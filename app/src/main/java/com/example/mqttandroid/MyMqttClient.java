@@ -1,6 +1,8 @@
 package com.example.mqttandroid;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.loader.ResourcesProvider;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
@@ -34,10 +36,12 @@ public class MyMqttClient {
     private boolean connected;
     private boolean subscribed;
 
-    private Context context;
+    private final Context context;
+    private final Resources res;
 
     public MyMqttClient(Context context, String URL){
         this.context = context;
+        res = context.getResources();
         messages = new ArrayList<>();
         serverURI = URL;
         clientID = MqttClient.generateClientId();
@@ -81,19 +85,20 @@ public class MyMqttClient {
             token.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    Toast.makeText(context, "Suscripto a: " + topic, Toast.LENGTH_SHORT).show();
+                    String str = res.getString(R.string.lbl_sub_to);
+                    Toast.makeText(context, str + " " + topic, Toast.LENGTH_SHORT).show();
                     subscribed = true;
                 }
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Toast.makeText(context, "Failed to Subscribe", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.lbl_sub_failed, Toast.LENGTH_SHORT).show();
                     subscribed = false;
                 }
             });
             client.setCallback(new MqttCallback() {
                 @Override
                 public void connectionLost(Throwable cause) {
-                    Toast.makeText(context, "Connection Lost", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.lbl_conn_lost, Toast.LENGTH_SHORT).show();
                     subscribed = false;
                     connected = false;
                 }
@@ -119,7 +124,7 @@ public class MyMqttClient {
             encodedPayload = payload.getBytes(StandardCharsets.UTF_8);
             MqttMessage message = new MqttMessage(encodedPayload);
             client.publish(pubTopic, message);
-            Toast.makeText(context, "Mensaje Enviado!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.lbl_msg_sent, Toast.LENGTH_SHORT).show();
         } catch (MqttException e) {
             e.printStackTrace();
         }

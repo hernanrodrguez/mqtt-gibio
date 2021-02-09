@@ -1,3 +1,20 @@
 <resources>
-    <string name="app_name">mqtt android</string>
+    <string name="app_name">MQTT GIBIO</string>
+    <string name="lbl_send_message">Send Message</string>
+    <string name="lbl_add_new_broker">Add New Broker</string>
+    <string name="lbl_enter_port">Enter Port</string>
+    <string name="lbl_enter_topic">Enter Topic</string>
+    <string name="lbl_enter_address">Enter Address</string>
+    <string name="lbl_add_broker">Add Broker</string>
+    <string name="lbl_topic">Topic</string>
+    <string name="lbl_msg">Message</string>
+    <string name="lbl_send">Send</string>
+    <string name="lbl_test_message">Test message</string>
+    <string name="lbl_test_topic">test_gibio</string>
+    <string name="lbl_test_address">test.mosquitto.org</string>
+    <string name="lbl_test_port">1883</string>
+    <string name="lbl_sub_to">Subscribed to:</string>
+    <string name="lbl_sub_failed">Failed to subscribe</string>
+    <string name="lbl_conn_lost">Connection lost</string>
+    <string name="lbl_msg_sent">Message sent!</string>
 </resources>

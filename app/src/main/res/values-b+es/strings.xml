@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">MQTT GIBIO</string>
+    <string name="lbl_send_message">Enviar Mensaje</string>
+    <string name="lbl_add_new_broker">Agregar Nuevo Broker</string>
+    <string name="lbl_enter_port">Ingresar Puerto</string>
+    <string name="lbl_enter_topic">Ingresar Topic</string>
+    <string name="lbl_enter_address">Ingresar Dirección</string>
+    <string name="lbl_add_broker">Agregar Broker</string>
+    <string name="lbl_topic">Topic</string>
+    <string name="lbl_msg">Mensaje</string>
+    <string name="lbl_send">Enviar</string>
+    <string name="lbl_test_message">Mensaje de prueba</string>
+    <string name="lbl_test_topic">test_gibio</string>
+    <string name="lbl_test_address">test.mosquitto.org</string>
+    <string name="lbl_test_port">1883</string>
+    <string name="lbl_sub_to">Suscripto a:</string>
+    <string name="lbl_sub_failed">No se pudo suscribir</string>
+    <string name="lbl_conn_lost">Se perdió la conexión</string>
+    <string name="lbl_msg_sent">¡Mensaje enviado!</string>
+</resources>

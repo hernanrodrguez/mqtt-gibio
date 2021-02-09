@@ -9,7 +9,7 @@
         android:id="@+id/tvAddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ingresar dirección" />
+        android:text="@string/lbl_enter_address" />
     <EditText
         android:id="@+id/etAddress"
         android:inputType="text"
@@ -21,7 +21,7 @@
         android:id="@+id/tvPort"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ingresar puerto" />
+        android:text="@string/lbl_enter_port" />
     <EditText
         android:id="@+id/etPort"
         android:inputType="number"
@@ -34,7 +34,7 @@
         android:id="@+id/tvTopic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ingresar topic" />
+        android:text="@string/lbl_enter_topic" />
     <EditText
         android:id="@+id/etTopic"
         android:inputType="text"
@@ -44,7 +44,7 @@
         tools:ignore="LabelFor" />
     <Button
         android:id="@+id/btnAdd"
-        android:text="Agregar Broker"
+        android:text="@string/lbl_add_broker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </LinearLayout>

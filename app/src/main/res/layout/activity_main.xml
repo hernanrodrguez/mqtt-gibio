@@ -5,12 +5,12 @@
     android:layout_height="match_parent">
     <Button
         android:id="@+id/btnSendMessage"
-        android:text="Enviar Mensaje"
+        android:text="@string/lbl_send_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <Button
         android:id="@+id/btnAddNewBroker"
-        android:text="Agregar Nuevo Broker"
+        android:text="@string/lbl_add_new_broker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <ListView

@@ -9,7 +9,7 @@
         android:id="@+id/tvTopicSend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Topic" />
+        android:text="@string/lbl_topic" />
     <EditText
         android:id="@+id/etTopicSend"
         android:inputType="text"
@@ -18,10 +18,10 @@
         android:importantForAutofill="no"
         tools:ignore="LabelFor" />
     <TextView
-        android:id="@+id/tvPort"
+        android:id="@+id/tvMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Mensaje" />
+        android:text="@string/lbl_msg" />
     <EditText
         android:id="@+id/etMsg"
         android:inputType="text"
@@ -31,7 +31,7 @@
         tools:ignore="LabelFor" />
     <Button
         android:id="@+id/btnSend"
-        android:text="Enviar"
+        android:text="@string/lbl_send"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </LinearLayout>

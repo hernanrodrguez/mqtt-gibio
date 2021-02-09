@@ -78,9 +78,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(currentView);
 
         etMessage = findViewById(R.id.etMsg);
-        etMessage.setText("Mensaje");
+        etMessage.setText(R.string.lbl_test_message);
         etTopicSend = findViewById(R.id.etTopicSend);
-        etTopicSend.setText("test_gibio");
+        etTopicSend.setText(R.string.lbl_test_topic);
 
         Button btnSend = findViewById(R.id.btnSend);
         btnSend.setOnClickListener(this::btnSendClick);
@@ -105,9 +105,9 @@ public class MainActivity extends AppCompatActivity {
         etPort = findViewById(R.id.etPort);
         etTopic = findViewById(R.id.etTopic);
 
-        etAddress.setText("test.mosquitto.org");
-        etPort.setText("1883");
-        etTopic.setText("test_gibio");
+        etAddress.setText(R.string.lbl_test_address);
+        etPort.setText(R.string.lbl_test_port);
+        etTopic.setText(R.string.lbl_test_topic);
 
         Button btnAdd = findViewById(R.id.btnAdd);
         btnAdd.setOnClickListener(this::btnAddClick);
