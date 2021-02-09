@@ -17,4 +17,6 @@
     <string name="lbl_sub_failed">No se pudo suscribir</string>
     <string name="lbl_conn_lost">Se perdió la conexión</string>
     <string name="lbl_msg_sent">¡Mensaje enviado!</string>
+    <string name="lbl_loading">Cargando… Por favor espere</string>
+    <string name="err_field">Este campo no puede estar vacío</string>
 </resources>

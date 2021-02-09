@@ -1,5 +1,6 @@
 package com.example.mqttandroid;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.loader.ResourcesProvider;
@@ -39,6 +40,8 @@ public class MyMqttClient {
     private final Context context;
     private final Resources res;
 
+    private final ProgressDialog progressDialog;
+
     public MyMqttClient(Context context, String URL){
         this.context = context;
         res = context.getResources();
@@ -46,10 +49,12 @@ public class MyMqttClient {
         serverURI = URL;
         clientID = MqttClient.generateClientId();
         client = new MqttAndroidClient(context, serverURI, clientID);
+        progressDialog = new ProgressDialog(context);
     }
 
     public void Subscribe(String subTopic){
         topic = subTopic;
+        ShowProgressDialog();
         if(!connected){
             Connect();
         } else {
@@ -71,11 +76,13 @@ public class MyMqttClient {
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     Log.d(TAG, "Not Connected");
                     connected = false;
+                    HideProgressDialog();
                 }
             });
         } catch (MqttException e) {
             e.printStackTrace();
             connected = false;
+            HideProgressDialog();
         }
     }
 
@@ -88,11 +95,13 @@ public class MyMqttClient {
                     String str = res.getString(R.string.lbl_sub_to);
                     Toast.makeText(context, str + " " + topic, Toast.LENGTH_SHORT).show();
                     subscribed = true;
+                    HideProgressDialog();
                 }
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     Toast.makeText(context, R.string.lbl_sub_failed, Toast.LENGTH_SHORT).show();
                     subscribed = false;
+                    HideProgressDialog();
                 }
             });
             client.setCallback(new MqttCallback() {
@@ -115,6 +124,7 @@ public class MyMqttClient {
         } catch (MqttException e) {
             e.printStackTrace();
             subscribed = false;
+            HideProgressDialog();
         }
     }
 
@@ -128,6 +138,18 @@ public class MyMqttClient {
         } catch (MqttException e) {
             e.printStackTrace();
         }
+    }
+
+    private void ShowProgressDialog(){
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage(res.getString(R.string.lbl_loading));
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+    }
+
+    private void HideProgressDialog(){
+        progressDialog.cancel();
     }
 
     public boolean IsConnected(){ return connected; }

@@ -2,8 +2,10 @@ package com.example.mqttandroid;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -87,10 +89,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void btnSendClick(View view) {
-        String topic = String.valueOf(etTopicSend.getText());
-        String payload = String.valueOf(etMessage.getText());
-        mqttClient.Publish(topic, payload);
-        SetUpMainActivity();
+        ArrayList<EditText> arr = new ArrayList<EditText>(){
+            {
+                add(etTopicSend);
+                add(etMessage);
+            }
+        };
+
+        if(CheckFields(arr)){
+            Editable topic = etTopicSend.getText();
+            Editable payload = etMessage.getText();
+            mqttClient.Publish(String.valueOf(topic), String.valueOf(payload));
+            SetUpMainActivity();
+        }
     }
 
     private void btnAddNewBrokerClick(View view) {
@@ -114,12 +125,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void btnAddClick(View view) {
-        Editable address = etAddress.getText();
-        Editable topic = etTopic.getText();
-        Editable port = etPort.getText();
+        ArrayList<EditText> arr = new ArrayList<EditText>(){
+            {
+                add(etAddress);
+                add(etTopic);
+                add(etPort);
+            }
+        };
 
-        mqttClient = new MyMqttClient(this, PROTOCOL + address + ":" + port);
-        mqttClient.Subscribe(String.valueOf(topic));
-        SetUpMainActivity();
+        if(CheckFields(arr)){
+            Editable address = etAddress.getText();
+            Editable topic = etTopic.getText();
+            Editable port = etPort.getText();
+
+            mqttClient = new MyMqttClient(this, PROTOCOL + address + ":" + port);
+            mqttClient.Subscribe(String.valueOf(topic));
+            SetUpMainActivity();
+        }
+
+    }
+
+    private boolean CheckFields(List<EditText> editTexts){
+        boolean ret = true;
+        String err = getResources().getString(R.string.err_field);
+
+        for(int i=0; i<editTexts.size(); i++){
+            if(TextUtils.isEmpty(editTexts.get(i).getText())){
+                editTexts.get(i).setError(err);
+                ret = false;
+            }
+        }
+        return ret;
     }
 }
