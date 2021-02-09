@@ -3,116 +3,123 @@ package com.example.mqttandroid;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.os.Debug;
-import android.util.Log;
+import android.text.Editable;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.android.material.tabs.TabLayout;
-
-import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final String TAG = "Mqtt";
+    private final String TAG = "Main Activity";
+    private final String PROTOCOL = "tcp://";
+
+    private MyMqttClient mqttClient;
+
+    private EditText etAddress;
+    private EditText etPort;
+    private EditText etTopic;
+    private EditText etMessage;
+    private EditText etTopicSend;
+
+    private int currentView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        SetUpMainActivity();
+    }
 
-        // https://www.hivemq.com/blog/mqtt-client-library-enyclopedia-paho-android-service/
-        
-        String clientId = MqttClient.generateClientId();
-        MqttAndroidClient client = new MqttAndroidClient(this.getApplicationContext(),
-                                                "tcp://test.mosquitto.org:1883",
-                                                         clientId);
-
-        try {
-            Log.d(TAG, "Starting connection...");
-            IMqttToken token = client.connect();
-            token.setActionCallback(new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    // We are connected
-                    Log.d(TAG, "Connected");
-
-                    String topic = "test_gibio";
-                    int qos = 1;
-                    try {
-                        IMqttToken subToken = client.subscribe(topic, qos);
-                        subToken.setActionCallback(new IMqttActionListener() {
-                            @Override
-                            public void onSuccess(IMqttToken asyncActionToken) {
-                                // The message was published
-                                Log.d(TAG, "Subscribed");
-                            }
-
-                            @Override
-                            public void onFailure(IMqttToken asyncActionToken,
-                                                  Throwable exception) {
-                                // The subscription could not be performed, maybe the user was not
-                                // authorized to subscribe on the specified topic e.g. using wildcards
-                                Log.d(TAG, "Failed to Subscribe");
-                            }
-                        });
-                        client.setCallback(new MqttCallback() {
-                            @Override
-                            public void connectionLost(Throwable cause) {
-                                Log.d(TAG, "Connection Lost");
-                            }
-
-                            @Override
-                            public void messageArrived(String topic, MqttMessage message) throws Exception {
-                                String payload = new String(message.getPayload());
-                                Log.d(TAG, "Message received: " + payload);
-                            }
-
-                            @Override
-                            public void deliveryComplete(IMqttDeliveryToken token) {
-                                Log.d(TAG, "Delivery Complete");
-                            }
-                        });
-                    } catch (MqttException e) {
-                        e.printStackTrace();
-                    }
-
-                    String topicc = "test_gibioo";
-                    String payload = "Mensaje de Prueba";
-                    byte[] encodedPayload;
-                    try {
-                        encodedPayload = payload.getBytes(StandardCharsets.UTF_8);
-                        MqttMessage message = new MqttMessage(encodedPayload);
-                        client.publish(topicc, message);
-                    } catch (MqttException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    // Something went wrong e.g. connection timeout or firewall problems
-                    Log.d(TAG, "Failed to connect");
-
-                }
-            });
-        } catch (MqttException e) {
-            e.printStackTrace();
+    @Override
+    public void onBackPressed() {
+        switch (currentView){
+            case R.layout.activity_main:
+                finish();
+                break;
+            case R.layout.activity_add_new_broker:
+            case R.layout.activity_send_message:
+                SetUpMainActivity();
+                break;
+            default:
+                finish();
+                break;
         }
     }
 
+    private void SetUpMainActivity(){
+        currentView = R.layout.activity_main;
+        setContentView(currentView);
 
+        Button btnAddNewBroker = findViewById(R.id.btnAddNewBroker);
+        btnAddNewBroker.setOnClickListener(this::btnAddNewBrokerClick);
+        Button btnSendMessage = findViewById(R.id.btnSendMessage);
+        btnSendMessage.setOnClickListener(this::btnSendMessageClick);
 
+        ListView lvMsg = findViewById(R.id.lvMsg);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
+        if(mqttClient != null){
+            adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mqttClient.GetMessages());
+        }
+        adapter.notifyDataSetChanged();
+        lvMsg.setAdapter(adapter);
+    }
 
+    private void btnSendMessageClick(View view) {
+        SetUpSendMessageActivity();
+    }
+
+    private void SetUpSendMessageActivity() {
+        currentView = R.layout.activity_send_message;
+        setContentView(currentView);
+
+        etMessage = findViewById(R.id.etMsg);
+        etMessage.setText("Mensaje");
+        etTopicSend = findViewById(R.id.etTopicSend);
+        etTopicSend.setText("test_gibio");
+
+        Button btnSend = findViewById(R.id.btnSend);
+        btnSend.setOnClickListener(this::btnSendClick);
+    }
+
+    private void btnSendClick(View view) {
+        String topic = String.valueOf(etTopicSend.getText());
+        String payload = String.valueOf(etMessage.getText());
+        mqttClient.Publish(topic, payload);
+        SetUpMainActivity();
+    }
+
+    private void btnAddNewBrokerClick(View view) {
+        SetUpAddNewBrokerActivity();
+    }
+
+    private void SetUpAddNewBrokerActivity() {
+        currentView = R.layout.activity_add_new_broker;
+        setContentView(currentView);
+
+        etAddress = findViewById(R.id.etAddress);
+        etPort = findViewById(R.id.etPort);
+        etTopic = findViewById(R.id.etTopic);
+
+        etAddress.setText("test.mosquitto.org");
+        etPort.setText("1883");
+        etTopic.setText("test_gibio");
+
+        Button btnAdd = findViewById(R.id.btnAdd);
+        btnAdd.setOnClickListener(this::btnAddClick);
+    }
+
+    private void btnAddClick(View view) {
+        Editable address = etAddress.getText();
+        Editable topic = etTopic.getText();
+        Editable port = etPort.getText();
+
+        mqttClient = new MyMqttClient(this, PROTOCOL + address + ":" + port);
+        mqttClient.Subscribe(String.valueOf(topic));
+        SetUpMainActivity();
+    }
 }
