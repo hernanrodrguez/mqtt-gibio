@@ -114,7 +114,7 @@ public class MyMqttClient {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     String payload = new String(message.getPayload());
-                    messages.add(payload);
+                    messages.add(topic + ":" + payload);
                 }
                 @Override
                 public void deliveryComplete(IMqttDeliveryToken token) {
@@ -154,7 +154,12 @@ public class MyMqttClient {
 
     public boolean IsConnected(){ return connected; }
     public boolean IsSubscribed(){ return subscribed; }
-    public List<String> GetMessages(){ return messages; }
+
+    public List<String> GetMessages(){
+        List<String> ret = new ArrayList<>(messages);
+        ret.add(0, serverURI);
+        return ret;
+    }
     public String GetTopic(){ return topic; }
 
     @Override

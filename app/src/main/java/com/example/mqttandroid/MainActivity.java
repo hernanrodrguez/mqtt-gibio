@@ -70,9 +70,9 @@ public class MainActivity extends AppCompatActivity {
 
         ListView lvMsg = findViewById(R.id.lvMsg);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
-        //if(mqttClients != null){
-            //adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mqttClient.GetMessages());
-        //}
+        if(mqttClients.size() > 0){
+            adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, GetMessagesList(mqttClients));
+        }
         adapter.notifyDataSetChanged();
         lvMsg.setAdapter(adapter);
     }
@@ -184,6 +184,14 @@ public class MainActivity extends AppCompatActivity {
                 editTexts.get(i).setError(err);
                 ret = false;
             }
+        }
+        return ret;
+    }
+
+    private List<String> GetMessagesList(List<MyMqttClient> clients){
+        List<String> ret = new ArrayList<>();
+        for(MyMqttClient client : clients){
+            ret.addAll(client.GetMessages());
         }
         return ret;
     }
