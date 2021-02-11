@@ -157,4 +157,8 @@ public class MyMqttClient {
     public List<String> GetMessages(){ return messages; }
     public String GetTopic(){ return topic; }
 
+    @Override
+    public String toString() {
+        return serverURI;
+    }
 }

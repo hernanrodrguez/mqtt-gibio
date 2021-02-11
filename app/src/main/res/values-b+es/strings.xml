@@ -18,5 +18,7 @@
     <string name="lbl_conn_lost">Se perdió la conexión</string>
     <string name="lbl_msg_sent">¡Mensaje enviado!</string>
     <string name="lbl_loading">Cargando… Por favor espere</string>
+    <string name="lbl_broker">Broker</string>
     <string name="err_field">Este campo no puede estar vacío</string>
+    <string name="err_broker">No se agregó ningún broker</string>
 </resources>
