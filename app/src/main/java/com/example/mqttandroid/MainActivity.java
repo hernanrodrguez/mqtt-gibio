@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private final String TAG = "Main Activity";
     private final String PROTOCOL = "tcp://";
 
-    private List<MyMqttClient> mqttClients;
+    private MyMqttClient mqttClient;
 
     private EditText etAddress;
     private EditText etPort;
@@ -32,14 +32,11 @@ public class MainActivity extends AppCompatActivity {
     private EditText etMessage;
     private EditText etTopicSend;
 
-    private Spinner spBrokerSend;
-
     private int currentView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mqttClients = new ArrayList<>();
         SetUpMainActivity();
     }
 
@@ -70,15 +67,15 @@ public class MainActivity extends AppCompatActivity {
 
         ListView lvMsg = findViewById(R.id.lvMsg);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
-        if(mqttClients.size() > 0){
-            adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, GetMessagesList(mqttClients));
+        if(mqttClient != null){
+            adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mqttClient.GetMessages());
         }
         adapter.notifyDataSetChanged();
         lvMsg.setAdapter(adapter);
     }
 
     private void btnSendMessageClick(View view) {
-        if(mqttClients.size() == 0){
+        if(mqttClient == null){
             Toast.makeText(this, R.string.err_broker, Toast.LENGTH_SHORT).show();
         } else {
             SetUpSendMessageActivity();
@@ -92,24 +89,10 @@ public class MainActivity extends AppCompatActivity {
         etMessage = findViewById(R.id.etMsg);
         etMessage.setText(R.string.lbl_test_message);
         etTopicSend = findViewById(R.id.etTopicSend);
-        etTopicSend.setText(R.string.lbl_test_topic);
-
-        List<String> clients = GetClientsList(mqttClients);
-        spBrokerSend = findViewById(R.id.spBrokerSend);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, clients);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spBrokerSend.setAdapter(adapter);
+        etTopicSend.setText(R.string.lbl_test_topic_send);
 
         Button btnSend = findViewById(R.id.btnSend);
         btnSend.setOnClickListener(this::btnSendClick);
-    }
-
-    private List<String> GetClientsList(List<MyMqttClient> clients) {
-        List<String> ret = new ArrayList<>();
-        for(MyMqttClient client : clients)
-            ret.add(client.toString());
-
-        return ret;
     }
 
     private void btnSendClick(View view) {
@@ -120,14 +103,12 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        int index = spBrokerSend.getSelectedItemPosition();
 
         if(CheckFields(arr)){
-            MyMqttClient client = mqttClients.get(index);
             Editable topic = etTopicSend.getText();
             Editable payload = etMessage.getText();
 
-            client.Publish(String.valueOf(topic), String.valueOf(payload));
+            mqttClient.Publish(String.valueOf(topic), String.valueOf(payload));
             SetUpMainActivity();
         }
     }
@@ -166,10 +147,9 @@ public class MainActivity extends AppCompatActivity {
             Editable topic = etTopic.getText();
             Editable port = etPort.getText();
 
-            MyMqttClient client = new MyMqttClient(this, PROTOCOL + address + ":" + port);
-            client.Subscribe(String.valueOf(topic));
+            mqttClient = new MyMqttClient(this, PROTOCOL + address + ":" + port);
+            mqttClient.Subscribe(String.valueOf(topic));
 
-            mqttClients.add(client);
             SetUpMainActivity();
         }
 
@@ -184,14 +164,6 @@ public class MainActivity extends AppCompatActivity {
                 editTexts.get(i).setError(err);
                 ret = false;
             }
-        }
-        return ret;
-    }
-
-    private List<String> GetMessagesList(List<MyMqttClient> clients){
-        List<String> ret = new ArrayList<>();
-        for(MyMqttClient client : clients){
-            ret.addAll(client.GetMessages());
         }
         return ret;
     }

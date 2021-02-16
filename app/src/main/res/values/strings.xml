@@ -10,10 +10,11 @@
     <string name="lbl_msg">Message</string>
     <string name="lbl_send">Send</string>
     <string name="lbl_test_message">Test message</string>
-    <string name="lbl_test_topic">test_gibio</string>
+    <string name="lbl_test_topic">test_gibio/#</string>
+    <string name="lbl_test_topic_send">test_gibio</string>
     <string name="lbl_test_address">test.mosquitto.org</string>
     <string name="lbl_test_port">1883</string>
-    <string name="lbl_sub_to">Subscribed to:</string>
+    <string name="lbl_connected">Broker connected</string>
     <string name="lbl_sub_failed">Failed to subscribe</string>
     <string name="lbl_conn_lost">Connection lost</string>
     <string name="lbl_msg_sent">Message sent!</string>
@@ -21,4 +22,5 @@
     <string name="lbl_broker">Broker</string>
     <string name="err_field">This field cannot be empty</string>
     <string name="err_broker">There is no broker</string>
+    <string name="err_connect">Can\'t connect to the broker</string>
 </resources>

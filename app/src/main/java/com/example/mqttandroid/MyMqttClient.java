@@ -32,7 +32,7 @@ public class MyMqttClient {
     private String serverURI;
     private String topic;
 
-    private List<String> messages;
+    public List<String> messages;
 
     private boolean connected;
     private boolean subscribed;
@@ -68,13 +68,12 @@ public class MyMqttClient {
             token.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    Log.d(TAG, "Connected");
                     connected = true;
                     Subscribe();
                 }
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Log.d(TAG, "Not Connected");
+                    Toast.makeText(context, R.string.err_connect, Toast.LENGTH_SHORT).show();
                     connected = false;
                     HideProgressDialog();
                 }
@@ -92,8 +91,7 @@ public class MyMqttClient {
             token.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    String str = res.getString(R.string.lbl_sub_to);
-                    Toast.makeText(context, str + " " + topic, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, res.getString(R.string.lbl_connected), Toast.LENGTH_SHORT).show();
                     subscribed = true;
                     HideProgressDialog();
                 }
@@ -114,12 +112,10 @@ public class MyMqttClient {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     String payload = new String(message.getPayload());
-                    messages.add(topic + ":" + payload);
+                    messages.add(topic + ": " + payload);
                 }
                 @Override
-                public void deliveryComplete(IMqttDeliveryToken token) {
-                    Log.d(TAG, "Delivery Complete");
-                }
+                public void deliveryComplete(IMqttDeliveryToken token) { }
             });
         } catch (MqttException e) {
             e.printStackTrace();
@@ -156,9 +152,7 @@ public class MyMqttClient {
     public boolean IsSubscribed(){ return subscribed; }
 
     public List<String> GetMessages(){
-        List<String> ret = new ArrayList<>(messages);
-        ret.add(0, serverURI);
-        return ret;
+        return messages;
     }
     public String GetTopic(){ return topic; }
 
