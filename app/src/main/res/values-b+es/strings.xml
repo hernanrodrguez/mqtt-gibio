@@ -20,6 +20,8 @@
     <string name="lbl_msg_sent">¡Mensaje enviado!</string>
     <string name="lbl_loading">Cargando… Por favor espere</string>
     <string name="lbl_broker">Broker</string>
+    <string name="lbl_logo_gibio">Logo GIBIO</string>
+    <string name="lbl_logo_utn">Logo UTN</string>
     <string name="err_field">Este campo no puede estar vacío</string>
     <string name="err_broker">No se agregó ningún broker</string>
     <string name="err_connect">No se pudo conectar al broker</string>

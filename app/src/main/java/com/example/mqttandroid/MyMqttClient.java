@@ -52,7 +52,7 @@ public class MyMqttClient {
 
     public void Subscribe(String subTopic){
         topic = subTopic;
-        ShowProgressDialog();
+        //ShowProgressDialog();
         if(!connected){
             Connect();
         } else {

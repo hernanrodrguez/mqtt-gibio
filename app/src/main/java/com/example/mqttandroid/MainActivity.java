@@ -45,9 +45,10 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SetUpSplashScreen();
         messages = new ArrayList<>();
         GetBroker();
-        SetUpMainActivity();
+        //SetUpMainActivity();
     }
 
     @Override
@@ -84,6 +85,11 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
         editor.putString(BROKER_KEY, mqttClient.GetURL());
         editor.putString(TOPIC_KEY, mqttClient.GetTopic());
         editor.apply();
+    }
+
+    private void SetUpSplashScreen(){
+        currentView = R.layout.splash_screen;
+        setContentView(currentView);
     }
 
     private void SetUpMainActivity(){
@@ -213,7 +219,8 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
 
     @Override
     public void BrokerAdded() {
-        Toast.makeText(this, R.string.lbl_connected, Toast.LENGTH_SHORT).show();
+        SetUpMainActivity();
+        //Toast.makeText(this, R.string.lbl_connected, Toast.LENGTH_SHORT).show();
     }
 
     @Override
