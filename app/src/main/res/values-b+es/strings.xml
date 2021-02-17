@@ -23,4 +23,5 @@
     <string name="err_field">Este campo no puede estar vacío</string>
     <string name="err_broker">No se agregó ningún broker</string>
     <string name="err_connect">No se pudo conectar al broker</string>
+    <string name="err_send">Hubo un problema</string>
 </resources>

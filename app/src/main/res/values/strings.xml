@@ -23,4 +23,5 @@
     <string name="err_field">This field cannot be empty</string>
     <string name="err_broker">There is no broker</string>
     <string name="err_connect">Can\'t connect to the broker</string>
+    <string name="err_send">There was a problem</string>
 </resources>

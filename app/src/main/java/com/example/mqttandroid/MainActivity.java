@@ -2,8 +2,10 @@ package com.example.mqttandroid;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.view.View;
@@ -19,7 +21,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MqttListener{
 
     private final String TAG = "Main Activity";
     private final String PROTOCOL = "tcp://";
@@ -32,11 +34,19 @@ public class MainActivity extends AppCompatActivity {
     private EditText etMessage;
     private EditText etTopicSend;
 
+    private List<String> messages;
+    private ArrayAdapter<String> adapter;
+
     private int currentView;
+
+    private final static String BROKER_KEY = "Broker";
+    private final static String TOPIC_KEY = "Topic";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        messages = new ArrayList<>();
+        GetBroker();
         SetUpMainActivity();
     }
 
@@ -56,6 +66,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private boolean GetBroker(){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String URL = prefs.getString(BROKER_KEY, "");
+        String topic = prefs.getString(TOPIC_KEY, "");
+        if(!URL.equals("") && !topic.equals("")){
+            mqttClient = new MyMqttClient(this, URL);
+            mqttClient.Subscribe(topic);
+            return true;
+        } else
+            return false;
+    }
+
+    private void SaveBroker(){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(BROKER_KEY, mqttClient.GetURL());
+        editor.putString(TOPIC_KEY, mqttClient.GetTopic());
+        editor.apply();
+    }
+
     private void SetUpMainActivity(){
         currentView = R.layout.activity_main;
         setContentView(currentView);
@@ -66,10 +96,7 @@ public class MainActivity extends AppCompatActivity {
         btnSendMessage.setOnClickListener(this::btnSendMessageClick);
 
         ListView lvMsg = findViewById(R.id.lvMsg);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
-        if(mqttClient != null){
-            adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mqttClient.GetMessages());
-        }
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, messages);
         adapter.notifyDataSetChanged();
         lvMsg.setAdapter(adapter);
     }
@@ -150,9 +177,9 @@ public class MainActivity extends AppCompatActivity {
             mqttClient = new MyMqttClient(this, PROTOCOL + address + ":" + port);
             mqttClient.Subscribe(String.valueOf(topic));
 
+            SaveBroker();
             SetUpMainActivity();
         }
-
     }
 
     private boolean CheckFields(List<EditText> editTexts){
@@ -166,5 +193,16 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return ret;
+    }
+
+    @Override
+    public void MessageArrived(String msg) {
+        messages.add(msg);
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void BrokerAdded() {
+        Toast.makeText(this, getResources().getString(R.string.lbl_connected), Toast.LENGTH_SHORT).show();
     }
 }

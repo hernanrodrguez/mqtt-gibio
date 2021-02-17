@@ -1,10 +1,12 @@
 package com.example.mqttandroid;
 
 import android.app.ProgressDialog;
+import android.app.usage.UsageEvents;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.loader.ResourcesProvider;
 import android.os.AsyncTask;
+import android.util.EventLog;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -27,12 +29,11 @@ public class MyMqttClient {
     private final String TAG = "MyMqttClient";
 
     private MqttAndroidClient client;
+    private MqttListener listener;
 
     private String clientID;
     private String serverURI;
     private String topic;
-
-    public List<String> messages;
 
     private boolean connected;
     private boolean subscribed;
@@ -45,11 +46,11 @@ public class MyMqttClient {
     public MyMqttClient(Context context, String URL){
         this.context = context;
         res = context.getResources();
-        messages = new ArrayList<>();
         serverURI = URL;
         clientID = MqttClient.generateClientId();
         client = new MqttAndroidClient(context, serverURI, clientID);
         progressDialog = new ProgressDialog(context);
+        listener = (MqttListener)context;
     }
 
     public void Subscribe(String subTopic){
@@ -91,7 +92,8 @@ public class MyMqttClient {
             token.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    Toast.makeText(context, res.getString(R.string.lbl_connected), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, res.getString(R.string.lbl_connected), Toast.LENGTH_SHORT).show();
+                    listener.BrokerAdded();
                     subscribed = true;
                     HideProgressDialog();
                 }
@@ -112,7 +114,7 @@ public class MyMqttClient {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     String payload = new String(message.getPayload());
-                    messages.add(topic + ": " + payload);
+                    listener.MessageArrived(topic + ": " + payload);
                 }
                 @Override
                 public void deliveryComplete(IMqttDeliveryToken token) { }
@@ -133,6 +135,7 @@ public class MyMqttClient {
             Toast.makeText(context, R.string.lbl_msg_sent, Toast.LENGTH_SHORT).show();
         } catch (MqttException e) {
             e.printStackTrace();
+            Toast.makeText(context, R.string.err_send, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -151,10 +154,8 @@ public class MyMqttClient {
     public boolean IsConnected(){ return connected; }
     public boolean IsSubscribed(){ return subscribed; }
 
-    public List<String> GetMessages(){
-        return messages;
-    }
     public String GetTopic(){ return topic; }
+    public String GetURL(){ return serverURI; }
 
     @Override
     public String toString() {
