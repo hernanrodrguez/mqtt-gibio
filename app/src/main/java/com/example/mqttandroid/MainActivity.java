@@ -202,7 +202,27 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
     }
 
     @Override
+    public void MessageSent() {
+        Toast.makeText(this, R.string.lbl_msg_sent, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void MessageNotSent() {
+        Toast.makeText(this, R.string.err_send, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void BrokerAdded() {
-        Toast.makeText(this, getResources().getString(R.string.lbl_connected), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.lbl_connected, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void ConnectionFailed() {
+        Toast.makeText(this, R.string.err_connect, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void ConnectionLost() {
+        Toast.makeText(this, R.string.lbl_conn_lost, Toast.LENGTH_SHORT).show();
     }
 }

@@ -28,26 +28,23 @@ public class MyMqttClient {
 
     private final String TAG = "MyMqttClient";
 
-    private MqttAndroidClient client;
-    private MqttListener listener;
+    private final MqttAndroidClient client;
+    private final MqttListener listener;
 
-    private String clientID;
-    private String serverURI;
+    private final String serverURI;
     private String topic;
 
     private boolean connected;
     private boolean subscribed;
 
-    private final Context context;
     private final Resources res;
 
     private final ProgressDialog progressDialog;
 
     public MyMqttClient(Context context, String URL){
-        this.context = context;
         res = context.getResources();
         serverURI = URL;
-        clientID = MqttClient.generateClientId();
+        String clientID = MqttClient.generateClientId();
         client = new MqttAndroidClient(context, serverURI, clientID);
         progressDialog = new ProgressDialog(context);
         listener = (MqttListener)context;
@@ -74,12 +71,13 @@ public class MyMqttClient {
                 }
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Toast.makeText(context, R.string.err_connect, Toast.LENGTH_SHORT).show();
+                    listener.ConnectionFailed();
                     connected = false;
                     HideProgressDialog();
                 }
             });
         } catch (MqttException e) {
+            listener.ConnectionFailed();
             e.printStackTrace();
             connected = false;
             HideProgressDialog();
@@ -92,14 +90,13 @@ public class MyMqttClient {
             token.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    //Toast.makeText(context, res.getString(R.string.lbl_connected), Toast.LENGTH_SHORT).show();
                     listener.BrokerAdded();
                     subscribed = true;
                     HideProgressDialog();
                 }
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Toast.makeText(context, R.string.lbl_sub_failed, Toast.LENGTH_SHORT).show();
+                    listener.ConnectionFailed();
                     subscribed = false;
                     HideProgressDialog();
                 }
@@ -107,7 +104,7 @@ public class MyMqttClient {
             client.setCallback(new MqttCallback() {
                 @Override
                 public void connectionLost(Throwable cause) {
-                    Toast.makeText(context, R.string.lbl_conn_lost, Toast.LENGTH_SHORT).show();
+                    listener.ConnectionLost();
                     subscribed = false;
                     connected = false;
                 }
@@ -120,6 +117,7 @@ public class MyMqttClient {
                 public void deliveryComplete(IMqttDeliveryToken token) { }
             });
         } catch (MqttException e) {
+            listener.ConnectionFailed();
             e.printStackTrace();
             subscribed = false;
             HideProgressDialog();
@@ -132,10 +130,10 @@ public class MyMqttClient {
             encodedPayload = payload.getBytes(StandardCharsets.UTF_8);
             MqttMessage message = new MqttMessage(encodedPayload);
             client.publish(pubTopic, message);
-            Toast.makeText(context, R.string.lbl_msg_sent, Toast.LENGTH_SHORT).show();
+            listener.MessageSent();
         } catch (MqttException e) {
             e.printStackTrace();
-            Toast.makeText(context, R.string.err_send, Toast.LENGTH_SHORT).show();
+            listener.MessageNotSent();
         }
     }
 
