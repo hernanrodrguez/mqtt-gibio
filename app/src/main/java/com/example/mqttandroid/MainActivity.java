@@ -1,6 +1,10 @@
 package com.example.mqttandroid;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -23,9 +27,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MqttListener{
 
-    private final String TAG = "Main Activity";
-    private final String PROTOCOL = "tcp://";
-
     private MyMqttClient mqttClient;
 
     private EditText etAddress;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
     private EditText etMessage;
     private EditText etTopicSend;
 
+    private ListView lvMsg;
     private List<String> messages;
     private ArrayAdapter<String> adapter;
 
@@ -45,9 +47,11 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         SetUpSplashScreen();
         messages = new ArrayList<>();
         GetBroker();
+
         //SetUpMainActivity();
     }
 
@@ -101,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
         Button btnSendMessage = findViewById(R.id.btnSendMessage);
         btnSendMessage.setOnClickListener(this::btnSendMessageClick);
 
-        ListView lvMsg = findViewById(R.id.lvMsg);
+        lvMsg = findViewById(R.id.lvMsg);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, messages);
         adapter.notifyDataSetChanged();
         lvMsg.setAdapter(adapter);
@@ -135,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
                 add(etMessage);
             }
         };
-
 
         if(CheckFields(arr)){
             Editable topic = etTopicSend.getText();
@@ -180,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
             Editable topic = etTopic.getText();
             Editable port = etPort.getText();
 
+            String PROTOCOL = "tcp://";
             mqttClient = new MyMqttClient(this, PROTOCOL + address + ":" + port);
             mqttClient.Subscribe(String.valueOf(topic));
 
@@ -205,6 +209,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
     public void MessageArrived(String msg) {
         messages.add(msg);
         adapter.notifyDataSetChanged();
+        lvMsg.smoothScrollToPosition(messages.size()-1);
     }
 
     @Override

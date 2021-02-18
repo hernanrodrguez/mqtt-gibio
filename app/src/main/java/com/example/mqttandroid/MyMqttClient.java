@@ -26,8 +26,6 @@ import java.util.List;
 // https://www.hivemq.com/blog/mqtt-client-library-enyclopedia-paho-android-service/
 public class MyMqttClient {
 
-    private final String TAG = "MyMqttClient";
-
     private final MqttAndroidClient client;
     private final MqttListener listener;
 
