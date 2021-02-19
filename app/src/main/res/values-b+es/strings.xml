@@ -23,6 +23,12 @@
     <string name="lbl_logo_gibio">Logo GIBIO</string>
     <string name="lbl_logo_utn">Logo UTN</string>
     <string name="lbl_gibio">Grupo de Investigación y Desarrollo en Bioingeniería</string>
+    <string name="lbl_monitoring">Monitoreo</string>
+    <string name="lbl_select">Elija una opción</string>
+    <string name="lbl_room">Habitación</string>
+    <string name="lbl_rooms">Habitaciones</string>
+    <string name="lbl_person">Persona</string>
+    <string name="lbl_air">Aire</string>
     <string name="err_field">Este campo no puede estar vacío</string>
     <string name="err_broker">No se agregó ningún broker</string>
     <string name="err_connect">No se pudo conectar al broker</string>
