@@ -19,12 +19,13 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/white">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF">
+        android:background="@color/white">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -44,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="24dp"
-            android:fontFamily="@font/baloo"
+            android:fontFamily="@font/poppins_bold"
             android:text="@string/lbl_monitoring"
             android:textAlignment="center"
             android:textSize="30sp"
@@ -57,7 +58,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:fontFamily="@font/baloo"
+            android:fontFamily="@font/poppins"
             android:text="@string/lbl_select"
             android:textAlignment="center"
             app:layout_constraintEnd_toStartOf="@+id/imageView"
@@ -98,7 +99,7 @@
                         android:layout_below="@id/room"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="10dp"
-                        android:fontFamily="@font/baloo"
+                        android:fontFamily="@font/poppins_bold"
                         android:text="@string/lbl_room"
                         android:textSize="24sp" />
                     <ImageView
@@ -126,7 +127,7 @@
                         android:layout_below="@id/imageView3"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="10dp"
-                        android:fontFamily="@font/baloo"
+                        android:fontFamily="@font/poppins_bold"
                         android:text="@string/lbl_person"
                         android:textSize="24sp" />
                     <ImageView
@@ -165,7 +166,7 @@
                         android:layout_below="@id/co2"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="10dp"
-                        android:fontFamily="@font/baloo"
+                        android:fontFamily="@font/poppins_bold"
                         android:text="@string/lbl_air"
                         android:textSize="24sp" />
                     <ImageView
@@ -193,7 +194,7 @@
                         android:layout_below="@id/rooms"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="10dp"
-                        android:fontFamily="@font/baloo"
+                        android:fontFamily="@font/poppins_bold"
                         android:text="@string/lbl_rooms"
                         android:textSize="24sp" />
                     <ImageView

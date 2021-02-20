@@ -26,7 +26,7 @@
     <item android:title="@string/lbl_conf">
         <menu>
             <item
-                android:id="@+id/nav_share"
+                android:id="@+id/nav_settings"
                 android:icon="@drawable/settings_icon"
                 android:title="@string/lbl_settings" />
         </menu>

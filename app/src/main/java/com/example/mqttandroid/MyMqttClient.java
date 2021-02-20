@@ -37,14 +37,11 @@ public class MyMqttClient {
 
     private final Resources res;
 
-    private final ProgressDialog progressDialog;
-
     public MyMqttClient(Context context, String URL){
         res = context.getResources();
         serverURI = URL;
         String clientID = MqttClient.generateClientId();
         client = new MqttAndroidClient(context, serverURI, clientID);
-        progressDialog = new ProgressDialog(context);
         listener = (MqttListener)context;
     }
 
@@ -71,14 +68,12 @@ public class MyMqttClient {
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     listener.ConnectionFailed();
                     connected = false;
-                    HideProgressDialog();
                 }
             });
         } catch (MqttException e) {
             listener.ConnectionFailed();
             e.printStackTrace();
             connected = false;
-            HideProgressDialog();
         }
     }
 
@@ -90,13 +85,11 @@ public class MyMqttClient {
                 public void onSuccess(IMqttToken asyncActionToken) {
                     listener.BrokerAdded();
                     subscribed = true;
-                    HideProgressDialog();
                 }
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     listener.ConnectionFailed();
                     subscribed = false;
-                    HideProgressDialog();
                 }
             });
             client.setCallback(new MqttCallback() {
@@ -118,7 +111,6 @@ public class MyMqttClient {
             listener.ConnectionFailed();
             e.printStackTrace();
             subscribed = false;
-            HideProgressDialog();
         }
     }
 
@@ -135,23 +127,17 @@ public class MyMqttClient {
         }
     }
 
-    private void ShowProgressDialog(){
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage(res.getString(R.string.lbl_loading));
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.show();
-    }
-
-    private void HideProgressDialog(){
-        progressDialog.cancel();
-    }
-
     public boolean IsConnected(){ return connected; }
     public boolean IsSubscribed(){ return subscribed; }
 
     public String GetTopic(){ return topic; }
-    public String GetURL(){ return serverURI; }
+    public String GetURL(){
+        String URL = serverURI.split(":")[1];
+        return URL.substring(2);
+    }
+    public String GetPort(){
+        return serverURI.split(":")[2];
+    }
 
     @Override
     public String toString() {

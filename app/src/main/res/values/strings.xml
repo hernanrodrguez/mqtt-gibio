@@ -1,11 +1,19 @@
 <resources>
     <string name="app_name">MQTT GIBIO</string>
     <string name="lbl_home">Home</string>
+    <string name="lbl_init_title">Monitoring App</string>
+    <string name="lbl_init_desc">This App, developed by members of Grupo de Investigación y Desarrollo en Bioingeniería from UTN FRBA, monitors the measurement devices placed in the classrooms and common spaces of the University. These devices are capable of measuring the ambient temperature, people\'s temperature and the carbon dioxide concentration in the environment. The communication is based on MQTT protocol, the standard for IoT applications. To get started, enter your server details.</string>
+    <string name="lbl_sett_desc">These are your current server properties:</string>
+    <string name="lbl_edit">Edit server</string>
     <string name="lbl_send_message">Send Message</string>
     <string name="lbl_add_new_broker">Add New Broker</string>
     <string name="lbl_enter_port">Enter Port</string>
+    <string name="lbl_port">Port</string>
+    <string name="lbl_enter">Enter</string>
+    <string name="lbl_remember">Remember me</string>
     <string name="lbl_enter_topic">Enter Topic</string>
     <string name="lbl_enter_address">Enter Address</string>
+    <string name="lbl_address">Address</string>
     <string name="lbl_add_broker">Add Broker</string>
     <string name="lbl_topic">Topic</string>
     <string name="lbl_msg">Message</string>
@@ -37,8 +45,13 @@
     <string name="lbl_bug">Report a bug</string>
     <string name="lbl_nav_open">Navigation drawer opened</string>
     <string name="lbl_nav_closed">Navigation drawer closed</string>
+    <string name="lbl_warning">Warning</string>
+    <string name="lbl_warning_msg">Do you want to delete the current server and set a new one?</string>
+    <string name="lbl_yes">Yes</string>
+    <string name="lbl_no">No</string>
     <string name="err_field">This field cannot be empty</string>
     <string name="err_broker">There is no broker</string>
     <string name="err_connect">Can\'t connect to the broker</string>
     <string name="err_send">There was a problem</string>
+    <color name="blue_elec">#1B74C4</color>
 </resources>
