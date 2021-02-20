@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">MQTT GIBIO</string>
+    <string name="lbl_home">Home</string>
     <string name="lbl_send_message">Enviar Mensaje</string>
     <string name="lbl_add_new_broker">Agregar Nuevo Broker</string>
     <string name="lbl_enter_port">Ingresar Puerto</string>
@@ -29,6 +30,13 @@
     <string name="lbl_rooms">Habitaciones</string>
     <string name="lbl_person">Persona</string>
     <string name="lbl_air">Aire</string>
+    <string name="lbl_conf">Configuración</string>
+    <string name="lbl_settings">Ajustes</string>
+    <string name="lbl_communicate">Comunicate</string>
+    <string name="lbl_info">Más información</string>
+    <string name="lbl_bug">Reportar un error</string>
+    <string name="lbl_nav_open">Menú de navegación abierto</string>
+    <string name="lbl_nav_closed">Menú de navegación cerrado</string>
     <string name="err_field">Este campo no puede estar vacío</string>
     <string name="err_broker">No se agregó ningún broker</string>
     <string name="err_connect">No se pudo conectar al broker</string>

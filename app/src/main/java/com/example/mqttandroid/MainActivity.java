@@ -8,17 +8,23 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.view.Menu;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.navigation.NavigationView;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
 
@@ -41,12 +47,23 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
 
     private int currentView;
 
+
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private Toolbar toolbar;
+    private Menu menu;
+    private TextView textView;
+
+
     private final static String BROKER_KEY = "Broker";
     private final static String TOPIC_KEY = "Topic";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         SetUpSplashScreen();
         messages = new ArrayList<>();
@@ -57,17 +74,21 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
 
     @Override
     public void onBackPressed() {
-        switch (currentView){
-            case R.layout.activity_main:
-                finish();
-                break;
-            case R.layout.activity_add_new_broker:
-            case R.layout.activity_send_message:
-                SetUpMainActivity();
-                break;
-            default:
-                finish();
-                break;
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            switch (currentView){
+                case R.layout.activity_main:
+                    finish();
+                    break;
+                case R.layout.activity_add_new_broker:
+                case R.layout.activity_send_message:
+                    SetUpMainActivity();
+                    break;
+                default:
+                    finish();
+                    break;
+            }
         }
     }
 
@@ -109,6 +130,24 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, messages);
         adapter.notifyDataSetChanged();
         lvMsg.setAdapter(adapter);
+    }
+
+    private void SetUpHomeActivity(){
+        currentView = R.layout.activity_home;
+        setContentView(currentView);
+
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        textView = findViewById(R.id.textView);
+        toolbar = findViewById(R.id.toolbar);
+
+        navigationView.bringToFront();
+        ActionBarDrawerToggle toggle =
+                new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.lbl_nav_open, R.string.lbl_nav_closed);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        //navigationView.setNavigationItemSelectedListener((NavigationView.OnNavigationItemSelectedListener) this);
+        navigationView.setCheckedItem(R.id.nav_home);
     }
 
     private void btnSendMessageClick(View view) {
@@ -224,7 +263,8 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
 
     @Override
     public void BrokerAdded() {
-        SetUpMainActivity();
+        //SetUpMainActivity();
+        SetUpHomeActivity();
         //Toast.makeText(this, R.string.lbl_connected, Toast.LENGTH_SHORT).show();
     }
 
