@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
@@ -121,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
     private void SaveBroker(){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(BROKER_KEY, mqttClient.GetURL());
+        editor.putString(BROKER_KEY, mqttClient.GetServerURL());
         editor.putString(TOPIC_KEY, mqttClient.GetTopic());
         editor.apply();
     }

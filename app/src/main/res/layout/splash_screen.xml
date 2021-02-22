@@ -20,7 +20,8 @@
     <TextView
         android:text="@string/lbl_gibio"
         android:paddingTop="20dp"
-        android:textSize="30sp"
+        android:paddingHorizontal="30dp"
+        android:textSize="20sp"
         android:textColor="@color/black"
         android:textAlignment="center"
         android:layout_width="match_parent"

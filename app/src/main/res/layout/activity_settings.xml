@@ -10,13 +10,14 @@
     <TextView
         android:text="@string/lbl_settings"
         android:fontFamily="@font/poppins_bold"
-        android:textSize="30sp"
+        android:textSize="20sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <TextView
         android:text="@string/lbl_sett_desc"
-        android:textSize="20sp"
+        android:textSize="15sp"
         android:layout_width="match_parent"
+        android:fontFamily="@font/poppins"
         android:layout_height="wrap_content" />
 
     <androidx.cardview.widget.CardView
@@ -28,7 +29,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="10dp">
 
             <TextView
                 android:layout_width="match_parent"
@@ -107,7 +109,7 @@
                 android:gravity="center"
                 android:text="@string/lbl_edit"
                 android:textColor="@color/white"
-                android:textSize="22sp" />
+                android:textSize="15sp" />
 
         </RelativeLayout>
 

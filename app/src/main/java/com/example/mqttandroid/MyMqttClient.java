@@ -131,6 +131,7 @@ public class MyMqttClient {
     public boolean IsSubscribed(){ return subscribed; }
 
     public String GetTopic(){ return topic; }
+    public String GetServerURL(){ return serverURI; }
     public String GetURL(){
         String URL = serverURI.split(":")[1];
         return URL.substring(2);
