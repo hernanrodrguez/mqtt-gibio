@@ -54,4 +54,5 @@
     <string name="err_connect">Can\'t connect to the broker</string>
     <string name="err_send">There was a problem</string>
     <color name="blue_elec">#1B74C4</color>
+    <string name="hello_blank_fragment">ACA PONER GRAFICOS</string>
 </resources>

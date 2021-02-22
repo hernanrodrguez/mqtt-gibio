@@ -7,6 +7,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -23,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +34,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MqttListener{
+public class MainActivity extends AppCompatActivity implements MqttListener, IComFragments{
 
     private MyMqttClient mqttClient;
 
@@ -49,6 +51,9 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
     private int currentView;
 
 
+    private HomeFragment homeFragment;
+    private PlotFragment plotFragment;
+
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private Toolbar toolbar;
@@ -63,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
 
     private final static String BROKER_KEY = "Broker";
     private final static String TOPIC_KEY = "Topic";
+    private final static String DATA_KEY = "Data";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,15 +93,15 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             switch (currentView){
-                case R.layout.activity_main:
-                    finish();
-                    break;
                 case R.layout.activity_settings:
                 case R.layout.activity_send_message:
                     SetUpHomeActivity();
                     break;
                 default:
-                    finish();
+                    if(getSupportFragmentManager().findFragmentById(R.id.fragHome) instanceof PlotFragment)
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, homeFragment).commit();
+                    else
+                        finish();
                     break;
             }
         }
@@ -163,17 +169,27 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this::NavigationItemSelected);
         navigationView.setCheckedItem(R.id.nav_home);
+
+        homeFragment = new HomeFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, homeFragment).commit();
     }
 
     private boolean NavigationItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()){
+            case R.id.nav_home:
+                SetUpHomeActivity();
+                break;
             case R.id.nav_room:
+                SendData("ROOM");
                 break;
             case R.id.nav_person:
+                SendData("PERSON");
                 break;
             case R.id.nav_co2:
+                SendData("CO2");
                 break;
             case R.id.nav_rooms:
+                SendData("ROOMS");
                 break;
             case R.id.nav_settings:
                 SetUpSettingsActivity();
@@ -351,11 +367,23 @@ public class MainActivity extends AppCompatActivity implements MqttListener{
     @Override
     public void ConnectionFailed() {
         HideProgressDialog();
+        SetUpInitActivity();
         Toast.makeText(this, R.string.err_connect, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void ConnectionLost() {
-        Toast.makeText(this, R.string.lbl_conn_lost, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.lbl_conn_lost, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void SendData(String data) {
+        plotFragment = new PlotFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putString(DATA_KEY, data);
+
+        plotFragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
     }
 }

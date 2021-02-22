@@ -53,4 +53,5 @@
     <string name="err_broker">No se agregó ningún broker</string>
     <string name="err_connect">No se pudo conectar al broker</string>
     <string name="err_send">Hubo un problema</string>
+    <string name="hello_blank_fragment">ACA PONER GRAFICOS</string>
 </resources>
