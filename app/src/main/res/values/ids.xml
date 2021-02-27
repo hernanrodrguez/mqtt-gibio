@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="btnAddPt" type="id">btnAddPt</item>
+    <item name="numX" type="id">numX</item>
+    <item name="numY" type="id">numY</item>
+    <item name="scatterPlot" type="id">scatterPlot</item>
+</resources>

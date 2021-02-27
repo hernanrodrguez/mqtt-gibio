@@ -1,5 +1,6 @@
 package com.example.mqttandroid;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
@@ -18,11 +20,15 @@ import com.jjoe64.graphview.series.PointsGraphSeries;
 
 import java.util.ArrayList;
 
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link PlotFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+
+
+
 public class PlotFragment extends Fragment {
 
     private TextView tvDummy;
@@ -30,6 +36,8 @@ public class PlotFragment extends Fragment {
     private String data;
     private static final String DATA_KEY = "Data";
 
+
+    private static final String TAG = "PlotFragment";
 
     //add PointsGraphSeries of DataPoint type
     PointsGraphSeries<DataPoint> xySeries;
@@ -40,8 +48,8 @@ public class PlotFragment extends Fragment {
 
     GraphView mScatterPlot;
 
-    //make xyValueArray global
-    private ArrayList<XYpoints> xyValueArray;
+    //make xyPointsArray global
+    private ArrayList<XYpoints> xyPointsArray;
 
 
     public PlotFragment() {
@@ -72,7 +80,7 @@ public class PlotFragment extends Fragment {
         mX = (EditText) view.findViewById(R.id.numX);
         mY = (EditText) view.findViewById(R.id.numY);
         mScatterPlot = (GraphView) view.findViewById(R.id.scatterPlot);
-        xyValueArray = new ArrayList<>();
+        xyPointsArray = new ArrayList<>();
 
 
 
@@ -99,7 +107,7 @@ public class PlotFragment extends Fragment {
                     double x = Double.parseDouble(mX.getText().toString());
                     double y = Double.parseDouble(mY.getText().toString());
                     Log.d(TAG, "onClick: Adding a new point. (x,y): (" + x + "," + y + ")" );
-                    xyValueArray.add(new XYpoints(x,y));
+                    xyPointsArray.add(new XYpoints(x,y));
                     init();
                 }else {
                     toastMessage("You must fill out both fields!");
@@ -108,7 +116,7 @@ public class PlotFragment extends Fragment {
         });
 
         //little bit of exception handling for if there is no data.
-        if(xyValueArray.size() != 0){
+        if(xyPointsArray.size() != 0){
             createScatterPlot();
         }else{
             Log.d(TAG, "onCreate: No data to plot.");
@@ -120,13 +128,13 @@ public class PlotFragment extends Fragment {
         Log.d(TAG, "createScatterPlot: Creating scatter plot.");
 
         //sort the array of xy values
-        xyValueArray = sortArray(xyValueArray);
+        xyPointsArray = sortArray(xyPointsArray);
 
         //add the data to the series
-        for(int i = 0;i <xyValueArray.size(); i++){
+        for(int i = 0;i <xyPointsArray.size(); i++){
             try{
-                double x = xyValueArray.get(i).getX();
-                double y = xyValueArray.get(i).getY();
+                double x = xyPointsArray.get(i).getX();
+                double y = xyPointsArray.get(i).getY();
                 xySeries.appendData(new DataPoint(x,y),true, 1000);
             }catch (IllegalArgumentException e){
                 Log.e(TAG, "createScatterPlot: IllegalArgumentException: " + e.getMessage() );
@@ -158,13 +166,13 @@ public class PlotFragment extends Fragment {
     }
 
     /**
-     * Sorts an ArrayList<XYValue> with respect to the x values.
+     * Sorts an ArrayList<XYPoints> with respect to the x values.
      * @param array
      * @return
      */
-    private ArrayList<XYValue> sortArray(ArrayList<XYValue> array){
+    private ArrayList<XYpoints> sortArray(ArrayList<XYpoints> array){
         /*
-        //Sorts the xyValues in Ascending order to prepare them for the PointsGraphSeries<DataSet>
+        //Sorts the xyPoints in Ascending order to prepare them for the PointsGraphSeries<DataSet>
          */
         int factor = Integer.parseInt(String.valueOf(Math.round(Math.pow(array.size(),2))));
         int m = array.size() - 1;
@@ -216,7 +224,7 @@ public class PlotFragment extends Fragment {
      * @param message
      */
     private void toastMessage(String message){
-        Toast.makeText(this,message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
 
