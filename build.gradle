@@ -16,9 +16,8 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven{
-            url "https://repo.eclipse.org/content/repositories/paho-snapshots/"
-        }
+        maven{ url "https://repo.eclipse.org/content/repositories/paho-snapshots/" }
+        maven { url "https://mvnrepository.com/artifact/com.jjoe64/graphview" }
     }
 }
 

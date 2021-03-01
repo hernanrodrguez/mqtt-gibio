@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.PointsGraphSeries;
 
 import java.util.ArrayList;
@@ -76,21 +77,30 @@ public class PlotFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_plot, container, false);
 
+        /*
         btnAddPt = (Button) view.findViewById(R.id.btnAddPt);
         mX = (EditText) view.findViewById(R.id.numX);
         mY = (EditText) view.findViewById(R.id.numY);
         mScatterPlot = (GraphView) view.findViewById(R.id.scatterPlot);
         xyPointsArray = new ArrayList<>();
+        */
 
-
-
+        GraphView graph = (GraphView) view.findViewById(R.id.graph);
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {
+                new DataPoint(0, 1),
+                new DataPoint(1, 5),
+                new DataPoint(2, 3),
+                new DataPoint(3, 2),
+                new DataPoint(4, 6)
+        });
+        graph.addSeries(series);
 
 
 
         tvDummy = view.findViewById(R.id.tvDummy);
         tvDummy.setText(data);
 
-        init();
+        //init();
 
         return view;
     }
