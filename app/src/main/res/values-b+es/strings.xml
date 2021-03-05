@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">MQTT GIBIO</string>
+    <string name="app_name">CheckING</string>
+    <string name="lbl_by">by GIBIO</string>
     <string name="lbl_home">Home</string>
     <string name="lbl_init_title">App de Monitoreo</string>
     <string name="lbl_init_desc">Esta aplicación, desarrollada por miembros del Grupo de Investigación y Desarrollo en Bioingeniería de la UTN FRBA, monitorea los dispositivos de medición colocados en las aulas y espacios comunes de la Universidad. Estos dispositivos son capaces de medir la temperatura ambiente, la temperatura de las personas y la concentración dióxido de carbono en el ambiente. La comunicación está basada en el protocolo MQTT, el estándar para aplicaciones IoT. Para comenzar, ingrese los datos del servidor.</string>
@@ -49,6 +50,13 @@
     <string name="lbl_warning_msg">¿Desea eliminar el servidor actual y configurar uno nuevo?</string>
     <string name="lbl_yes">Sí</string>
     <string name="lbl_no">No</string>
+    <string name="lbl_graph_amb">TEMPERATURA AMBIENTE</string>
+    <string name="lbl_graph_obj">TEMPERATURA DEL SUJETO</string>
+    <string name="lbl_graph_co2">CONCENTRACION CO2</string>
+    <string name="lbl_graph_spo2">NIVEL DE SPO2</string>
+    <string name="lbl_axis_samples">Muestras[n]</string>
+    <string name="lbl_axis_time">Tiempo(s)</string>
+    <string name="lbl_axis_temp">Temperatura(°C)</string>
     <string name="err_field">Este campo no puede estar vacío</string>
     <string name="err_broker">No se agregó ningún broker</string>
     <string name="err_connect">No se pudo conectar al broker</string>

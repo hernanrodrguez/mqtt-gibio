@@ -1,7 +1,7 @@
 package com.example.mqttandroid;
 
 public interface MqttListener {
-    void MessageArrived(String msg);
+    void MessageArrived(String topic, String msg);
     void MessageSent();
     void MessageNotSent();
     void BrokerAdded();

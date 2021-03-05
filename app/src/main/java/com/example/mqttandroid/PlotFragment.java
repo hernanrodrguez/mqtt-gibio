@@ -1,10 +1,12 @@
 package com.example.mqttandroid;
 
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GridLabelRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.PointsGraphSeries;
@@ -34,21 +37,24 @@ public class PlotFragment extends Fragment {
 
     private TextView tvDummy;
 
-    private String data;
-    private static final String DATA_KEY = "Data";
+    private int id_graph;
+    private ArrayList<Double> data;
 
+    private static final String DATA_KEY = "Data";
+    private final static String CASE_KEY = "Case";
+
+    private final static int TEMP_OBJ = 1;
+    private final static int TEMP_AMB = 2;
+    private final static int CO2 = 3;
+    private final static int SPO2 = 4;
 
     private static final String TAG = "PlotFragment";
 
     //add PointsGraphSeries of DataPoint type
     PointsGraphSeries<DataPoint> xySeries;
-
     private Button btnAddPt;
-
     private EditText mX,mY;
-
     GraphView mScatterPlot;
-
     //make xyPointsArray global
     private ArrayList<XYpoints> xyPointsArray;
 
@@ -69,7 +75,9 @@ public class PlotFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            data = getArguments().getString(DATA_KEY);
+            Bundle bundle = getArguments();
+            data = (ArrayList<Double>) bundle.getSerializable(DATA_KEY);
+            id_graph = bundle.getInt(CASE_KEY);
         }
     }
 
@@ -85,24 +93,71 @@ public class PlotFragment extends Fragment {
         xyPointsArray = new ArrayList<>();
         */
 
-        GraphView graph = (GraphView) view.findViewById(R.id.graph);
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {
-                new DataPoint(0, 1),
-                new DataPoint(1, 5),
-                new DataPoint(2, 3),
-                new DataPoint(3, 2),
-                new DataPoint(4, 6)
-        });
-        graph.addSeries(series);
+        MeasurementAdapter db = new MeasurementAdapter(getContext());
+        db.OpenDB();
+        Cursor allRows = db.GetValues("temp_obj");
+        allRows.moveToFirst();
+        // seguir viendo el PDF del curso de Java 
+
+        SetUpGraphView(view);
 
 
-
-        tvDummy = view.findViewById(R.id.tvDummy);
-        tvDummy.setText(data);
 
         //init();
 
         return view;
+    }
+
+    private void SetUpGraphView(View v){
+        // https://github.com/jjoe64/GraphView/wiki/Documentation
+
+        GraphView graph = (GraphView) v.findViewById(R.id.graph);
+
+        LineGraphSeries<DataPoint> series = new LineGraphSeries();
+        GridLabelRenderer gridLabel = graph.getGridLabelRenderer();
+
+        for(int i=0; i<data.size(); i++){
+            series.appendData(new DataPoint(i, data.get(i)), true, 40);
+        }
+
+        graph.addSeries(series);
+        // activate horizontal zooming and scrolling
+        graph.getViewport().setScalable(true);
+
+        tvDummy = v.findViewById(R.id.tvDummy);
+        switch (id_graph){
+            case TEMP_OBJ:
+                series.setColor(Color.RED);
+                series.setDrawDataPoints(true);
+                series.setDataPointsRadius(10);
+                series.setThickness(1);
+                gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_samples));
+                gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_temp));
+                tvDummy.setText(R.string.lbl_graph_obj);
+                break;
+            case TEMP_AMB:
+                series.setColor(Color.BLUE);
+                gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_time));
+                gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_temp));
+                tvDummy.setText(R.string.lbl_graph_amb);
+                break;
+            case CO2:
+                series.setColor(Color.DKGRAY);
+                gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_time));
+                tvDummy.setText(R.string.lbl_graph_co2);
+                break;
+            case SPO2:
+                series.setColor(Color.GREEN);
+                series.setDrawDataPoints(true);
+                series.setDataPointsRadius(10);
+                series.setThickness(1);
+                gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_samples));
+                tvDummy.setText(R.string.lbl_graph_spo2);
+                break;
+            default:
+                tvDummy.setText("Graficos en desarrollo...");
+                break;
+        }
     }
 
 

@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+**DBHelper.java
+**Measurement.java
+**MeasurementAdapter.java

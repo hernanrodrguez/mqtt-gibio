@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MqttListener, IComFragments{
@@ -69,6 +70,24 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     private final static String BROKER_KEY = "Broker";
     private final static String TOPIC_KEY = "Topic";
     private final static String DATA_KEY = "Data";
+    private final static String CASE_KEY = "Case";
+
+    private final static String TEMP_OBJ_KEY = "TO";
+    private final static String TEMP_AMB_KEY = "TA";
+    private final static String CO2_KEY = "C";
+    private final static String SPO2_KEY = "S";
+
+    private final static int TEMP_OBJ = 1;
+    private final static int TEMP_AMB = 2;
+    private final static int CO2 = 3;
+    private final static int SPO2 = 4;
+
+
+    private ArrayList<Double> temp_obj_list;
+    private ArrayList<Double> temp_amb_list;
+    private ArrayList<Double> co2_list;
+    private ArrayList<Double> spo2_list;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +99,11 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         SetUpSplashScreen();
         messages = new ArrayList<>();
         progressDialog = new ProgressDialog(this);
+
+        temp_obj_list = new ArrayList<>();
+        temp_amb_list = new ArrayList<>();
+        co2_list = new ArrayList<>();
+        spo2_list = new ArrayList<>();
 
         if(!GetBroker())
             SetUpInitActivity();
@@ -180,16 +204,16 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 SetUpHomeActivity();
                 break;
             case R.id.nav_room:
-                SendData("ROOM");
+                SendData(TEMP_AMB);
                 break;
             case R.id.nav_person:
-                SendData("PERSON");
+                SendData(TEMP_OBJ);
                 break;
             case R.id.nav_co2:
-                SendData("CO2");
+                SendData(CO2);
                 break;
             case R.id.nav_rooms:
-                SendData("ROOMS");
+                SendData(0);
                 break;
             case R.id.nav_settings:
                 SetUpSettingsActivity();
@@ -339,12 +363,38 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         progressDialog.cancel();
     }
 
+    private void HandleMessage(String topic, String msg){
+        String[] all_data = msg.split("-");
+        for(String data : all_data){
+            String key = data.split(":")[0];
+            try {
+                double value = Double.parseDouble(data.split(":")[1]);
+                switch (key) {
+                    case TEMP_AMB_KEY:
+                        temp_amb_list.add(value);
+                        //Measurement m = new Measurement(value, new Date());
+                        break;
+                    case TEMP_OBJ_KEY:
+                        temp_obj_list.add(value);
+                        break;
+                    case CO2_KEY:
+                        co2_list.add(value);
+                        break;
+                    case SPO2_KEY:
+                        spo2_list.add(value);
+                        break;
+                }
+            } catch (Exception ignored){}
+        }
+    }
+
     @Override
-    public void MessageArrived(String msg) {
-        messages.add(msg);
+    public void MessageArrived(String topic, String msg) {
+        messages.add(topic + ": " + msg);
         //adapter.notifyDataSetChanged();
         //lvMsg.smoothScrollToPosition(messages.size()-1);
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        HandleMessage(topic, msg);
     }
 
     @Override
@@ -377,11 +427,27 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     }
 
     @Override
-    public void SendData(String data) {
+    public void SendData(int graph) {
         plotFragment = new PlotFragment();
 
         Bundle bundle = new Bundle();
-        bundle.putString(DATA_KEY, data);
+        switch (graph){
+            case TEMP_AMB:
+                bundle.putInt(CASE_KEY, TEMP_AMB);
+                bundle.putSerializable(DATA_KEY, temp_amb_list);
+                break;
+            case TEMP_OBJ:
+                bundle.putInt(CASE_KEY, TEMP_OBJ);
+                bundle.putSerializable(DATA_KEY, temp_obj_list);
+                break;
+            case CO2:
+                bundle.putInt(CASE_KEY, CO2);
+                bundle.putSerializable(DATA_KEY, co2_list);
+                break;
+            default:
+                bundle.putInt(CASE_KEY, 0);
+                bundle.putSerializable(DATA_KEY, new ArrayList<>());
+        }
 
         plotFragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();

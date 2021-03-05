@@ -102,7 +102,7 @@ public class MyMqttClient {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     String payload = new String(message.getPayload());
-                    listener.MessageArrived(topic + ": " + payload);
+                    listener.MessageArrived(topic, payload);
                 }
                 @Override
                 public void deliveryComplete(IMqttDeliveryToken token) { }

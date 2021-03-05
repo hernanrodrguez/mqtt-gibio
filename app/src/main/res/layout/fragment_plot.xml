@@ -14,11 +14,14 @@
             android:id="@+id/tvDummy"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/hello_blank_fragment" />
+            android:textAlignment="center"
+            android:fontFamily="@font/poppins_bold"
+            android:textSize="30sp"/>
 
         <com.jjoe64.graphview.GraphView
             android:layout_width="match_parent"
             android:layout_height="200dip"
+            android:layout_marginHorizontal="15dp"
             android:id="@+id/graph" />
 
     </LinearLayout>

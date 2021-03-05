@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import java.util.ArrayList;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link HomeFragment#newInstance} factory method to
@@ -26,6 +28,11 @@ public class HomeFragment extends Fragment {
     private RelativeLayout btnPerson;
     private RelativeLayout btnCo2;
     private RelativeLayout btnRooms;
+
+    private final static int TEMP_OBJ = 1;
+    private final static int TEMP_AMB = 2;
+    private final static int CO2 = 3;
+    private final static int SPO2 = 4;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -97,16 +104,16 @@ public class HomeFragment extends Fragment {
     public void OnClick(View view){
         switch (view.getId()){
             case R.id.btnRoom:
-                iComFragments.SendData("ROOM");
+                iComFragments.SendData(TEMP_AMB);
                 break;
             case R.id.btnPerson:
-                iComFragments.SendData("PERSON");
+                iComFragments.SendData(TEMP_OBJ);
                 break;
             case R.id.btnCo2:
-                iComFragments.SendData("CO2");
+                iComFragments.SendData(CO2);
                 break;
             case R.id.btnRooms:
-                iComFragments.SendData("ROOMS");
+                iComFragments.SendData(0);
                 break;
         }
     }

@@ -1,5 +1,7 @@
 package com.example.mqttandroid;
 
+import java.util.ArrayList;
+
 public interface IComFragments {
-    public void SendData(String data);
+    public void SendData(int graph);
 }
