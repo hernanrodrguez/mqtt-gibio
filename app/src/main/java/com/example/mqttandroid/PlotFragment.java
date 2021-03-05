@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;
+import com.jjoe64.graphview.Viewport;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.PointsGraphSeries;
@@ -33,9 +34,9 @@ import java.util.ArrayList;
 
 
 
-public class PlotFragment extends Fragment {
+public class PlotFragment extends Fragment implements IComData{
 
-    private TextView tvDummy;
+    private TextView tvGraphTitle;
 
     private int id_graph;
     private ArrayList<Double> data;
@@ -50,6 +51,12 @@ public class PlotFragment extends Fragment {
 
     private static final String TAG = "PlotFragment";
 
+    private GraphView graph;
+    private LineGraphSeries<DataPoint> series;
+    private GridLabelRenderer gridLabel;
+    private Viewport viewport;
+
+    /*
     //add PointsGraphSeries of DataPoint type
     PointsGraphSeries<DataPoint> xySeries;
     private Button btnAddPt;
@@ -57,7 +64,7 @@ public class PlotFragment extends Fragment {
     GraphView mScatterPlot;
     //make xyPointsArray global
     private ArrayList<XYpoints> xyPointsArray;
-
+    */
 
     public PlotFragment() {
         // Required empty public constructor
@@ -93,15 +100,14 @@ public class PlotFragment extends Fragment {
         xyPointsArray = new ArrayList<>();
         */
 
+        /*
         MeasurementAdapter db = new MeasurementAdapter(getContext());
         db.OpenDB();
         Cursor allRows = db.GetValues("temp_obj");
         allRows.moveToFirst();
         // seguir viendo el PDF del curso de Java 
-
+        */
         SetUpGraphView(view);
-
-
 
         //init();
 
@@ -111,56 +117,93 @@ public class PlotFragment extends Fragment {
     private void SetUpGraphView(View v){
         // https://github.com/jjoe64/GraphView/wiki/Documentation
 
-        GraphView graph = (GraphView) v.findViewById(R.id.graph);
-
-        LineGraphSeries<DataPoint> series = new LineGraphSeries();
-        GridLabelRenderer gridLabel = graph.getGridLabelRenderer();
+        graph = (GraphView) v.findViewById(R.id.graph);
+        series = new LineGraphSeries<>();
+        gridLabel = graph.getGridLabelRenderer();
+        viewport = graph.getViewport();
 
         for(int i=0; i<data.size(); i++){
-            series.appendData(new DataPoint(i, data.get(i)), true, 40);
+            series.appendData(new DataPoint(i, data.get(i)), true, 20);
         }
 
         graph.addSeries(series);
-        // activate horizontal zooming and scrolling
-        graph.getViewport().setScalable(true);
+        viewport.setScrollable(true);
+        tvGraphTitle = v.findViewById(R.id.tvGraphTitle);
 
-        tvDummy = v.findViewById(R.id.tvDummy);
         switch (id_graph){
             case TEMP_OBJ:
-                series.setColor(Color.RED);
-                series.setDrawDataPoints(true);
-                series.setDataPointsRadius(10);
-                series.setThickness(1);
-                gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_samples));
-                gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_temp));
-                tvDummy.setText(R.string.lbl_graph_obj);
+                CustomObjGraph();
                 break;
             case TEMP_AMB:
-                series.setColor(Color.BLUE);
-                gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_time));
-                gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_temp));
-                tvDummy.setText(R.string.lbl_graph_amb);
+                CustomAmbGraph();
                 break;
             case CO2:
-                series.setColor(Color.DKGRAY);
-                gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_time));
-                tvDummy.setText(R.string.lbl_graph_co2);
+                CustomCO2Graph();
                 break;
             case SPO2:
-                series.setColor(Color.GREEN);
-                series.setDrawDataPoints(true);
-                series.setDataPointsRadius(10);
-                series.setThickness(1);
-                gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_samples));
-                tvDummy.setText(R.string.lbl_graph_spo2);
+                CustomSPO2Graph();
                 break;
             default:
-                tvDummy.setText("Graficos en desarrollo...");
+                tvGraphTitle.setText("Graficos en desarrollo...");
                 break;
         }
     }
 
+    private void CustomSPO2Graph() {
+        series.setColor(Color.GREEN);
+        series.setDrawDataPoints(true);
+        series.setDataPointsRadius(10);
+        series.setThickness(1);
+        gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_samples));
+        tvGraphTitle.setText(R.string.lbl_graph_spo2);
+    }
 
+    private void CustomCO2Graph() {
+        series.setColor(Color.DKGRAY);
+        gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_time));
+        tvGraphTitle.setText(R.string.lbl_graph_co2);
+        viewport.setYAxisBoundsManual(true);
+        viewport.setXAxisBoundsManual(true);
+        viewport.setMinY(0);
+        viewport.setMaxY(400);
+    }
+
+    private void CustomAmbGraph() {
+        series.setColor(Color.BLUE);
+        gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_time));
+        gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_temp));
+        tvGraphTitle.setText(R.string.lbl_graph_amb);
+        viewport.setYAxisBoundsManual(true);
+        viewport.setXAxisBoundsManual(true);
+        viewport.setMinY(0);
+        viewport.setMaxY(40);
+    }
+
+    private void CustomObjGraph() {
+        series.setColor(Color.RED);
+        series.setDrawDataPoints(true);
+        series.setDataPointsRadius(6);
+        series.setThickness(1);
+        gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_samples));
+        gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_temp));
+        tvGraphTitle.setText(R.string.lbl_graph_obj);
+        viewport.setYAxisBoundsManual(true);
+        viewport.setXAxisBoundsManual(true);
+        viewport.setMinY(20);
+        viewport.setMaxY(40);
+    }
+
+    @Override
+    public void DataArrived(Double value, int key) {
+        if(key == id_graph)
+            series.appendData(new DataPoint(data.size(), value), true, 20);
+        //graph.addSeries(series);
+        //data.add(value);
+        //Log.println(Log.DEBUG, "Data Arrived", String.valueOf(data));
+        //Toast.makeText(getContext(), "DataArrived", Toast.LENGTH_SHORT).show();
+    }
+
+/*
     private void init(){
         //declare the xySeries Object
         xySeries = new PointsGraphSeries<>();
@@ -230,15 +273,15 @@ public class PlotFragment extends Fragment {
         mScatterPlot.addSeries(xySeries);
     }
 
-    /**
-     * Sorts an ArrayList<XYPoints> with respect to the x values.
-     * @param array
-     * @return
-     */
+
+      Sorts an ArrayList<XYPoints> with respect to the x values.
+      @param array
+      @return
+
     private ArrayList<XYpoints> sortArray(ArrayList<XYpoints> array){
-        /*
+
         //Sorts the xyPoints in Ascending order to prepare them for the PointsGraphSeries<DataSet>
-         */
+
         int factor = Integer.parseInt(String.valueOf(Math.round(Math.pow(array.size(),2))));
         int m = array.size() - 1;
         int count = 0;
@@ -284,13 +327,12 @@ public class PlotFragment extends Fragment {
         return array;
     }
 
-    /**
-     * customizable toast
-     * @param message
-     */
+
+      customizable toast
+      @param message
+
     private void toastMessage(String message){
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
-
-
+    */
 }

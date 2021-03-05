@@ -372,13 +372,16 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 switch (key) {
                     case TEMP_AMB_KEY:
                         temp_amb_list.add(value);
+                        plotFragment.DataArrived(value, TEMP_AMB);
                         //Measurement m = new Measurement(value, new Date());
                         break;
                     case TEMP_OBJ_KEY:
                         temp_obj_list.add(value);
+                        plotFragment.DataArrived(value, TEMP_OBJ);
                         break;
                     case CO2_KEY:
                         co2_list.add(value);
+                        plotFragment.DataArrived(value, CO2);
                         break;
                     case SPO2_KEY:
                         spo2_list.add(value);
