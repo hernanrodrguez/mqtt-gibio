@@ -1,14 +1,7 @@
 package com.example.mqttandroid;
 
-import android.app.ProgressDialog;
-import android.app.usage.UsageEvents;
 import android.content.Context;
 import android.content.res.Resources;
-import android.content.res.loader.ResourcesProvider;
-import android.os.AsyncTask;
-import android.util.EventLog;
-import android.util.Log;
-import android.widget.Toast;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -20,8 +13,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 // https://www.hivemq.com/blog/mqtt-client-library-enyclopedia-paho-android-service/
 public class MyMqttClient {

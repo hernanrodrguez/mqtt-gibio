@@ -1,17 +1,9 @@
 package com.example.mqttandroid;
 
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
@@ -24,15 +16,19 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MqttListener, IComFragments{
@@ -65,23 +61,6 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     private TextView btnEnter;
 
     private ProgressDialog progressDialog;
-
-
-    private final static String BROKER_KEY = "Broker";
-    private final static String TOPIC_KEY = "Topic";
-    private final static String DATA_KEY = "Data";
-    private final static String CASE_KEY = "Case";
-
-    private final static String TEMP_OBJ_KEY = "TO";
-    private final static String TEMP_AMB_KEY = "TA";
-    private final static String CO2_KEY = "C";
-    private final static String SPO2_KEY = "S";
-
-    private final static int TEMP_OBJ = 1;
-    private final static int TEMP_AMB = 2;
-    private final static int CO2 = 3;
-    private final static int SPO2 = 4;
-
 
     private ArrayList<Double> temp_obj_list;
     private ArrayList<Double> temp_amb_list;
@@ -139,8 +118,8 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         //editor.clear();
         //editor.apply();
 
-        String URL = prefs.getString(BROKER_KEY, "");
-        String topic = prefs.getString(TOPIC_KEY, "");
+        String URL = prefs.getString(Constants.BROKER_KEY, "");
+        String topic = prefs.getString(Constants.TOPIC_KEY, "");
         if(!URL.equals("") && !topic.equals("")){
             mqttClient = new MyMqttClient(this, URL);
             mqttClient.Subscribe(topic);
@@ -152,8 +131,8 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     private void SaveBroker(){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(BROKER_KEY, mqttClient.GetServerURL());
-        editor.putString(TOPIC_KEY, mqttClient.GetTopic());
+        editor.putString(Constants.BROKER_KEY, mqttClient.GetServerURL());
+        editor.putString(Constants.TOPIC_KEY, mqttClient.GetTopic());
         editor.apply();
     }
 
@@ -204,13 +183,13 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 SetUpHomeActivity();
                 break;
             case R.id.nav_room:
-                SendData(TEMP_AMB);
+                SendData(Constants.TEMP_AMB);
                 break;
             case R.id.nav_person:
-                SendData(TEMP_OBJ);
+                SendData(Constants.TEMP_OBJ);
                 break;
             case R.id.nav_co2:
-                SendData(CO2);
+                SendData(Constants.CO2);
                 break;
             case R.id.nav_rooms:
                 SendData(0);
@@ -328,11 +307,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         new AlertDialog.Builder(this)
                 .setTitle(R.string.lbl_warning)
                 .setMessage(R.string.lbl_warning_msg)
-                .setPositiveButton(R.string.lbl_yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        SetUpInitActivity();
-                    }
-                })
+                .setPositiveButton(R.string.lbl_yes, (dialog, which) -> SetUpInitActivity())
                 .setNegativeButton(R.string.lbl_no, null)
                 .setIcon(R.drawable.warning)
                 .show();
@@ -363,41 +338,33 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         progressDialog.cancel();
     }
 
-    private void HandleMessage(String topic, String msg){
+    @Override
+    public void MessageArrived(String topic, String msg) {
         String[] all_data = msg.split("-");
         for(String data : all_data){
             String key = data.split(":")[0];
             try {
                 double value = Double.parseDouble(data.split(":")[1]);
                 switch (key) {
-                    case TEMP_AMB_KEY:
+                    case Constants.TEMP_AMB_KEY:
                         temp_amb_list.add(value);
-                        plotFragment.DataArrived(value, TEMP_AMB);
+                        plotFragment.DataArrived(value, Constants.TEMP_AMB);
                         //Measurement m = new Measurement(value, new Date());
                         break;
-                    case TEMP_OBJ_KEY:
+                    case Constants.TEMP_OBJ_KEY:
                         temp_obj_list.add(value);
-                        plotFragment.DataArrived(value, TEMP_OBJ);
+                        plotFragment.DataArrived(value, Constants.TEMP_OBJ);
                         break;
-                    case CO2_KEY:
+                    case Constants.CO2_KEY:
                         co2_list.add(value);
-                        plotFragment.DataArrived(value, CO2);
+                        plotFragment.DataArrived(value, Constants.CO2);
                         break;
-                    case SPO2_KEY:
+                    case Constants.SPO2_KEY:
                         spo2_list.add(value);
                         break;
                 }
             } catch (Exception ignored){}
         }
-    }
-
-    @Override
-    public void MessageArrived(String topic, String msg) {
-        messages.add(topic + ": " + msg);
-        //adapter.notifyDataSetChanged();
-        //lvMsg.smoothScrollToPosition(messages.size()-1);
-        //Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-        HandleMessage(topic, msg);
     }
 
     @Override
@@ -432,24 +399,24 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     @Override
     public void SendData(int graph) {
         plotFragment = new PlotFragment();
-
         Bundle bundle = new Bundle();
+
         switch (graph){
-            case TEMP_AMB:
-                bundle.putInt(CASE_KEY, TEMP_AMB);
-                bundle.putSerializable(DATA_KEY, temp_amb_list);
+            case Constants.TEMP_AMB:
+                bundle.putInt(Constants.CASE_KEY, Constants.TEMP_AMB);
+                bundle.putSerializable(Constants.DATA_KEY, temp_amb_list);
                 break;
-            case TEMP_OBJ:
-                bundle.putInt(CASE_KEY, TEMP_OBJ);
-                bundle.putSerializable(DATA_KEY, temp_obj_list);
+            case Constants.TEMP_OBJ:
+                bundle.putInt(Constants.CASE_KEY, Constants.TEMP_OBJ);
+                bundle.putSerializable(Constants.DATA_KEY, temp_obj_list);
                 break;
-            case CO2:
-                bundle.putInt(CASE_KEY, CO2);
-                bundle.putSerializable(DATA_KEY, co2_list);
+            case Constants.CO2:
+                bundle.putInt(Constants.CASE_KEY, Constants.CO2);
+                bundle.putSerializable(Constants.DATA_KEY, co2_list);
                 break;
             default:
-                bundle.putInt(CASE_KEY, 0);
-                bundle.putSerializable(DATA_KEY, new ArrayList<>());
+                bundle.putInt(Constants.CASE_KEY, 0);
+                bundle.putSerializable(Constants.DATA_KEY, new ArrayList<>());
         }
 
         plotFragment.setArguments(bundle);

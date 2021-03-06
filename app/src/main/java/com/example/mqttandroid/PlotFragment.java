@@ -1,56 +1,28 @@
 package com.example.mqttandroid;
 
-import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
-import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;
 import com.jjoe64.graphview.Viewport;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
-import com.jjoe64.graphview.series.PointsGraphSeries;
 
 import java.util.ArrayList;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link PlotFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-
-
-
 public class PlotFragment extends Fragment implements IComData{
-
-    private TextView tvGraphTitle;
 
     private int id_graph;
     private ArrayList<Double> data;
 
-    private static final String DATA_KEY = "Data";
-    private final static String CASE_KEY = "Case";
-
-    private final static int TEMP_OBJ = 1;
-    private final static int TEMP_AMB = 2;
-    private final static int CO2 = 3;
-    private final static int SPO2 = 4;
-
-    private static final String TAG = "PlotFragment";
-
+    private TextView tvGraphTitle;
     private GraphView graph;
     private LineGraphSeries<DataPoint> series;
     private GridLabelRenderer gridLabel;
@@ -70,27 +42,21 @@ public class PlotFragment extends Fragment implements IComData{
         // Required empty public constructor
     }
 
-    public static PlotFragment newInstance(String param1) {
-        PlotFragment fragment = new PlotFragment();
-        Bundle args = new Bundle();
-        args.putString(DATA_KEY, param1);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             Bundle bundle = getArguments();
-            data = (ArrayList<Double>) bundle.getSerializable(DATA_KEY);
-            id_graph = bundle.getInt(CASE_KEY);
+            data = (ArrayList<Double>) bundle.getSerializable(Constants.DATA_KEY);
+            id_graph = bundle.getInt(Constants.CASE_KEY);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_plot, container, false);
+        SetUpGraphView(view);
+        return view;
 
         /*
         btnAddPt = (Button) view.findViewById(R.id.btnAddPt);
@@ -98,6 +64,7 @@ public class PlotFragment extends Fragment implements IComData{
         mY = (EditText) view.findViewById(R.id.numY);
         mScatterPlot = (GraphView) view.findViewById(R.id.scatterPlot);
         xyPointsArray = new ArrayList<>();
+        init();
         */
 
         /*
@@ -107,11 +74,6 @@ public class PlotFragment extends Fragment implements IComData{
         allRows.moveToFirst();
         // seguir viendo el PDF del curso de Java 
         */
-        SetUpGraphView(view);
-
-        //init();
-
-        return view;
     }
 
     private void SetUpGraphView(View v){
@@ -131,16 +93,20 @@ public class PlotFragment extends Fragment implements IComData{
         tvGraphTitle = v.findViewById(R.id.tvGraphTitle);
 
         switch (id_graph){
-            case TEMP_OBJ:
+            case Constants.TEMP_OBJ:
+                CustomSamplesGraph();
                 CustomObjGraph();
                 break;
-            case TEMP_AMB:
+            case Constants.TEMP_AMB:
+                CustomTimeGraph();
                 CustomAmbGraph();
                 break;
-            case CO2:
+            case Constants.CO2:
+                CustomTimeGraph();
                 CustomCO2Graph();
                 break;
-            case SPO2:
+            case Constants.SPO2:
+                CustomSamplesGraph();
                 CustomSPO2Graph();
                 break;
             default:
@@ -149,18 +115,24 @@ public class PlotFragment extends Fragment implements IComData{
         }
     }
 
-    private void CustomSPO2Graph() {
-        series.setColor(Color.GREEN);
+    private void CustomSamplesGraph(){
         series.setDrawDataPoints(true);
         series.setDataPointsRadius(10);
         series.setThickness(1);
         gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_samples));
+    }
+
+    private void CustomTimeGraph(){
+        gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_time));
+    }
+
+    private void CustomSPO2Graph() {
+        series.setColor(Color.GREEN);
         tvGraphTitle.setText(R.string.lbl_graph_spo2);
     }
 
     private void CustomCO2Graph() {
         series.setColor(Color.DKGRAY);
-        gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_time));
         tvGraphTitle.setText(R.string.lbl_graph_co2);
         viewport.setYAxisBoundsManual(true);
         viewport.setXAxisBoundsManual(true);
@@ -170,7 +142,6 @@ public class PlotFragment extends Fragment implements IComData{
 
     private void CustomAmbGraph() {
         series.setColor(Color.BLUE);
-        gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_time));
         gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_temp));
         tvGraphTitle.setText(R.string.lbl_graph_amb);
         viewport.setYAxisBoundsManual(true);
@@ -181,10 +152,6 @@ public class PlotFragment extends Fragment implements IComData{
 
     private void CustomObjGraph() {
         series.setColor(Color.RED);
-        series.setDrawDataPoints(true);
-        series.setDataPointsRadius(6);
-        series.setThickness(1);
-        gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_samples));
         gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_temp));
         tvGraphTitle.setText(R.string.lbl_graph_obj);
         viewport.setYAxisBoundsManual(true);
@@ -197,10 +164,6 @@ public class PlotFragment extends Fragment implements IComData{
     public void DataArrived(Double value, int key) {
         if(key == id_graph)
             series.appendData(new DataPoint(data.size(), value), true, 20);
-        //graph.addSeries(series);
-        //data.add(value);
-        //Log.println(Log.DEBUG, "Data Arrived", String.valueOf(data));
-        //Toast.makeText(getContext(), "DataArrived", Toast.LENGTH_SHORT).show();
     }
 
 /*
