@@ -1,12 +1,20 @@
 package com.example.mqttandroid;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import com.jjoe64.graphview.GraphView;
@@ -21,12 +29,14 @@ public class PlotFragment extends Fragment implements IComData{
 
     private int id_graph;
     private ArrayList<Double> data;
+    private ArrayList<MeasList> measLists;
 
     private TextView tvGraphTitle;
-    private GraphView graph;
-    private LineGraphSeries<DataPoint> series;
     private GridLabelRenderer gridLabel;
     private Viewport viewport;
+
+    private LineGraphSeries<DataPoint> currentSeries;
+    private ArrayList<LineGraphSeries<DataPoint>> graphSeries;
 
     /*
     //add PointsGraphSeries of DataPoint type
@@ -45,9 +55,20 @@ public class PlotFragment extends Fragment implements IComData{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        measLists = new ArrayList<>();
+        graphSeries = new ArrayList<>();
+
         if (getArguments() != null) {
             Bundle bundle = getArguments();
-            data = (ArrayList<Double>) bundle.getSerializable(Constants.DATA_KEY);
+
+            int n_graphs = bundle.getInt(Constants.QUANT_KEY);
+            for(int i = 0; i< n_graphs; i++){
+                MeasList measList = (MeasList) bundle.getSerializable(Constants.DATA_KEY + i);
+                measLists.add(measList);
+            }
+            //data = (ArrayList<Double>) bundle.getSerializable(Constants.DATA_KEY);
+
             id_graph = bundle.getInt(Constants.CASE_KEY);
         }
     }
@@ -76,49 +97,91 @@ public class PlotFragment extends Fragment implements IComData{
         */
     }
 
-    private void SetUpGraphView(View v){
+    private void SetUpGraphView(View v) {
         // https://github.com/jjoe64/GraphView/wiki/Documentation
 
-        graph = (GraphView) v.findViewById(R.id.graph);
-        series = new LineGraphSeries<>();
-        gridLabel = graph.getGridLabelRenderer();
-        viewport = graph.getViewport();
 
-        for(int i=0; i<data.size(); i++){
-            series.appendData(new DataPoint(i, data.get(i)), true, 20);
+        //graph = (GraphView) v.findViewById(R.id.graph);
+
+        //for(int i=0; i<data.size(); i++){
+        //series.appendData(new DataPoint(i, data.get(i)), true, 20);
+        //}
+
+        ScrollView sv = v.findViewById(R.id.scrollView);
+
+        LinearLayout ll = new LinearLayout(getContext());
+        ll.setOrientation(LinearLayout.VERTICAL);
+        ll.setLayoutParams(
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT)
+        );
+
+        for(MeasList measList : measLists){
+            TextView tv = new TextView(getContext());
+            tv.setLayoutParams(
+                    new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT)
+            );
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+            Typeface typeface = ResourcesCompat.getFont(getContext(), R.font.poppins_medium);
+            tv.setTypeface(typeface);
+            tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            tv.setText(measList.GetRoom().toUpperCase());
+
+            GraphView graph = new GraphView(getContext());
+            graph.setLayoutParams(
+                    new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            700
+                    )
+            );
+            currentSeries = new LineGraphSeries<>();
+            gridLabel = graph.getGridLabelRenderer();
+            viewport = graph.getViewport();
+
+            ArrayList<Measurement> arr = measList.GetList();
+            for (int i=0; i < arr.size(); i++){
+                Measurement measurement = measList.GetList().get(i);
+                currentSeries.appendData(new DataPoint(measurement.GetSample(), measurement.GetValue()), true, 20);
+            }
+            graph.addSeries(currentSeries);
+            graphSeries.add(currentSeries);
+            viewport.setScrollable(true);
+            tvGraphTitle = v.findViewById(R.id.tvGraphTitle);
+
+            switch (id_graph){
+                case Constants.TEMP_OBJ_ID:
+                    CustomSamplesGraph();
+                    CustomObjGraph();
+                    break;
+                case Constants.TEMP_AMB_ID:
+                    CustomTimeGraph();
+                    CustomAmbGraph();
+                    break;
+                case Constants.CO2_ID:
+                    CustomTimeGraph();
+                    CustomCO2Graph();
+                    break;
+                case Constants.SPO2_ID:
+                    CustomSamplesGraph();
+                    CustomSPO2Graph();
+                    break;
+                default:
+                    tvGraphTitle.setText("Graficos en desarrollo...");
+                    break;
+            }
+            ll.addView(tv);
+            ll.addView(graph);
         }
-
-        graph.addSeries(series);
-        viewport.setScrollable(true);
-        tvGraphTitle = v.findViewById(R.id.tvGraphTitle);
-
-        switch (id_graph){
-            case Constants.TEMP_OBJ:
-                CustomSamplesGraph();
-                CustomObjGraph();
-                break;
-            case Constants.TEMP_AMB:
-                CustomTimeGraph();
-                CustomAmbGraph();
-                break;
-            case Constants.CO2:
-                CustomTimeGraph();
-                CustomCO2Graph();
-                break;
-            case Constants.SPO2:
-                CustomSamplesGraph();
-                CustomSPO2Graph();
-                break;
-            default:
-                tvGraphTitle.setText("Graficos en desarrollo...");
-                break;
-        }
+        sv.addView(ll);
     }
 
     private void CustomSamplesGraph(){
-        series.setDrawDataPoints(true);
-        series.setDataPointsRadius(10);
-        series.setThickness(1);
+        currentSeries.setDrawDataPoints(true);
+        currentSeries.setDataPointsRadius(10);
+        currentSeries.setThickness(1);
         gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_samples));
     }
 
@@ -127,12 +190,12 @@ public class PlotFragment extends Fragment implements IComData{
     }
 
     private void CustomSPO2Graph() {
-        series.setColor(Color.GREEN);
+        currentSeries.setColor(Color.GREEN);
         tvGraphTitle.setText(R.string.lbl_graph_spo2);
     }
 
     private void CustomCO2Graph() {
-        series.setColor(Color.DKGRAY);
+        currentSeries.setColor(Color.DKGRAY);
         tvGraphTitle.setText(R.string.lbl_graph_co2);
         viewport.setYAxisBoundsManual(true);
         viewport.setXAxisBoundsManual(true);
@@ -141,7 +204,7 @@ public class PlotFragment extends Fragment implements IComData{
     }
 
     private void CustomAmbGraph() {
-        series.setColor(Color.BLUE);
+        currentSeries.setColor(Color.BLUE);
         gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_temp));
         tvGraphTitle.setText(R.string.lbl_graph_amb);
         viewport.setYAxisBoundsManual(true);
@@ -151,7 +214,7 @@ public class PlotFragment extends Fragment implements IComData{
     }
 
     private void CustomObjGraph() {
-        series.setColor(Color.RED);
+        currentSeries.setColor(Color.RED);
         gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_temp));
         tvGraphTitle.setText(R.string.lbl_graph_obj);
         viewport.setYAxisBoundsManual(true);
@@ -162,8 +225,21 @@ public class PlotFragment extends Fragment implements IComData{
 
     @Override
     public void DataArrived(Double value, int key) {
-        if(key == id_graph)
-            series.appendData(new DataPoint(data.size(), value), true, 20);
+        //if(key == id_graph)
+            //series.appendData(new DataPoint(data.size(), value), true, 20);
+    }
+
+    @Override
+    public void MeasArrived(String id_room, int id_meas, Measurement measurement) {
+        for(int i=0; i<measLists.size();i++){
+            MeasList measList = measLists.get(i);
+            if(id_room.equals(measList.GetRoom())){
+                if(id_meas == id_graph){
+                    graphSeries.get(i).appendData(new DataPoint(measurement.GetSample(), measurement.GetValue()), true, 20);
+                }
+            }
+        }
+
     }
 
 /*

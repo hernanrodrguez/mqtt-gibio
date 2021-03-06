@@ -53,13 +53,13 @@ public class HomeFragment extends Fragment {
     public void OnClick(View view){
         switch (view.getId()){
             case R.id.btnRoom:
-                iComFragments.SendData(Constants.TEMP_AMB);
+                iComFragments.SendData(Constants.TEMP_AMB_ID);
                 break;
             case R.id.btnPerson:
-                iComFragments.SendData(Constants.TEMP_OBJ);
+                iComFragments.SendData(Constants.TEMP_OBJ_ID);
                 break;
             case R.id.btnCo2:
-                iComFragments.SendData(Constants.CO2);
+                iComFragments.SendData(Constants.CO2_ID);
                 break;
             case R.id.btnRooms:
                 iComFragments.SendData(0);

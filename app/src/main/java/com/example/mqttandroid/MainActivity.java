@@ -2,7 +2,6 @@ package com.example.mqttandroid;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -52,13 +51,9 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     private PlotFragment plotFragment;
 
     private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
-    private Toolbar toolbar;
     private Menu menu;
-    private TextView textView;
 
     private CheckBox cbRemember;
-    private TextView btnEnter;
 
     private ProgressDialog progressDialog;
 
@@ -66,6 +61,13 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     private ArrayList<Double> temp_amb_list;
     private ArrayList<Double> co2_list;
     private ArrayList<Double> spo2_list;
+
+    private MeasList m_temp_obj_list;
+    private MeasList m_temp_amb_list;
+    private MeasList m_co2_list;
+    private MeasList m_spo2_list;
+
+    private ArrayList<Room> rooms;
 
 
     @Override
@@ -83,6 +85,13 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         temp_amb_list = new ArrayList<>();
         co2_list = new ArrayList<>();
         spo2_list = new ArrayList<>();
+
+        m_co2_list = new MeasList();
+        m_spo2_list = new MeasList();
+        m_temp_amb_list = new MeasList();
+        m_temp_obj_list = new MeasList();
+
+        rooms = new ArrayList<>();
 
         if(!GetBroker())
             SetUpInitActivity();
@@ -161,9 +170,9 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         setContentView(currentView);
 
         drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
-        textView = findViewById(R.id.textView);
-        toolbar = findViewById(R.id.toolbar);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        TextView textView = findViewById(R.id.textView);
+        Toolbar toolbar = findViewById(R.id.toolbar);
 
         navigationView.bringToFront();
         ActionBarDrawerToggle toggle =
@@ -183,13 +192,13 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 SetUpHomeActivity();
                 break;
             case R.id.nav_room:
-                SendData(Constants.TEMP_AMB);
+                SendData(Constants.TEMP_AMB_ID);
                 break;
             case R.id.nav_person:
-                SendData(Constants.TEMP_OBJ);
+                SendData(Constants.TEMP_OBJ_ID);
                 break;
             case R.id.nav_co2:
-                SendData(Constants.CO2);
+                SendData(Constants.CO2_ID);
                 break;
             case R.id.nav_rooms:
                 SendData(0);
@@ -216,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         etPort = findViewById(R.id.etPortInit);
         etTopic = findViewById(R.id.etTopicInit);
         cbRemember = findViewById(R.id.cbRemember);
-        btnEnter = findViewById(R.id.btnEnter);
+        TextView btnEnter = findViewById(R.id.btnEnter);
         btnEnter.setOnClickListener(this::BtnEnterClick);
     }
 
@@ -338,33 +347,88 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         progressDialog.cancel();
     }
 
-    @Override
-    public void MessageArrived(String topic, String msg) {
-        String[] all_data = msg.split("-");
-        for(String data : all_data){
-            String key = data.split(":")[0];
-            try {
-                double value = Double.parseDouble(data.split(":")[1]);
-                switch (key) {
-                    case Constants.TEMP_AMB_KEY:
-                        temp_amb_list.add(value);
-                        plotFragment.DataArrived(value, Constants.TEMP_AMB);
-                        //Measurement m = new Measurement(value, new Date());
-                        break;
-                    case Constants.TEMP_OBJ_KEY:
-                        temp_obj_list.add(value);
-                        plotFragment.DataArrived(value, Constants.TEMP_OBJ);
-                        break;
-                    case Constants.CO2_KEY:
-                        co2_list.add(value);
-                        plotFragment.DataArrived(value, Constants.CO2);
-                        break;
-                    case Constants.SPO2_KEY:
-                        spo2_list.add(value);
-                        break;
+    private String ObtainIdRoom(String topic){
+        try{
+            return topic.split("/")[1];
+        } catch (Exception e){
+            return null;
+        }
+    }
+
+    private boolean RoomExists(String id_room){
+        for(Room room : rooms){
+            if(room.GetIdRoom().equals(id_room))
+                return true;
+        }
+        return false;
+    }
+
+    private int GetCurrentRoom(String id_room){
+        for(int i=0; i<rooms.size(); i++){
+            if(rooms.get(i).GetIdRoom().equals(id_room))
+                return i;
+        }
+        return -1;
+    }
+
+    private void HandleMessage(String topic, String msg){
+        try {
+            int current_room;
+            String id_room = ObtainIdRoom(topic);
+            if(id_room != null){
+                if(RoomExists(id_room)){
+                    current_room = GetCurrentRoom(id_room);
+                } else{
+                    current_room = rooms.size();
+                    rooms.add(new Room(id_room));
+                }
+                String[] all_data = msg.split("-");
+                for(String data : all_data){
+                    String key_meas = data.split(":")[0];
+                    double value = Double.parseDouble(data.split(":")[1]);
+                    Room room = rooms.get(current_room);
+                    MeasList measList;
+                    Measurement measurement;
+                    switch (key_meas) {
+                        case Constants.TEMP_AMB_KEY:
+                            measList = room.GetTAmbList();
+                            measurement = new Measurement(value, measList.Size());
+                            room.AddTAmb(measurement);
+                            temp_amb_list.add(value);
+                            //plotFragment.DataArrived(value, Constants.TEMP_AMB_ID);
+                            plotFragment.MeasArrived(id_room, Constants.Key2Id(key_meas), measurement);
+                            break;
+                        case Constants.TEMP_OBJ_KEY:
+                            measList = room.GetTObjList();
+                            measurement = new Measurement(value, measList.Size());
+                            room.AddTObj(measurement);
+                            temp_obj_list.add(value);
+                            //plotFragment.DataArrived(value, Constants.TEMP_OBJ_ID);
+                            plotFragment.MeasArrived(id_room, Constants.Key2Id(key_meas), measurement);
+                            break;
+                        case Constants.CO2_KEY:
+                            measList = room.GetCo2List();
+                            measurement = new Measurement(value, measList.Size());
+                            room.AddCo2(measurement);
+                            co2_list.add(value);
+                            //plotFragment.DataArrived(value, Constants.CO2_ID);
+                            plotFragment.MeasArrived(id_room, Constants.Key2Id(key_meas), measurement);
+                            break;
+                        case Constants.SPO2_KEY:
+                            measList = room.GetSpo2List();
+                            measurement = new Measurement(value, measList.Size());
+                            room.AddSpo2(measurement);
+                            spo2_list.add(value);
+                            break;
+                        }
+                    }
                 }
             } catch (Exception ignored){}
-        }
+    }
+
+    @Override
+    public void MessageArrived(String topic, String msg) {
+        HandleMessage(topic, msg);
     }
 
     @Override
@@ -397,22 +461,31 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     }
 
     @Override
-    public void SendData(int graph) {
+    public void SendData(int id) {
         plotFragment = new PlotFragment();
         Bundle bundle = new Bundle();
 
-        switch (graph){
-            case Constants.TEMP_AMB:
-                bundle.putInt(Constants.CASE_KEY, Constants.TEMP_AMB);
-                bundle.putSerializable(Constants.DATA_KEY, temp_amb_list);
+        bundle.putInt(Constants.CASE_KEY, id);
+        bundle.putInt(Constants.QUANT_KEY, rooms.size());
+
+        switch (id){
+            case Constants.TEMP_AMB_ID:
+                for(int i=0; i<rooms.size(); i++)
+                    bundle.putSerializable(Constants.DATA_KEY + i, rooms.get(i).GetTAmbList());
+
+                //bundle.putSerializable(Constants.DATA_KEY, temp_amb_list);
                 break;
-            case Constants.TEMP_OBJ:
-                bundle.putInt(Constants.CASE_KEY, Constants.TEMP_OBJ);
-                bundle.putSerializable(Constants.DATA_KEY, temp_obj_list);
+            case Constants.TEMP_OBJ_ID:
+                for(int i=0; i<rooms.size(); i++)
+                    bundle.putSerializable(Constants.DATA_KEY + i, rooms.get(i).GetTObjList());
+
+                //bundle.putSerializable(Constants.DATA_KEY, temp_obj_list);
                 break;
-            case Constants.CO2:
-                bundle.putInt(Constants.CASE_KEY, Constants.CO2);
-                bundle.putSerializable(Constants.DATA_KEY, co2_list);
+            case Constants.CO2_ID:
+                for(int i=0; i<rooms.size(); i++)
+                    bundle.putSerializable(Constants.DATA_KEY + i, rooms.get(i).GetCo2List());
+
+                //bundle.putSerializable(Constants.DATA_KEY, co2_list);
                 break;
             default:
                 bundle.putInt(Constants.CASE_KEY, 0);
