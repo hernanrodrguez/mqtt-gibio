@@ -14,13 +14,17 @@ import android.widget.TextView;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;
 import com.jjoe64.graphview.Viewport;
+import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class PlotFragment extends Fragment implements IComData{
 
@@ -32,7 +36,9 @@ public class PlotFragment extends Fragment implements IComData{
     private Viewport viewport;
 
     private LineGraphSeries<DataPoint> currentSeries;
-    private ArrayList<LineGraphSeries<DataPoint>> graphSeries;
+    private ArrayList<LineGraphSeries<DataPoint>> series;
+
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
     public PlotFragment() {
         // Required empty public constructor
@@ -43,7 +49,7 @@ public class PlotFragment extends Fragment implements IComData{
         super.onCreate(savedInstanceState);
 
         measLists = new ArrayList<>();
-        graphSeries = new ArrayList<>();
+        series = new ArrayList<>();
 
         if (getArguments() != null) {
             Bundle bundle = getArguments();
@@ -80,11 +86,14 @@ public class PlotFragment extends Fragment implements IComData{
             ArrayList<Measurement> arr = measList.GetList();
             for (int i=0; i < arr.size(); i++){
                 Measurement m = measList.GetList().get(i);
-                currentSeries.appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
+                if(id_graph == Constants.TEMP_AMB_ID || id_graph == Constants.CO2_ID)
+                    currentSeries.appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 20);
+                else
+                    currentSeries.appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
             }
 
             graph.addSeries(currentSeries);
-            graphSeries.add(currentSeries);
+            series.add(currentSeries);
             viewport.setScrollable(true);
             tvGraphTitle = v.findViewById(R.id.tvGraphTitle);
 
@@ -94,11 +103,11 @@ public class PlotFragment extends Fragment implements IComData{
                     CustomObjGraph();
                     break;
                 case Constants.TEMP_AMB_ID:
-                    CustomTimeGraph();
+                    CustomTimeGraph(graph);
                     CustomAmbGraph();
                     break;
                 case Constants.CO2_ID:
-                    CustomTimeGraph();
+                    CustomTimeGraph(graph);
                     CustomCO2Graph();
                     break;
                 case Constants.SPO2_ID:
@@ -160,8 +169,18 @@ public class PlotFragment extends Fragment implements IComData{
         gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_samples));
     }
 
-    private void CustomTimeGraph(){
-        gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_axis_time));
+    private void CustomTimeGraph(GraphView g){
+        gridLabel.setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
+        gridLabel.setHumanRounding(false);
+        g.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter(){
+            @Override
+            public String formatLabel(double value, boolean isValueX) {
+                if(isValueX)
+                    return sdf.format(new Date((long)value));
+                else
+                    return super.formatLabel(value, isValueX);
+            }
+        });
     }
 
     private void CustomSPO2Graph() {
@@ -199,12 +218,17 @@ public class PlotFragment extends Fragment implements IComData{
     }
 
     @Override
-    public void MeasArrived(String id_room, int id_meas, Measurement measurement) {
+    public void MeasArrived(String id_room, int id_meas, Measurement m) {
         for(int i=0; i<measLists.size();i++){
             MeasList measList = measLists.get(i);
-            if(id_room.equals(measList.GetRoom())){
-                if(id_meas == id_graph)
-                    graphSeries.get(i).appendData(new DataPoint(measurement.GetSample(), measurement.GetValue()), true, 20);
+            if(id_room.equals(measList.GetRoom())) {
+                if (id_meas == id_graph) {
+                    if(id_meas == Constants.TEMP_AMB_ID || id_meas == Constants.CO2_ID){
+                        series.get(i).appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 20);
+                    } else {
+                        series.get(i).appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
+                    }
+                }
             }
         }
 

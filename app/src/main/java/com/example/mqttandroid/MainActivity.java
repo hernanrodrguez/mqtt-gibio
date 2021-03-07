@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,9 +27,15 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
+import com.jjoe64.graphview.series.DataPoint;
 
+import java.sql.Time;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity implements MqttListener, IComFragments{
 
@@ -363,11 +370,15 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                     double value = Double.parseDouble(data.split(":")[1]); // Obtengo el valor de la medicion
 
                     Room room = rooms.get(current_room); // Trabajo con la habitacion a la que pertenece la medicion
-                    int index = room.GetLastIndex(id_meas); // Obtengo el indice de la ultima medicion
-
-                    Measurement measurement = new Measurement(value, index); // Creo la nueva medicion
+                    Measurement measurement;
+                    if(id_meas == Constants.TEMP_AMB_ID || id_meas == Constants.CO2_ID){
+                        Date date = Calendar.getInstance().getTime();
+                        measurement = new Measurement(value, date); // Creo la nueva medicion
+                    } else{
+                        int index = room.GetLastIndex(id_meas); // Obtengo el indice de la ultima medicion
+                        measurement = new Measurement(value, index); // Creo la nueva medicion
+                    }
                     room.Add(measurement, id_meas); // Guardo la nueva medicion
-
                     plotFragment.MeasArrived(id_room, id_meas, measurement); // Envio la medicion al plot fragment para graficar en tiempo real
                 }
             }
