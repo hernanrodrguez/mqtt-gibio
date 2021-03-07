@@ -1,12 +1,12 @@
 package com.example.mqttandroid;
 
 public class Room {
-    private String id_room;
+    private final String id_room;
 
-    private MeasList tamb_meas;
-    private MeasList tobj_meas;
-    private MeasList co2_meas;
-    private MeasList spo2_meas;
+    private final MeasList tamb_meas;
+    private final MeasList tobj_meas;
+    private final MeasList co2_meas;
+    private final MeasList spo2_meas;
 
     public Room() throws Exception {
         this.id_room = "";
@@ -25,6 +25,25 @@ public class Room {
         this.co2_meas = new MeasList(Constants.CO2_ID, id_room);
         this.spo2_meas = new MeasList(Constants.SPO2_ID, id_room);
 
+    }
+
+    public void Add(Measurement measurement, int id_meas){
+        switch (id_meas) {
+            case Constants.TEMP_OBJ_ID:
+                tobj_meas.Add(measurement);
+                break;
+            case Constants.TEMP_AMB_ID:
+                tamb_meas.Add(measurement);
+                break;
+            case Constants.CO2_ID:
+                co2_meas.Add(measurement);
+                break;
+            case Constants.SPO2_ID:
+                spo2_meas.Add(measurement);
+                break;
+            default:
+                break;
+        }
     }
 
     public void AddTAmb(Measurement measurement){
@@ -49,5 +68,33 @@ public class Room {
     public MeasList GetCo2List(){ return co2_meas; }
     public MeasList GetSpo2List(){ return spo2_meas; }
 
+    public int GetLastIndex(int id_meas){
+        switch (id_meas){
+            case Constants.TEMP_OBJ_ID:
+                return tobj_meas.Size();
+            case Constants.TEMP_AMB_ID:
+                return tamb_meas.Size();
+            case Constants.CO2_ID:
+                return co2_meas.Size();
+            case Constants.SPO2_ID:
+                return spo2_meas.Size();
+            default:
+                return -1;
+        }
+    }
 
+    public MeasList GetList(int id_meas){
+        switch (id_meas){
+            case Constants.TEMP_OBJ_ID:
+                return tobj_meas;
+            case Constants.TEMP_AMB_ID:
+                return tamb_meas;
+            case Constants.CO2_ID:
+                return co2_meas;
+            case Constants.SPO2_ID:
+                return spo2_meas;
+            default:
+                return null;
+        }
+    }
 }

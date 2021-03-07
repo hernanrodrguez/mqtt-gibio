@@ -1,9 +1,10 @@
 package com.example.mqttandroid;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Measurement {
-    private double value;
+public class Measurement implements Serializable {
+    private final double value;
     private Date date;
     private int sample;
 

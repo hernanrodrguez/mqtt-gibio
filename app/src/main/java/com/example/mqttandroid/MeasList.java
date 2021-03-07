@@ -20,25 +20,27 @@ public class MeasList implements Serializable {
         if(Constants.CheckIdMeas(id_meas))
             this.id_meas = id_meas;
         else
-            throw new Exception("Invalid id_room");
+            throw new Exception("Invalid id_meas");
         this.measurements = new ArrayList<>();
         this.id_room = id_room;
     }
 
-    public MeasList(int id_meas, Measurement measurement) throws Exception {
+    public MeasList(int id_meas, String id_room, Measurement measurement) throws Exception {
         if(Constants.CheckIdMeas(id_meas))
             this.id_meas = id_meas;
         else
-            throw new Exception("Invalid id_room");
+            throw new Exception("Invalid id_meas");
+        this.id_room = id_room;
         this.measurements = new ArrayList<>();
         this.measurements.add(measurement);
     }
 
-    public MeasList(int id_meas, ArrayList<Measurement> measurements) throws Exception {
+    public MeasList(int id_meas, String id_room, ArrayList<Measurement> measurements) throws Exception {
         if(Constants.CheckIdMeas(id_meas))
             this.id_meas = id_meas;
         else
-            throw new Exception("Invalid id_room");
+            throw new Exception("Invalid id_meas");
+        this.id_room = id_room;
         this.measurements = measurements;
     }
 
