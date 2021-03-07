@@ -2,9 +2,7 @@ package com.example.mqttandroid;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +11,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
@@ -71,44 +68,21 @@ public class PlotFragment extends Fragment implements IComData{
         // https://github.com/jjoe64/GraphView/wiki/Documentation
 
         ScrollView sv = v.findViewById(R.id.scrollView);
-
-        LinearLayout ll = new LinearLayout(getContext());
-        ll.setOrientation(LinearLayout.VERTICAL);
-        ll.setLayoutParams(
-                new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT)
-        );
+        LinearLayout ll = CustomLinearLayout();
 
         for(MeasList measList : measLists){
-            TextView tv = new TextView(getContext());
-            tv.setLayoutParams(
-                    new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT)
-            );
-            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-            Typeface typeface = ResourcesCompat.getFont(getContext(), R.font.poppins_medium);
-            tv.setTypeface(typeface);
-            tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-            tv.setText(measList.GetRoom().toUpperCase());
-
-            GraphView graph = new GraphView(getContext());
-            graph.setLayoutParams(
-                    new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            700
-                    )
-            );
+            TextView tv = CustomTextView(measList.GetRoom());
+            GraphView graph = CustomGraphView();
             currentSeries = new LineGraphSeries<>();
             gridLabel = graph.getGridLabelRenderer();
             viewport = graph.getViewport();
 
             ArrayList<Measurement> arr = measList.GetList();
             for (int i=0; i < arr.size(); i++){
-                Measurement measurement = measList.GetList().get(i);
-                currentSeries.appendData(new DataPoint(measurement.GetSample(), measurement.GetValue()), true, 20);
+                Measurement m = measList.GetList().get(i);
+                currentSeries.appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
             }
+
             graph.addSeries(currentSeries);
             graphSeries.add(currentSeries);
             viewport.setScrollable(true);
@@ -139,6 +113,44 @@ public class PlotFragment extends Fragment implements IComData{
             ll.addView(graph);
         }
         sv.addView(ll);
+    }
+
+    private LinearLayout CustomLinearLayout(){
+        LinearLayout ll = new LinearLayout(getContext());
+        ll.setOrientation(LinearLayout.VERTICAL);
+        ll.setLayoutParams(
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT)
+        );
+        return ll;
+    }
+
+    private TextView CustomTextView(String text){
+        TextView tv = new TextView(getContext());
+        tv.setLayoutParams(
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT)
+        );
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        Typeface typeface = ResourcesCompat.getFont(getContext(), R.font.poppins_medium);
+        tv.setTypeface(typeface);
+        tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        tv.setText(text.toUpperCase());
+
+        return tv;
+    }
+
+    private GraphView CustomGraphView(){
+        GraphView graph = new GraphView(getContext());
+        graph.setLayoutParams(
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        600
+                )
+        );
+        return graph;
     }
 
     private void CustomSamplesGraph(){

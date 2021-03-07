@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,13 +28,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MqttListener, IComFragments{
 
     private MyMqttClient mqttClient;
-
     private ArrayList<Room> rooms;
 
     private EditText etAddress;
@@ -49,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     private ArrayAdapter<String> adapter;
 
     private int currentView;
-
 
     private HomeFragment homeFragment;
     private PlotFragment plotFragment;
