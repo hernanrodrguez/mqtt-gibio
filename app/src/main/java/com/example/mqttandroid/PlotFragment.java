@@ -87,14 +87,14 @@ public class PlotFragment extends Fragment implements IComData{
             for (int i=0; i < arr.size(); i++){
                 Measurement m = measList.GetList().get(i);
                 if(id_graph == Constants.TEMP_AMB_ID || id_graph == Constants.CO2_ID)
-                    currentSeries.appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 20);
+                    currentSeries.appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
                 else
                     currentSeries.appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
             }
 
             graph.addSeries(currentSeries);
             series.add(currentSeries);
-            viewport.setScrollable(true);
+            viewport.setScalable(true);
             tvGraphTitle = v.findViewById(R.id.tvGraphTitle);
 
             switch (id_graph){
@@ -222,15 +222,13 @@ public class PlotFragment extends Fragment implements IComData{
         for(int i=0; i<measLists.size();i++){
             MeasList measList = measLists.get(i);
             if(id_room.equals(measList.GetRoom())) {
-                if (id_meas == id_graph) {
-                    if(id_meas == Constants.TEMP_AMB_ID || id_meas == Constants.CO2_ID){
-                        series.get(i).appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 20);
-                    } else {
-                        series.get(i).appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
-                    }
-                }
+                if(id_meas == Constants.TEMP_AMB_ID || id_meas == Constants.CO2_ID)
+                    series.get(i).appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
+                else
+                    series.get(i).appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
             }
         }
-
     }
+
+    public int GetIdGraph(){ return id_graph; }
 }

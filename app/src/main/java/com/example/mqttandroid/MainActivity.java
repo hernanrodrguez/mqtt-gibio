@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 SendData(Constants.CO2_ID);
                 break;
             case R.id.nav_rooms:
-                SendData(0);
+                //SendData(0);
                 break;
             case R.id.nav_settings:
                 SetUpSettingsActivity();
@@ -372,14 +372,16 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                     Room room = rooms.get(current_room); // Trabajo con la habitacion a la que pertenece la medicion
                     Measurement measurement;
                     if(id_meas == Constants.TEMP_AMB_ID || id_meas == Constants.CO2_ID){
-                        Date date = Calendar.getInstance().getTime();
+                        Date date = Calendar.getInstance().getTime(); // Obtengo la hora de la medicion
                         measurement = new Measurement(value, date); // Creo la nueva medicion
                     } else{
                         int index = room.GetLastIndex(id_meas); // Obtengo el indice de la ultima medicion
                         measurement = new Measurement(value, index); // Creo la nueva medicion
                     }
                     room.Add(measurement, id_meas); // Guardo la nueva medicion
-                    plotFragment.MeasArrived(id_room, id_meas, measurement); // Envio la medicion al plot fragment para graficar en tiempo real
+
+                    if(plotFragment.GetIdGraph() == id_meas)
+                        plotFragment.MeasArrived(id_room, id_meas, measurement); // Envio la medicion al plot fragment para graficar en tiempo real
                 }
             }
         } catch (Exception ignored){} // Ante un mensaje erroneo o algun problema, simplemente ignoro el caso
