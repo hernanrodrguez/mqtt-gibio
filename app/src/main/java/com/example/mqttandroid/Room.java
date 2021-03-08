@@ -1,6 +1,8 @@
 package com.example.mqttandroid;
 
-public class Room {
+import java.io.Serializable;
+
+public class Room implements Serializable {
     private final String id_room;
 
     private final MeasList tamb_meas;

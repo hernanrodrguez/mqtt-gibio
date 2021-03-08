@@ -56,7 +56,7 @@ public class HomeFragment extends Fragment {
                 iComFragments.SendData(Constants.TEMP_AMB_ID);
                 break;
             case R.id.btnPerson:
-                iComFragments.SendData(Constants.TEMP_OBJ_ID);
+                iComFragments.SendData(Constants.PERSON_ID);
                 break;
             case R.id.btnCo2:
                 iComFragments.SendData(Constants.CO2_ID);

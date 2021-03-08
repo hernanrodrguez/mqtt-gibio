@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;
+import com.jjoe64.graphview.SecondScale;
 import com.jjoe64.graphview.Viewport;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
@@ -30,6 +31,7 @@ public class PlotFragment extends Fragment implements IComData{
 
     private int id_graph;
     private ArrayList<MeasList> measLists;
+    private ArrayList<Room> rooms;
 
     private TextView tvGraphTitle;
     private GridLabelRenderer gridLabel;
@@ -48,18 +50,24 @@ public class PlotFragment extends Fragment implements IComData{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        measLists = new ArrayList<>();
         series = new ArrayList<>();
 
         if (getArguments() != null) {
             Bundle bundle = getArguments();
 
-            int n_graphs = bundle.getInt(Constants.QUANT_KEY);
-            for(int i = 0; i< n_graphs; i++){
-                MeasList measList = (MeasList) bundle.getSerializable(Constants.DATA_KEY + i);
-                measLists.add(measList);
-            }
             id_graph = bundle.getInt(Constants.CASE_KEY);
+            int n_graphs = bundle.getInt(Constants.QUANT_KEY);
+
+            switch (id_graph){
+                case Constants.TEMP_AMB_ID:
+                case Constants.CO2_ID:
+                case Constants.PERSON_ID:
+                    measLists = (ArrayList<MeasList>) bundle.getSerializable(Constants.DATA_KEY);
+                    break;
+                case Constants.ROOMS_ID:
+                    rooms = (ArrayList<Room>) bundle.getSerializable(Constants.DATA_KEY);
+                    break;
+            }
         }
     }
 
@@ -76,52 +84,64 @@ public class PlotFragment extends Fragment implements IComData{
         ScrollView sv = v.findViewById(R.id.scrollView);
         LinearLayout ll = CustomLinearLayout();
 
-        for(MeasList measList : measLists){
+        tvGraphTitle = v.findViewById(R.id.tvGraphTitle);
+
+        for(MeasList measList : measLists) {
             TextView tv = CustomTextView(measList.GetRoom());
             GraphView graph = CustomGraphView();
             currentSeries = new LineGraphSeries<>();
             gridLabel = graph.getGridLabelRenderer();
             viewport = graph.getViewport();
 
-            ArrayList<Measurement> arr = measList.GetList();
-            for (int i=0; i < arr.size(); i++){
-                Measurement m = measList.GetList().get(i);
-                if(id_graph == Constants.TEMP_AMB_ID || id_graph == Constants.CO2_ID)
-                    currentSeries.appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
-                else
-                    currentSeries.appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
-            }
-
+            currentSeries = LoadMeasurements(measList);
             graph.addSeries(currentSeries);
             series.add(currentSeries);
             viewport.setScalable(true);
-            tvGraphTitle = v.findViewById(R.id.tvGraphTitle);
 
-            switch (id_graph){
-                case Constants.TEMP_OBJ_ID:
-                    CustomSamplesGraph();
-                    CustomObjGraph();
-                    break;
-                case Constants.TEMP_AMB_ID:
-                    CustomTimeGraph(graph);
-                    CustomAmbGraph();
-                    break;
-                case Constants.CO2_ID:
-                    CustomTimeGraph(graph);
-                    CustomCO2Graph();
-                    break;
-                case Constants.SPO2_ID:
-                    CustomSamplesGraph();
-                    CustomSPO2Graph();
-                    break;
-                default:
-                    tvGraphTitle.setText("Graficos en desarrollo...");
-                    break;
-            }
+            CustomAxis(measList, graph);
+
+            if(measList.GetMeas() == Constants.TEMP_OBJ_ID)
+                tv = CustomTextView(measList.GetRoom() + " - " + getString(R.string.lbl_graph_obj));
+            else if(measList.GetMeas() == Constants.SPO2_ID)
+                tv = CustomTextView(measList.GetRoom() + " - " + getString(R.string.lbl_graph_spo2));
+
             ll.addView(tv);
             ll.addView(graph);
         }
         sv.addView(ll);
+    }
+
+    private void CustomAxis(MeasList measList, GraphView graph){
+        switch (measList.GetMeas()) {
+            case Constants.TEMP_OBJ_ID:
+                CustomSamplesGraph();
+                CustomObjGraph();
+                break;
+            case Constants.TEMP_AMB_ID:
+                CustomTimeGraph(graph);
+                CustomAmbGraph();
+                break;
+            case Constants.CO2_ID:
+                CustomTimeGraph(graph);
+                CustomCO2Graph();
+                break;
+            case Constants.SPO2_ID:
+                CustomSamplesGraph();
+                CustomSPO2Graph();
+                break;
+        }
+    }
+
+    private LineGraphSeries<DataPoint> LoadMeasurements(MeasList measList){
+        ArrayList<Measurement> list = measList.GetList();
+        LineGraphSeries<DataPoint> aux_series = new LineGraphSeries<>();
+        for (Measurement m : list) {
+            if(id_graph == Constants.PERSON_ID)
+                aux_series.appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
+            else
+                aux_series.appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
+        }
+        return aux_series;
     }
 
     private LinearLayout CustomLinearLayout(){
@@ -163,6 +183,7 @@ public class PlotFragment extends Fragment implements IComData{
     }
 
     private void CustomSamplesGraph(){
+        tvGraphTitle.setText(R.string.lbl_subject);
         currentSeries.setDrawDataPoints(true);
         currentSeries.setDataPointsRadius(10);
         currentSeries.setThickness(1);
@@ -185,7 +206,11 @@ public class PlotFragment extends Fragment implements IComData{
 
     private void CustomSPO2Graph() {
         currentSeries.setColor(Color.GREEN);
-        tvGraphTitle.setText(R.string.lbl_graph_spo2);
+        gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_spo2));
+        viewport.setYAxisBoundsManual(true);
+        viewport.setXAxisBoundsManual(true);
+        viewport.setMinY(80);
+        viewport.setMaxY(100);
     }
 
     private void CustomCO2Graph() {
@@ -193,8 +218,8 @@ public class PlotFragment extends Fragment implements IComData{
         tvGraphTitle.setText(R.string.lbl_graph_co2);
         viewport.setYAxisBoundsManual(true);
         viewport.setXAxisBoundsManual(true);
-        viewport.setMinY(0);
-        viewport.setMaxY(400);
+        viewport.setMinY(400);
+        viewport.setMaxY(2000);
     }
 
     private void CustomAmbGraph() {
@@ -210,7 +235,6 @@ public class PlotFragment extends Fragment implements IComData{
     private void CustomObjGraph() {
         currentSeries.setColor(Color.RED);
         gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_temp));
-        tvGraphTitle.setText(R.string.lbl_graph_obj);
         viewport.setYAxisBoundsManual(true);
         viewport.setXAxisBoundsManual(true);
         viewport.setMinY(20);
@@ -222,10 +246,12 @@ public class PlotFragment extends Fragment implements IComData{
         for(int i=0; i<measLists.size();i++){
             MeasList measList = measLists.get(i);
             if(id_room.equals(measList.GetRoom())) {
-                if(id_meas == Constants.TEMP_AMB_ID || id_meas == Constants.CO2_ID)
-                    series.get(i).appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
-                else
-                    series.get(i).appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
+                if(id_meas == measList.GetMeas()){
+                    if(id_meas == Constants.TEMP_AMB_ID || id_meas == Constants.CO2_ID)
+                        series.get(i).appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
+                    else
+                        series.get(i).appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
+                }
             }
         }
     }

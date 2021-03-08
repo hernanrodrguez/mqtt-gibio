@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 SendData(Constants.TEMP_AMB_ID);
                 break;
             case R.id.nav_person:
-                SendData(Constants.TEMP_OBJ_ID);
+                SendData(Constants.PERSON_ID);
                 break;
             case R.id.nav_co2:
                 SendData(Constants.CO2_ID);
@@ -379,9 +379,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                         measurement = new Measurement(value, index); // Creo la nueva medicion
                     }
                     room.Add(measurement, id_meas); // Guardo la nueva medicion
-
-                    if(plotFragment.GetIdGraph() == id_meas)
-                        plotFragment.MeasArrived(id_room, id_meas, measurement); // Envio la medicion al plot fragment para graficar en tiempo real
+                    plotFragment.MeasArrived(id_room, id_meas, measurement); // Envio la medicion al plot fragment para graficar en tiempo real
                 }
             }
         } catch (Exception ignored){} // Ante un mensaje erroneo o algun problema, simplemente ignoro el caso
@@ -428,10 +426,36 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         bundle.putInt(Constants.CASE_KEY, id);
         bundle.putInt(Constants.QUANT_KEY, rooms.size());
 
-        for(int i=0; i<rooms.size(); i++)
-            bundle.putSerializable(Constants.DATA_KEY + i, rooms.get(i).GetList(id));
-
+        switch (id){
+            case Constants.TEMP_AMB_ID:
+            case Constants.CO2_ID:
+                bundle.putSerializable(Constants.DATA_KEY, GetListsById(id));
+                break;
+            case Constants.PERSON_ID:
+                bundle.putSerializable(Constants.DATA_KEY, GetPersonLists());
+                break;
+            case Constants.ROOMS_ID:
+                bundle.putSerializable(Constants.DATA_KEY, rooms);
+                break;
+        }
         plotFragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
     }
+
+    private ArrayList<MeasList> GetListsById(int id){
+        ArrayList<MeasList> list = new ArrayList<>();
+        for(Room room : rooms)
+            list.add(room.GetList(id));
+        return list;
+    }
+
+    private ArrayList<MeasList> GetPersonLists(){
+        ArrayList<MeasList> list = new ArrayList<>();
+        for(Room room : rooms) {
+            list.add(room.GetTObjList());
+            list.add(room.GetSpo2List());
+        }
+        return list;
+    }
+
 }
