@@ -31,7 +31,7 @@ public class PlotFragment extends Fragment implements IComData{
 
     private int id_graph;
     private ArrayList<MeasList> measLists;
-    private ArrayList<Room> rooms;
+    private Room room;
 
     private TextView tvGraphTitle;
     private GridLabelRenderer gridLabel;
@@ -56,7 +56,7 @@ public class PlotFragment extends Fragment implements IComData{
             Bundle bundle = getArguments();
 
             id_graph = bundle.getInt(Constants.CASE_KEY);
-            int n_graphs = bundle.getInt(Constants.QUANT_KEY);
+            measLists = new ArrayList<>();
 
             switch (id_graph){
                 case Constants.TEMP_AMB_ID:
@@ -65,7 +65,7 @@ public class PlotFragment extends Fragment implements IComData{
                     measLists = (ArrayList<MeasList>) bundle.getSerializable(Constants.DATA_KEY);
                     break;
                 case Constants.ROOMS_ID:
-                    rooms = (ArrayList<Room>) bundle.getSerializable(Constants.DATA_KEY);
+                    room = (Room) bundle.getSerializable(Constants.DATA_KEY);
                     break;
             }
         }
@@ -86,8 +86,17 @@ public class PlotFragment extends Fragment implements IComData{
 
         tvGraphTitle = v.findViewById(R.id.tvGraphTitle);
 
+        if(id_graph == Constants.ROOMS_ID)
+            measLists = LoadList();
+
         for(MeasList measList : measLists) {
-            TextView tv = CustomTextView(measList.GetRoom());
+            TextView tv;
+
+            if(id_graph != Constants.ROOMS_ID)
+                tv = CustomTextView(measList.GetRoom());
+            else
+                tv = CustomTextView(measList.GetMeas());
+
             GraphView graph = CustomGraphView();
             currentSeries = new LineGraphSeries<>();
             gridLabel = graph.getGridLabelRenderer();
@@ -100,15 +109,28 @@ public class PlotFragment extends Fragment implements IComData{
 
             CustomAxis(measList, graph);
 
-            if(measList.GetMeas() == Constants.TEMP_OBJ_ID)
-                tv = CustomTextView(measList.GetRoom() + " - " + getString(R.string.lbl_graph_obj));
-            else if(measList.GetMeas() == Constants.SPO2_ID)
-                tv = CustomTextView(measList.GetRoom() + " - " + getString(R.string.lbl_graph_spo2));
+            if(id_graph != Constants.ROOMS_ID){
+                if(measList.GetMeas() == Constants.TEMP_OBJ_ID)
+                    tv = CustomTextView(measList.GetRoom() + " - " + getString(R.string.lbl_graph_obj));
+                else if(measList.GetMeas() == Constants.SPO2_ID)
+                    tv = CustomTextView(measList.GetRoom() + " - " + getString(R.string.lbl_graph_spo2));
+            } else
+                tvGraphTitle.setText(room.GetIdRoom().toUpperCase());
 
             ll.addView(tv);
             ll.addView(graph);
         }
         sv.addView(ll);
+    }
+
+    private ArrayList<MeasList> LoadList(){
+        ArrayList<MeasList> list = new ArrayList<>();
+        list.add(room.GetTAmbList());
+        list.add(room.GetCo2List());
+        list.add(room.GetTObjList());
+        list.add(room.GetSpo2List());
+
+        return list;
     }
 
     private void CustomAxis(MeasList measList, GraphView graph){
@@ -136,7 +158,7 @@ public class PlotFragment extends Fragment implements IComData{
         ArrayList<Measurement> list = measList.GetList();
         LineGraphSeries<DataPoint> aux_series = new LineGraphSeries<>();
         for (Measurement m : list) {
-            if(id_graph == Constants.PERSON_ID)
+            if(measList.GetMeas() == Constants.TEMP_OBJ_ID || measList.GetMeas() == Constants.SPO2_ID)
                 aux_series.appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
             else
                 aux_series.appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
@@ -157,17 +179,50 @@ public class PlotFragment extends Fragment implements IComData{
 
     private TextView CustomTextView(String text){
         TextView tv = new TextView(getContext());
-        tv.setLayoutParams(
-                new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT)
-        );
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, 50, 0, 20);
+        tv.setLayoutParams(params);
+
         tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         Typeface typeface = ResourcesCompat.getFont(getContext(), R.font.poppins_medium);
         tv.setTypeface(typeface);
         tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         tv.setText(text.toUpperCase());
 
+        return tv;
+    }
+
+    private TextView CustomTextView(int id_meas){
+        TextView tv = new TextView(getContext());
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, 50, 0, 20);
+        tv.setLayoutParams(params);
+
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        Typeface typeface = ResourcesCompat.getFont(getContext(), R.font.poppins_medium);
+        tv.setTypeface(typeface);
+        tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+        switch (id_meas){
+            case Constants.TEMP_OBJ_ID:
+                tv.setText(R.string.lbl_graph_obj);
+                break;
+            case Constants.TEMP_AMB_ID:
+                tv.setText(R.string.lbl_graph_amb);
+                break;
+            case Constants.CO2_ID:
+                tv.setText(R.string.lbl_graph_co2);
+                break;
+            case Constants.SPO2_ID:
+                tv.setText(R.string.lbl_graph_spo2);
+                break;
+        }
         return tv;
     }
 
@@ -215,6 +270,7 @@ public class PlotFragment extends Fragment implements IComData{
 
     private void CustomCO2Graph() {
         currentSeries.setColor(Color.DKGRAY);
+        gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_co2));
         tvGraphTitle.setText(R.string.lbl_graph_co2);
         viewport.setYAxisBoundsManual(true);
         viewport.setXAxisBoundsManual(true);

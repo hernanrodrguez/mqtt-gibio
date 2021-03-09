@@ -62,7 +62,7 @@ public class HomeFragment extends Fragment {
                 iComFragments.SendData(Constants.CO2_ID);
                 break;
             case R.id.btnRooms:
-                //iComFragments.SendData(0);
+                iComFragments.SendData(Constants.ROOMS_ID);
                 break;
         }
     }

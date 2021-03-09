@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,15 +26,11 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
-import com.jjoe64.graphview.series.DataPoint;
 
-import java.sql.Time;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity implements MqttListener, IComFragments{
 
@@ -181,7 +176,10 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 SendData(Constants.CO2_ID);
                 break;
             case R.id.nav_rooms:
-                //SendData(0);
+                if(rooms.size() > 1)
+                    ShowRooms();
+                else
+                    SendRoom(rooms.get(0));
                 break;
             case R.id.nav_settings:
                 SetUpSettingsActivity();
@@ -193,6 +191,26 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void ShowRooms(){
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+        builderSingle.setIcon(R.drawable.room);
+        builderSingle.setTitle(R.string.lbl_select_room);
+
+        ArrayList<String> rooms_id = new ArrayList<>();
+        for(Room room : rooms)
+            rooms_id.add(room.GetIdRoom().toUpperCase());
+
+        CharSequence[] cs = rooms_id.toArray(new CharSequence[rooms_id.size()]);
+
+        builderSingle.setItems(cs, (dialog, which) -> {
+            SendRoom(rooms.get(which));
+        });
+
+        builderSingle.setNegativeButton(R.string.lbl_cancel, (dialog, which) -> dialog.dismiss());
+        AlertDialog dialog = builderSingle.create();
+        dialog.show();
     }
 
     private void SetUpInitActivity(){
@@ -420,24 +438,36 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     @Override
     public void SendData(int id) {
+        if(id != Constants.ROOMS_ID){
+            plotFragment = new PlotFragment();
+            Bundle bundle = new Bundle();
+
+            bundle.putInt(Constants.CASE_KEY, id);
+
+            switch (id){
+                case Constants.TEMP_AMB_ID:
+                case Constants.CO2_ID:
+                    bundle.putSerializable(Constants.DATA_KEY, GetListsById(id));
+                    break;
+                case Constants.PERSON_ID:
+                    bundle.putSerializable(Constants.DATA_KEY, GetPersonLists());
+                    break;
+            }
+            plotFragment.setArguments(bundle);
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
+        } else
+            ShowRooms();
+
+    }
+
+    @Override
+    public void SendRoom(Room room) {
         plotFragment = new PlotFragment();
         Bundle bundle = new Bundle();
 
-        bundle.putInt(Constants.CASE_KEY, id);
-        bundle.putInt(Constants.QUANT_KEY, rooms.size());
+        bundle.putInt(Constants.CASE_KEY, Constants.ROOMS_ID);
+        bundle.putSerializable(Constants.DATA_KEY, room);
 
-        switch (id){
-            case Constants.TEMP_AMB_ID:
-            case Constants.CO2_ID:
-                bundle.putSerializable(Constants.DATA_KEY, GetListsById(id));
-                break;
-            case Constants.PERSON_ID:
-                bundle.putSerializable(Constants.DATA_KEY, GetPersonLists());
-                break;
-            case Constants.ROOMS_ID:
-                bundle.putSerializable(Constants.DATA_KEY, rooms);
-                break;
-        }
         plotFragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
     }
@@ -457,5 +487,4 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         }
         return list;
     }
-
 }
