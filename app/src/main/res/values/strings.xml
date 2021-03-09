@@ -56,12 +56,15 @@
     <string name="lbl_subject">SUBJECT</string>
     <string name="lbl_graph_co2">CO2 CONCENTRATION</string>
     <string name="lbl_graph_spo2">SPO2 LEVEL</string>
+    <string name="lbl_graph_room_obj">%1$s - SUBJECT TEMPERATURE</string>
+    <string name="lbl_graph_room_spo2">%1$s - SPO2 LEVEL</string>
     <string name="lbl_axis_samples">Samples[n]</string>
     <string name="lbl_axis_time">Time(s)</string>
     <string name="lbl_axis_temp">Temperature(°C)</string>
-    <string name="lbl_axis_co2">Concentration(ppm)</string>
+    <string name="lbl_axis_co2">Concentration (ppm)</string>
     <string name="lbl_axis_spo2">Concentration(%)</string>
     <string name="lbl_select_room">Select a Room:</string>
+    <string name="lbl_no_meas">There are no measurements yet…</string>
     <string name="err_field">This field cannot be empty</string>
     <string name="err_broker">There is no broker</string>
     <string name="err_connect">Can\'t connect to the broker</string>

@@ -176,10 +176,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 SendData(Constants.CO2_ID);
                 break;
             case R.id.nav_rooms:
-                if(rooms.size() > 1)
-                    ShowRooms();
-                else
-                    SendRoom(rooms.get(0));
+                SendData(Constants.ROOMS_ID);
                 break;
             case R.id.nav_settings:
                 SetUpSettingsActivity();
@@ -438,25 +435,28 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     @Override
     public void SendData(int id) {
-        if(id != Constants.ROOMS_ID){
-            plotFragment = new PlotFragment();
-            Bundle bundle = new Bundle();
+        if(rooms.size() > 0){
+            if(id != Constants.ROOMS_ID){
+                plotFragment = new PlotFragment();
+                Bundle bundle = new Bundle();
 
-            bundle.putInt(Constants.CASE_KEY, id);
-
-            switch (id){
-                case Constants.TEMP_AMB_ID:
-                case Constants.CO2_ID:
-                    bundle.putSerializable(Constants.DATA_KEY, GetListsById(id));
-                    break;
-                case Constants.PERSON_ID:
-                    bundle.putSerializable(Constants.DATA_KEY, GetPersonLists());
-                    break;
-            }
-            plotFragment.setArguments(bundle);
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
-        } else
-            ShowRooms();
+                bundle.putInt(Constants.CASE_KEY, id);
+                switch (id){
+                    case Constants.TEMP_AMB_ID:
+                    case Constants.CO2_ID:
+                        bundle.putSerializable(Constants.DATA_KEY, GetListsById(id));
+                        break;
+                    case Constants.PERSON_ID:
+                        bundle.putSerializable(Constants.DATA_KEY, GetPersonLists());
+                        break;
+                }
+                plotFragment.setArguments(bundle);
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
+            } else
+                CheckRooms();
+        } else {
+            Toast.makeText(this, R.string.lbl_no_meas, Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -486,5 +486,12 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             list.add(room.GetSpo2List());
         }
         return list;
+    }
+
+    private void CheckRooms(){
+        if(rooms.size() > 1)
+            ShowRooms();
+        else
+            SendRoom(rooms.get(0));
     }
 }
