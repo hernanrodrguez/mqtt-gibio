@@ -1,8 +1,11 @@
 package com.example.mqttandroid;
 
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,10 +25,12 @@ import com.jjoe64.graphview.Viewport;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.jjoe64.graphview.series.Series;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class PlotFragment extends Fragment implements IComData{
 
@@ -37,6 +42,7 @@ public class PlotFragment extends Fragment implements IComData{
     private Viewport viewport;
 
     private LineGraphSeries<DataPoint> currentSeries;
+    private ArrayList<LineGraphSeries<DataPoint>> thresholdSeries;
     private ArrayList<LineGraphSeries<DataPoint>> series;
 
     private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
@@ -50,6 +56,7 @@ public class PlotFragment extends Fragment implements IComData{
         super.onCreate(savedInstanceState);
 
         series = new ArrayList<>();
+        thresholdSeries = new ArrayList<>();
 
         if (getArguments() != null) {
             Bundle bundle = getArguments();
@@ -89,17 +96,21 @@ public class PlotFragment extends Fragment implements IComData{
 
         for(MeasList measList : measLists) {
             TextView tv = CustomTextView(id_graph, measList);
+            LineGraphSeries<DataPoint> currentThreshold;
 
             GraphView graph = CustomGraphView();
             currentSeries = new LineGraphSeries<>();
             gridLabel = graph.getGridLabelRenderer();
             viewport = graph.getViewport();
             currentSeries = LoadMeasurements(measList);
+            currentThreshold = SetThresholdLine(measList.GetMeas(), currentSeries);
 
             graph.addSeries(currentSeries);
+            graph.addSeries(currentThreshold);
             series.add(currentSeries);
-            viewport.setScalable(true);
+            thresholdSeries.add(currentThreshold);
 
+            viewport.setScalable(true);
             CustomAxis(measList, graph);
 
             ll.addView(tv);
@@ -253,7 +264,7 @@ public class PlotFragment extends Fragment implements IComData{
     }
 
     private void CustomSPO2Graph() {
-        currentSeries.setColor(Color.GREEN);
+        currentSeries.setColor(Color.rgb(0,100,0));
         gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_spo2));
         viewport.setYAxisBoundsManual(true);
         viewport.setXAxisBoundsManual(true);
@@ -262,7 +273,7 @@ public class PlotFragment extends Fragment implements IComData{
     }
 
     private void CustomCO2Graph() {
-        currentSeries.setColor(Color.DKGRAY);
+        currentSeries.setColor(Color.rgb(105,105,105));
         gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_co2));
         viewport.setYAxisBoundsManual(true);
         viewport.setXAxisBoundsManual(true);
@@ -271,7 +282,7 @@ public class PlotFragment extends Fragment implements IComData{
     }
 
     private void CustomAmbGraph() {
-        currentSeries.setColor(Color.BLUE);
+        currentSeries.setColor(Color.rgb(70,130,180));
         gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_temp));
         viewport.setYAxisBoundsManual(true);
         viewport.setXAxisBoundsManual(true);
@@ -280,12 +291,56 @@ public class PlotFragment extends Fragment implements IComData{
     }
 
     private void CustomObjGraph() {
-        currentSeries.setColor(Color.RED);
+        currentSeries.setColor(Color.rgb(255,69,0));
         gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_temp));
         viewport.setYAxisBoundsManual(true);
         viewport.setXAxisBoundsManual(true);
-        viewport.setMinY(20);
-        viewport.setMaxY(40);
+        viewport.setMinY(25);
+        viewport.setMaxY(45);
+    }
+
+    private LineGraphSeries<DataPoint> SetThresholdLine(int id, LineGraphSeries<DataPoint> lgs){
+        double min_x = lgs.getLowestValueX();
+        double max_x = lgs.getHighestValueX();
+        double threshold;
+
+        switch (id){
+            case Constants.TEMP_OBJ_ID:
+                threshold = Constants.TH_TEMP;
+                break;
+            case Constants.SPO2_ID:
+                threshold = Constants.TH_SPO2;
+                break;
+            default:
+                threshold = -1;
+                break;
+        }
+        LineGraphSeries<DataPoint> lgseries = new LineGraphSeries<>(
+                new DataPoint[]{
+                        new DataPoint(min_x, threshold),
+                        new DataPoint(max_x, threshold)
+                }
+        );
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(5);
+        paint.setPathEffect(new DashPathEffect(new float[]{15, 5}, 0));
+        paint.setColor(Color.RED);
+        lgseries.setDrawAsPath(true);
+        lgseries.setCustomPaint(paint);
+
+        return lgseries;
+    }
+
+    private void UpdateThreshold(int index, int id_meas, Measurement m){
+        switch (id_meas){
+            case Constants.TEMP_OBJ_ID:
+                thresholdSeries.get(index).appendData(new DataPoint(m.GetSample(), Constants.TH_TEMP), true, 20);
+                break;
+            case Constants.SPO2_ID:
+                thresholdSeries.get(index).appendData(new DataPoint(m.GetSample(), Constants.TH_SPO2), true, 20);
+                break;
+        }
     }
 
     @Override
@@ -296,8 +351,10 @@ public class PlotFragment extends Fragment implements IComData{
                 if(id_meas == measList.GetMeas()){
                     if(id_meas == Constants.TEMP_AMB_ID || id_meas == Constants.CO2_ID)
                         series.get(i).appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
-                    else
+                    else {
                         series.get(i).appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
+                        UpdateThreshold(i, id_meas, m);
+                    }
                 }
             }
         }

@@ -31,6 +31,8 @@ public final class Constants {
     public final static int PERSON_ID = 6;
     public final static int[] IDS = new int[]{TEMP_OBJ_ID, TEMP_AMB_ID, CO2_ID, SPO2_ID, ROOMS_ID, PERSON_ID};
 
+    public final static double TH_TEMP = 37.5;
+    public final static double TH_SPO2 = 95;
 
     public static boolean CheckIdMeas(int id_meas){
         for(int id : IDS) {
