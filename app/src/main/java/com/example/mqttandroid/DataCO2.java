@@ -8,16 +8,25 @@ public class DataCO2 {
     private String hora;
     private String CO2;
     private String habitacion;
+    private String ID;
+
+
+    // tipo de medicion IDS           medicion        id          fecha-hora         daily-indice
 
     public DataCO2 (String hora,
-                    String CO2, String habitacion) {
+                    String CO2, String habitacion, String ID) {
         this.hora = hora;
         this.CO2 = CO2;
         this.habitacion = habitacion;
+        this.ID = ID; //ACA VA EL CODIGO PARA GENERAR UN ID AUTOINCREMENTAL
     }
 
     public String getCO2() {
         return (CO2);
+    }
+
+    public String getID() {
+        return (ID);
     }
 
     public String getHora() {
