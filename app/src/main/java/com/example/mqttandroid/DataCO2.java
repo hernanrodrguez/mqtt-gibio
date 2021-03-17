@@ -1,5 +1,9 @@
 package com.example.mqttandroid;
 
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
 public class DataCO2 {
     private String hora;
     private String CO2;
@@ -24,4 +28,5 @@ public class DataCO2 {
         return (habitacion);
     }
 }
+
 
