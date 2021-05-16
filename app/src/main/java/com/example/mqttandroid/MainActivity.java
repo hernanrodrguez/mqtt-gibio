@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     private MyMqttClient mqttClient;
     private ArrayList<Room> rooms;
+    private ArrayList<Room> people;
 
     private EditText etAddress;
     private EditText etPort;
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         messages = new ArrayList<>();
         progressDialog = new ProgressDialog(this);
         rooms = new ArrayList<>();
+        people = new ArrayList<>();
 
         if(!GetBroker())
             SetUpInitActivity();
@@ -400,9 +402,63 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         } catch (Exception ignored){} // Ante un mensaje erroneo o algun problema, simplemente ignoro el caso
     }
 
+    private String ObtainIdPerson(String topic){
+        try{
+            return topic.split("/")[1];
+        } catch (Exception e){
+            return null;
+        }
+    }
+
+    private boolean PersonExists(String id_person){
+        for(Room person : people){
+            if(person.GetIdRoom().equals(id_person))
+                return true;
+        }
+        return false;
+    }
+
+    private int GetCurrentPerson(String id_person){
+        for(int i=0; i<people.size(); i++){
+            if(people.get(i).GetIdRoom().equals(id_person))
+                return i;
+        }
+        return -1;
+    }
+
+    private void HandleMessage_Person(String topic, String msg){
+        try {
+            int current_person;
+            String id_person = ObtainIdPerson(topic);
+            if(id_person != null) {
+                if (PersonExists(id_person)) {
+                    current_person = GetCurrentRoom(id_person);
+                } else {
+                    current_person = people.size();
+                    people.add(new Room(id_person));
+                }
+                String[] all_data = msg.split("-");
+
+                for (String data : all_data) {
+                    String key_meas = data.split(":")[0];
+                    int id_meas = Constants.Key2Id(key_meas); // Obtengo el tipo de medicion
+                    double value = Double.parseDouble(data.split(":")[1]); // Obtengo el valor de la medicion
+
+                    Room person = people.get(current_person); // Trabajo con la persona a la que pertenece la medicion
+                    Measurement measurement;
+                    Date date = Calendar.getInstance().getTime(); // Obtengo la hora de la medicion
+                    measurement = new Measurement(value, date); // Creo la nueva medicion
+                    person.Add(measurement, id_meas); // Guardo la nueva medicion
+                    plotFragment.MeasArrived(id_person, id_meas, measurement); // Envio la medicion al plot fragment para graficar en tiempo real
+                }
+            }
+        } catch (Exception ignored){} // Ante un mensaje erroneo o algun problema, simplemente ignoro el caso
+    }
+
     @Override
     public void MessageArrived(String topic, String msg) {
         HandleMessage(topic, msg);
+        HandleMessage_Person(topic, msg);
     }
 
     @Override
