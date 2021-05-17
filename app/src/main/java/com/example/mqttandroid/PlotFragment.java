@@ -141,11 +141,17 @@ public class PlotFragment extends Fragment implements IComData{
 
     private ArrayList<MeasList> LoadList(){
         ArrayList<MeasList> list = new ArrayList<>();
-        list.add(room.GetTAmbList());
-        list.add(room.GetCo2List());
-        list.add(room.GetTObjList());
-        list.add(room.GetSpo2List());
-
+        if(id_graph == Constants.ROOMS_ID) {
+            list.add(room.GetTAmbList());
+            list.add(room.GetCo2List());
+            list.add(room.GetTObjList());
+            list.add(room.GetSpo2List());
+        } else if(id_graph == Constants.PEOPLE_ID){
+            list.add(room.GetTObjList());
+            list.add(room.GetSpo2List());
+            list.add(room.GetTAmbList());
+            list.add(room.GetCo2List());
+        }
         return list;
     }
 
