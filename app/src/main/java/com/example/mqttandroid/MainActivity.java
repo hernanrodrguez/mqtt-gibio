@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -462,9 +463,10 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
                 for (String data : all_data) {
                     String key_meas = data.split(":")[0];
+                    Log.i("KEY_MEAS", key_meas);
                     int id_meas = Constants.Key2Id(key_meas); // Obtengo el tipo de medicion
                     double value = Double.parseDouble(data.split(":")[1]); // Obtengo el valor de la medicion
-
+                    Log.i("VALUE_MEAS", String.valueOf(value));
                     Room person = people.get(current_person); // Trabajo con la persona a la que pertenece la medicion
                     Measurement measurement;
                     Date date = Calendar.getInstance().getTime(); // Obtengo la hora de la medicion
@@ -473,28 +475,29 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                     plotFragment.MeasArrived(id_person, id_meas, measurement); // Envio la medicion al plot fragment para graficar en tiempo real
                 }
             }
-        } catch (Exception ignored){} // Ante un mensaje erroneo o algun problema, simplemente ignoro el caso
+        } catch (Exception e){
+            Log.e("ERROR", e.getMessage());
+        } // Ante un mensaje erroneo o algun problema, simplemente ignoro el caso
     }
 
     private void SendPlotData(int id){
-        if(rooms.size() > 0){
-            if(id == Constants.ROOMS_ID)
-                CheckRooms();
-            else
-                CheckPeople();
-        } else {
+        if(rooms.size() > 0 && id == Constants.ROOMS_ID)
+            CheckRooms();
+        else if(people.size() > 0 && id == Constants.PEOPLE_ID)
+            CheckPeople();
+        else
             Toast.makeText(this, R.string.lbl_no_meas, Toast.LENGTH_SHORT).show();
-        }
     }
 
     @Override
     public void MessageArrived(String topic, String msg) {
-        messages.add(topic + ": " + msg);
-        adapter.notifyDataSetChanged();
         if(topic.split("/")[1].equals("room"))
             HandleMessage(topic, msg);
         else if(topic.split("/")[1].equals("person"))
             HandleMessage_Person(topic, msg);
+
+        messages.add(topic + ": " + msg);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -527,7 +530,6 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     @Override
     public void HomeBtnClicked(int id) {
-
         switch (id){
             case Constants.ROOMS_ID:
             case Constants.PEOPLE_ID:

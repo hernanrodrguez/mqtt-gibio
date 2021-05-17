@@ -133,6 +133,7 @@ public class PlotFragment extends Fragment implements IComData{
                 tv.setText(R.string.lbl_subject);
                 break;
             case Constants.ROOMS_ID:
+            case Constants.PEOPLE_ID:
                 tv.setText(room.GetIdRoom().toUpperCase());
                 break;
         }
@@ -179,9 +180,12 @@ public class PlotFragment extends Fragment implements IComData{
         ArrayList<Measurement> list = measList.GetList();
         LineGraphSeries<DataPoint> aux_series = new LineGraphSeries<>();
         for (Measurement m : list) {
-            if(measList.GetMeas() == Constants.TEMP_OBJ_ID || measList.GetMeas() == Constants.SPO2_ID)
-                aux_series.appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
-            else
+            if(id_graph == Constants.ROOMS_ID){
+                if(measList.GetMeas() == Constants.TEMP_OBJ_ID || measList.GetMeas() == Constants.SPO2_ID)
+                    aux_series.appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
+                else
+                    aux_series.appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
+            } else if(id_graph == Constants.PEOPLE_ID)
                 aux_series.appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
         }
         return aux_series;
@@ -212,7 +216,7 @@ public class PlotFragment extends Fragment implements IComData{
         tv.setTypeface(typeface);
         tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
-        if(id_graph == Constants.ROOMS_ID) {
+        if(id_graph == Constants.ROOMS_ID || id_graph == Constants.PEOPLE_ID) {
             switch (list.GetMeas()) {
                 case Constants.TEMP_OBJ_ID:
                     tv.setText(R.string.lbl_graph_obj);
