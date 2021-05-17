@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">CheckING</string>
     <string name="lbl_by">by GIBIO</string>
+    <string name="lbl_props">Temperatura \nCO2 - SPO2 \nRitmo Cardíaco</string>
     <string name="lbl_home">Home</string>
     <string name="lbl_init_title">App de Monitoreo</string>
     <string name="lbl_init_desc">Esta aplicación, desarrollada por miembros del Grupo de Investigación y Desarrollo en Bioingeniería de la UTN FRBA, monitorea los dispositivos de medición colocados en las aulas y espacios comunes de la Universidad. Estos dispositivos son capaces de medir la temperatura ambiente, la temperatura de las personas y la concentración dióxido de carbono en el ambiente. La comunicación está basada en el protocolo MQTT, el estándar para aplicaciones IoT. Para comenzar, ingrese los datos del servidor.</string>
@@ -37,13 +38,13 @@
     <string name="lbl_select">Elija una opción</string>
     <string name="lbl_room">Habitación</string>
     <string name="lbl_rooms">Habitaciones</string>
-    <string name="lbl_person">Persona</string>
-    <string name="lbl_air">Aire</string>
+    <string name="lbl_people">Personas</string>
+    <string name="lbl_map">Mapa</string>
     <string name="lbl_conf">Configuración</string>
     <string name="lbl_settings">Ajustes</string>
     <string name="lbl_communicate">Comunicate</string>
     <string name="lbl_info">Más información</string>
-    <string name="lbl_bug">Reportar un error</string>
+    <string name="lbl_bug">Modo Debug</string>
     <string name="lbl_nav_open">Menú de navegación abierto</string>
     <string name="lbl_nav_closed">Menú de navegación cerrado</string>
     <string name="lbl_warning">Advertencia</string>
@@ -64,6 +65,7 @@
     <string name="lbl_axis_co2">Concentración (ppm)</string>
     <string name="lbl_axis_spo2">Concentración(%)</string>
     <string name="lbl_select_room">Elija una Habitación:</string>
+    <string name="lbl_select_person">Elija una Persona:</string>
     <string name="lbl_no_meas">Aún no hay mediciones…</string>
     <string name="err_field">Este campo no puede estar vacío</string>
     <string name="err_broker">No se agregó ningún broker</string>

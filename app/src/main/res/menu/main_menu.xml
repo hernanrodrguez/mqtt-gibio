@@ -6,21 +6,17 @@
             android:icon="@drawable/home_icon"
             android:title="@string/lbl_home" />
         <item
-            android:id="@+id/nav_room"
-            android:icon="@drawable/thermometer_icon"
-            android:title="@string/lbl_room" />
-        <item
-            android:id="@+id/nav_person"
-            android:icon="@drawable/thermometer_person_icon"
-            android:title="@string/lbl_person" />
-        <item
-            android:id="@+id/nav_co2"
-            android:icon="@drawable/co2_icon"
-            android:title="@string/lbl_air" />
-        <item
             android:id="@+id/nav_rooms"
             android:icon="@drawable/room_icon"
-            android:title="@string/lbl_rooms" />
+            android:title="@string/lbl_room" />
+        <item
+            android:id="@+id/nav_people"
+            android:icon="@drawable/thermometer_person_icon"
+            android:title="@string/lbl_people" />
+        <item
+            android:id="@+id/nav_map"
+            android:icon="@drawable/map_icon"
+            android:title="@string/lbl_map" />
     </group>
 
     <item android:title="@string/lbl_conf">
@@ -29,6 +25,10 @@
                 android:id="@+id/nav_settings"
                 android:icon="@drawable/settings_icon"
                 android:title="@string/lbl_settings" />
+            <item
+                android:id="@+id/nav_bug"
+                android:icon="@drawable/bug_icon"
+                android:title="@string/lbl_bug" />
         </menu>
     </item>
 
@@ -39,10 +39,6 @@
                     android:id="@+id/nav_info"
                     android:icon="@drawable/info_icon"
                     android:title="@string/lbl_info" />
-                <item
-                    android:id="@+id/nav_bug"
-                    android:icon="@drawable/bug_icon"
-                    android:title="@string/lbl_bug" />
             </group>
         </menu>
     </item>

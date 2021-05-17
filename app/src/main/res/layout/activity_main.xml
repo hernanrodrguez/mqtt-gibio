@@ -8,14 +8,16 @@
         android:text="@string/lbl_send_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-    <Button
+    <!--<Button
         android:id="@+id/btnAddNewBroker"
         android:text="@string/lbl_add_new_broker"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" />-->
     <ListView
         android:id="@+id/lvMsg"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:transcriptMode="alwaysScroll" />
+
 
 </LinearLayout>

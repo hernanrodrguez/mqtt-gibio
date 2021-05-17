@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     private MyMqttClient mqttClient;
     private ArrayList<Room> rooms;
+    private ArrayList<Room> people;
 
     private EditText etAddress;
     private EditText etPort;
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         messages = new ArrayList<>();
         progressDialog = new ProgressDialog(this);
         rooms = new ArrayList<>();
+        people = new ArrayList<>();
 
         if(!GetBroker())
             SetUpInitActivity();
@@ -81,8 +84,11 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         } else {
             switch (currentView){
                 case R.layout.activity_settings:
-                case R.layout.activity_send_message:
+                case R.layout.activity_main:
                     SetUpHomeActivity();
+                    break;
+                case R.layout.activity_send_message:
+                    SetUpMainActivity();
                     break;
                 default:
                     if(getSupportFragmentManager().findFragmentById(R.id.fragHome) instanceof PlotFragment)
@@ -129,8 +135,8 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         currentView = R.layout.activity_main;
         setContentView(currentView);
 
-        Button btnAddNewBroker = findViewById(R.id.btnAddNewBroker);
-        btnAddNewBroker.setOnClickListener(this::btnAddNewBrokerClick);
+        //Button btnAddNewBroker = findViewById(R.id.btnAddNewBroker);
+        //btnAddNewBroker.setOnClickListener(this::btnAddNewBrokerClick);
         Button btnSendMessage = findViewById(R.id.btnSendMessage);
         btnSendMessage.setOnClickListener(this::btnSendMessageClick);
 
@@ -166,17 +172,14 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             case R.id.nav_home:
                 SetUpHomeActivity();
                 break;
-            case R.id.nav_room:
-                SendData(Constants.TEMP_AMB_ID);
-                break;
-            case R.id.nav_person:
-                SendData(Constants.PERSON_ID);
-                break;
-            case R.id.nav_co2:
-                SendData(Constants.CO2_ID);
-                break;
             case R.id.nav_rooms:
-                SendData(Constants.ROOMS_ID);
+                HomeBtnClicked(Constants.ROOMS_ID);
+                break;
+            case R.id.nav_people:
+                HomeBtnClicked(Constants.PEOPLE_ID);
+                break;
+            case R.id.nav_map:
+                HomeBtnClicked(Constants.MAP_ID);
                 break;
             case R.id.nav_settings:
                 SetUpSettingsActivity();
@@ -184,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             case R.id.nav_info:
                 break;
             case R.id.nav_bug:
+                SetUpMainActivity();
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -203,6 +207,26 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
         builderSingle.setItems(cs, (dialog, which) -> {
             SendRoom(rooms.get(which));
+        });
+
+        builderSingle.setNegativeButton(R.string.lbl_cancel, (dialog, which) -> dialog.dismiss());
+        AlertDialog dialog = builderSingle.create();
+        dialog.show();
+    }
+
+    private void ShowPeople(){
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+        builderSingle.setIcon(R.drawable.thermometer_person);
+        builderSingle.setTitle(R.string.lbl_select_person);
+
+        ArrayList<String> people_id = new ArrayList<>();
+        for(Room person : people)
+            people_id.add(person.GetIdRoom().toUpperCase());
+
+        CharSequence[] cs = people_id.toArray(new CharSequence[people_id.size()]);
+
+        builderSingle.setItems(cs, (dialog, which) -> {
+            SendPerson(people.get(which));
         });
 
         builderSingle.setNegativeButton(R.string.lbl_cancel, (dialog, which) -> dialog.dismiss());
@@ -344,7 +368,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     private String ObtainIdRoom(String topic){
         try{
-            return topic.split("/")[1];
+            return topic.split("/")[2];
         } catch (Exception e){
             return null;
         }
@@ -400,9 +424,80 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         } catch (Exception ignored){} // Ante un mensaje erroneo o algun problema, simplemente ignoro el caso
     }
 
+    private String ObtainIdPerson(String topic){
+        try{
+            return topic.split("/")[2];
+        } catch (Exception e){
+            return null;
+        }
+    }
+
+    private boolean PersonExists(String id_person){
+        for(Room person : people){
+            if(person.GetIdRoom().equals(id_person))
+                return true;
+        }
+        return false;
+    }
+
+    private int GetCurrentPerson(String id_person){
+        for(int i=0; i<people.size(); i++){
+            if(people.get(i).GetIdRoom().equals(id_person))
+                return i;
+        }
+        return -1;
+    }
+
+    private void HandleMessage_Person(String topic, String msg){
+        try {
+            int current_person;
+            String id_person = ObtainIdPerson(topic);
+            if(id_person != null) {
+                if (PersonExists(id_person)) {
+                    current_person = GetCurrentPerson(id_person);
+                } else {
+                    current_person = people.size();
+                    people.add(new Room(id_person));
+                }
+                String[] all_data = msg.split("-");
+
+                for (String data : all_data) {
+                    String key_meas = data.split(":")[0];
+                    Log.i("KEY_MEAS", key_meas);
+                    int id_meas = Constants.Key2Id(key_meas); // Obtengo el tipo de medicion
+                    double value = Double.parseDouble(data.split(":")[1]); // Obtengo el valor de la medicion
+                    Log.i("VALUE_MEAS", String.valueOf(value));
+                    Room person = people.get(current_person); // Trabajo con la persona a la que pertenece la medicion
+                    Measurement measurement;
+                    Date date = Calendar.getInstance().getTime(); // Obtengo la hora de la medicion
+                    measurement = new Measurement(value, date); // Creo la nueva medicion
+                    person.Add(measurement, id_meas); // Guardo la nueva medicion
+                    plotFragment.MeasArrived(id_person, id_meas, measurement); // Envio la medicion al plot fragment para graficar en tiempo real
+                }
+            }
+        } catch (Exception e){
+            Log.e("ERROR", e.getMessage());
+        } // Ante un mensaje erroneo o algun problema, simplemente ignoro el caso
+    }
+
+    private void SendPlotData(int id){
+        if(rooms.size() > 0 && id == Constants.ROOMS_ID)
+            CheckRooms();
+        else if(people.size() > 0 && id == Constants.PEOPLE_ID)
+            CheckPeople();
+        else
+            Toast.makeText(this, R.string.lbl_no_meas, Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public void MessageArrived(String topic, String msg) {
-        HandleMessage(topic, msg);
+        if(topic.split("/")[1].equals("room"))
+            HandleMessage(topic, msg);
+        else if(topic.split("/")[1].equals("person"))
+            HandleMessage_Person(topic, msg);
+
+        messages.add(topic + ": " + msg);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -434,30 +529,20 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     }
 
     @Override
-    public void SendData(int id) {
-        if(rooms.size() > 0){
-            if(id != Constants.ROOMS_ID){
-                plotFragment = new PlotFragment();
-                Bundle bundle = new Bundle();
-
-                bundle.putInt(Constants.CASE_KEY, id);
-                switch (id){
-                    case Constants.TEMP_AMB_ID:
-                    case Constants.CO2_ID:
-                        bundle.putSerializable(Constants.DATA_KEY, GetListsById(id));
-                        break;
-                    case Constants.PERSON_ID:
-                        bundle.putSerializable(Constants.DATA_KEY, GetPersonLists());
-                        break;
-                }
-                plotFragment.setArguments(bundle);
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
-            } else
-                CheckRooms();
-        } else {
-            Toast.makeText(this, R.string.lbl_no_meas, Toast.LENGTH_SHORT).show();
+    public void HomeBtnClicked(int id) {
+        switch (id){
+            case Constants.ROOMS_ID:
+            case Constants.PEOPLE_ID:
+                SendPlotData(id);
+                break;
+            case Constants.MAP_ID:
+                break;
+            case Constants.SETTINGS_ID:
+                SetUpSettingsActivity();
+                break;
+            default:
+                break;
         }
-
     }
 
     @Override
@@ -467,6 +552,18 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
         bundle.putInt(Constants.CASE_KEY, Constants.ROOMS_ID);
         bundle.putSerializable(Constants.DATA_KEY, room);
+
+        plotFragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
+    }
+
+    @Override
+    public void SendPerson(Room person) {
+        plotFragment = new PlotFragment();
+        Bundle bundle = new Bundle();
+
+        bundle.putInt(Constants.CASE_KEY, Constants.PEOPLE_ID);
+        bundle.putSerializable(Constants.DATA_KEY, person);
 
         plotFragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
@@ -493,5 +590,12 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             ShowRooms();
         else
             SendRoom(rooms.get(0));
+    }
+
+    private void CheckPeople(){
+        if(people.size() > 1)
+            ShowPeople();
+        else
+            SendPerson(people.get(0));
     }
 }

@@ -71,6 +71,7 @@ public class PlotFragment extends Fragment implements IComData{
                     measLists = (ArrayList<MeasList>) bundle.getSerializable(Constants.DATA_KEY);
                     break;
                 case Constants.ROOMS_ID:
+                case Constants.PEOPLE_ID:
                     room = (Room) bundle.getSerializable(Constants.DATA_KEY);
                     break;
             }
@@ -91,7 +92,7 @@ public class PlotFragment extends Fragment implements IComData{
         LinearLayout ll = CustomLinearLayout();
         CustomGraphTitle(v);
 
-        if(id_graph == Constants.ROOMS_ID)
+        if(id_graph == Constants.ROOMS_ID || id_graph == Constants.PEOPLE_ID)
             measLists = LoadList();
 
         for(MeasList measList : measLists) {
@@ -132,6 +133,7 @@ public class PlotFragment extends Fragment implements IComData{
                 tv.setText(R.string.lbl_subject);
                 break;
             case Constants.ROOMS_ID:
+            case Constants.PEOPLE_ID:
                 tv.setText(room.GetIdRoom().toUpperCase());
                 break;
         }
@@ -139,18 +141,27 @@ public class PlotFragment extends Fragment implements IComData{
 
     private ArrayList<MeasList> LoadList(){
         ArrayList<MeasList> list = new ArrayList<>();
-        list.add(room.GetTAmbList());
-        list.add(room.GetCo2List());
-        list.add(room.GetTObjList());
-        list.add(room.GetSpo2List());
-
+        if(id_graph == Constants.ROOMS_ID) {
+            list.add(room.GetTAmbList());
+            list.add(room.GetCo2List());
+            list.add(room.GetTObjList());
+            list.add(room.GetSpo2List());
+        } else if(id_graph == Constants.PEOPLE_ID){
+            list.add(room.GetTObjList());
+            list.add(room.GetSpo2List());
+            list.add(room.GetTAmbList());
+            list.add(room.GetCo2List());
+        }
         return list;
     }
 
     private void CustomAxis(MeasList measList, GraphView graph){
         switch (measList.GetMeas()) {
             case Constants.TEMP_OBJ_ID:
-                CustomSamplesGraph();
+                if(id_graph == Constants.PEOPLE_ID)
+                    CustomTimeGraph(graph);
+                else
+                    CustomSamplesGraph();
                 CustomObjGraph();
                 break;
             case Constants.TEMP_AMB_ID:
@@ -162,7 +173,10 @@ public class PlotFragment extends Fragment implements IComData{
                 CustomCO2Graph();
                 break;
             case Constants.SPO2_ID:
-                CustomSamplesGraph();
+                if(id_graph == Constants.PEOPLE_ID)
+                    CustomTimeGraph(graph);
+                else
+                    CustomSamplesGraph();
                 CustomSPO2Graph();
                 break;
         }
@@ -172,9 +186,12 @@ public class PlotFragment extends Fragment implements IComData{
         ArrayList<Measurement> list = measList.GetList();
         LineGraphSeries<DataPoint> aux_series = new LineGraphSeries<>();
         for (Measurement m : list) {
-            if(measList.GetMeas() == Constants.TEMP_OBJ_ID || measList.GetMeas() == Constants.SPO2_ID)
-                aux_series.appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
-            else
+            if(id_graph == Constants.ROOMS_ID){
+                if(measList.GetMeas() == Constants.TEMP_OBJ_ID || measList.GetMeas() == Constants.SPO2_ID)
+                    aux_series.appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
+                else
+                    aux_series.appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
+            } else if(id_graph == Constants.PEOPLE_ID)
                 aux_series.appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
         }
         return aux_series;
@@ -205,7 +222,7 @@ public class PlotFragment extends Fragment implements IComData{
         tv.setTypeface(typeface);
         tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
-        if(id_graph == Constants.ROOMS_ID) {
+        if(id_graph == Constants.ROOMS_ID || id_graph == Constants.PEOPLE_ID) {
             switch (list.GetMeas()) {
                 case Constants.TEMP_OBJ_ID:
                     tv.setText(R.string.lbl_graph_obj);
@@ -349,11 +366,15 @@ public class PlotFragment extends Fragment implements IComData{
             MeasList measList = measLists.get(i);
             if(id_room.equals(measList.GetRoom())) {
                 if(id_meas == measList.GetMeas()){
-                    if(id_meas == Constants.TEMP_AMB_ID || id_meas == Constants.CO2_ID)
+                    if(id_graph == Constants.ROOMS_ID){
+                        if(id_meas == Constants.TEMP_AMB_ID || id_meas == Constants.CO2_ID)
+                            series.get(i).appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
+                        else {
+                            series.get(i).appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
+                            UpdateThreshold(i, id_meas, m);
+                        }
+                    } else {
                         series.get(i).appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
-                    else {
-                        series.get(i).appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
-                        UpdateThreshold(i, id_meas, m);
                     }
                 }
             }

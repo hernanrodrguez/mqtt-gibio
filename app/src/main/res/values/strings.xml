@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">CheckING</string>
     <string name="lbl_by">by GIBIO</string>
+    <string name="lbl_props">Temperature \nCO2 - SPO2 \nHeart Rate</string>
     <string name="lbl_home">Home</string>
     <string name="lbl_init_title">Monitoring App</string>
     <string name="lbl_init_desc">This App, developed by members of Grupo de Investigación y Desarrollo en Bioingeniería from UTN FRBA, monitors the measurement devices placed in the classrooms and common spaces of the University. These devices are capable of measuring the ambient temperature, people\'s temperature and the carbon dioxide concentration in the environment. The communication is based on MQTT protocol, the standard for IoT applications. To get started, enter your server details.</string>
@@ -36,14 +37,14 @@
     <string name="lbl_monitoring">Monitoring</string>
     <string name="lbl_select">Select an option</string>
     <string name="lbl_room">Room</string>
-    <string name="lbl_rooms">All Rooms</string>
-    <string name="lbl_person">Person</string>
-    <string name="lbl_air">Air</string>
+    <string name="lbl_rooms">Rooms</string>
+    <string name="lbl_people">People</string>
+    <string name="lbl_map">Map</string>
     <string name="lbl_conf">Configuration</string>
     <string name="lbl_settings">Settings</string>
     <string name="lbl_communicate">Communicate</string>
     <string name="lbl_info">More information</string>
-    <string name="lbl_bug">Report a bug</string>
+    <string name="lbl_bug">Debug Mode</string>
     <string name="lbl_nav_open">Navigation drawer opened</string>
     <string name="lbl_nav_closed">Navigation drawer closed</string>
     <string name="lbl_warning">Warning</string>
@@ -64,6 +65,7 @@
     <string name="lbl_axis_co2">Concentration (ppm)</string>
     <string name="lbl_axis_spo2">Concentration(%)</string>
     <string name="lbl_select_room">Select a Room:</string>
+    <string name="lbl_select_person">Select a Person:</string>
     <string name="lbl_no_meas">There are no measurements yet…</string>
     <string name="err_field">This field cannot be empty</string>
     <string name="err_broker">There is no broker</string>
