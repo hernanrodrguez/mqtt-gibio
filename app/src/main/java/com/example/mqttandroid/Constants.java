@@ -29,7 +29,10 @@ public final class Constants {
     public final static int SPO2_ID = 4;
     public final static int ROOMS_ID = 5;
     public final static int PERSON_ID = 6;
-    public final static int[] IDS = new int[]{TEMP_OBJ_ID, TEMP_AMB_ID, CO2_ID, SPO2_ID, ROOMS_ID, PERSON_ID};
+    public final static int PEOPLE_ID = 7;
+    public final static int MAP_ID = 8;
+    public final static int SETTINGS_ID = 9;
+    public final static int[] IDS = new int[]{TEMP_OBJ_ID, TEMP_AMB_ID, CO2_ID, SPO2_ID, ROOMS_ID, PERSON_ID, PEOPLE_ID, MAP_ID, SETTINGS_ID};
 
     public final static double TH_TEMP = 37.5;
     public final static double TH_SPO2 = 95;

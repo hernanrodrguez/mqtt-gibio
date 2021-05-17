@@ -168,17 +168,14 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             case R.id.nav_home:
                 SetUpHomeActivity();
                 break;
-            case R.id.nav_room:
-                SendData(Constants.TEMP_AMB_ID);
-                break;
-            case R.id.nav_person:
-                SendData(Constants.PERSON_ID);
-                break;
-            case R.id.nav_co2:
-                SendData(Constants.CO2_ID);
-                break;
             case R.id.nav_rooms:
-                SendData(Constants.ROOMS_ID);
+                HomeBtnClicked(Constants.ROOMS_ID);
+                break;
+            case R.id.nav_people:
+                HomeBtnClicked(Constants.PEOPLE_ID);
+                break;
+            case R.id.nav_map:
+                HomeBtnClicked(Constants.MAP_ID);
                 break;
             case R.id.nav_settings:
                 SetUpSettingsActivity();
@@ -205,6 +202,26 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
         builderSingle.setItems(cs, (dialog, which) -> {
             SendRoom(rooms.get(which));
+        });
+
+        builderSingle.setNegativeButton(R.string.lbl_cancel, (dialog, which) -> dialog.dismiss());
+        AlertDialog dialog = builderSingle.create();
+        dialog.show();
+    }
+
+    private void ShowPeople(){
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+        builderSingle.setIcon(R.drawable.thermometer_person);
+        builderSingle.setTitle(R.string.lbl_select_person);
+
+        ArrayList<String> people_id = new ArrayList<>();
+        for(Room person : people)
+            people_id.add(person.GetIdRoom().toUpperCase());
+
+        CharSequence[] cs = people_id.toArray(new CharSequence[people_id.size()]);
+
+        builderSingle.setItems(cs, (dialog, which) -> {
+            SendRoom(people.get(which));
         });
 
         builderSingle.setNegativeButton(R.string.lbl_cancel, (dialog, which) -> dialog.dismiss());
@@ -455,6 +472,17 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         } catch (Exception ignored){} // Ante un mensaje erroneo o algun problema, simplemente ignoro el caso
     }
 
+    private void SendPlotData(int id){
+        if(rooms.size() > 0){
+            if(id == Constants.ROOMS_ID)
+                CheckRooms();
+            else
+                CheckPeople();
+        } else {
+            Toast.makeText(this, R.string.lbl_no_meas, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public void MessageArrived(String topic, String msg) {
         HandleMessage(topic, msg);
@@ -490,30 +518,21 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     }
 
     @Override
-    public void SendData(int id) {
-        if(rooms.size() > 0){
-            if(id != Constants.ROOMS_ID){
-                plotFragment = new PlotFragment();
-                Bundle bundle = new Bundle();
+    public void HomeBtnClicked(int id) {
 
-                bundle.putInt(Constants.CASE_KEY, id);
-                switch (id){
-                    case Constants.TEMP_AMB_ID:
-                    case Constants.CO2_ID:
-                        bundle.putSerializable(Constants.DATA_KEY, GetListsById(id));
-                        break;
-                    case Constants.PERSON_ID:
-                        bundle.putSerializable(Constants.DATA_KEY, GetPersonLists());
-                        break;
-                }
-                plotFragment.setArguments(bundle);
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
-            } else
-                CheckRooms();
-        } else {
-            Toast.makeText(this, R.string.lbl_no_meas, Toast.LENGTH_SHORT).show();
+        switch (id){
+            case Constants.ROOMS_ID:
+            case Constants.PEOPLE_ID:
+                SendPlotData(id);
+                break;
+            case Constants.MAP_ID:
+                break;
+            case Constants.SETTINGS_ID:
+                SetUpSettingsActivity();
+                break;
+            default:
+                break;
         }
-
     }
 
     @Override
@@ -549,5 +568,12 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             ShowRooms();
         else
             SendRoom(rooms.get(0));
+    }
+
+    private void CheckPeople(){
+        if(people.size() > 1)
+            ShowPeople();
+        else
+            SendRoom(people.get(0));
     }
 }

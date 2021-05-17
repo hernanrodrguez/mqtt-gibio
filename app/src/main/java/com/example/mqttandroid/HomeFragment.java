@@ -28,15 +28,15 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        RelativeLayout btnRoom = view.findViewById(R.id.btnRoom);
-        RelativeLayout btnPerson = view.findViewById(R.id.btnPerson);
-        RelativeLayout btnCo2 = view.findViewById(R.id.btnCo2);
         RelativeLayout btnRooms = view.findViewById(R.id.btnRooms);
+        RelativeLayout btnPeople = view.findViewById(R.id.btnPeople);
+        RelativeLayout btnMap = view.findViewById(R.id.btnMap);
+        RelativeLayout btnSettings = view.findViewById(R.id.btnSettings);
 
-        btnRoom.setOnClickListener(this::OnClick);
-        btnPerson.setOnClickListener(this::OnClick);
-        btnCo2.setOnClickListener(this::OnClick);
         btnRooms.setOnClickListener(this::OnClick);
+        btnPeople.setOnClickListener(this::OnClick);
+        btnMap.setOnClickListener(this::OnClick);
+        btnSettings.setOnClickListener(this::OnClick);
 
         return view;
     }
@@ -52,17 +52,17 @@ public class HomeFragment extends Fragment {
 
     public void OnClick(View view){
         switch (view.getId()){
-            case R.id.btnRoom:
-                iComFragments.SendData(Constants.TEMP_AMB_ID);
-                break;
-            case R.id.btnPerson:
-                iComFragments.SendData(Constants.PERSON_ID);
-                break;
-            case R.id.btnCo2:
-                iComFragments.SendData(Constants.CO2_ID);
-                break;
             case R.id.btnRooms:
-                iComFragments.SendData(Constants.ROOMS_ID);
+                iComFragments.HomeBtnClicked(Constants.ROOMS_ID);
+                break;
+            case R.id.btnPeople:
+                iComFragments.HomeBtnClicked(Constants.PEOPLE_ID);
+                break;
+            case R.id.btnMap:
+                iComFragments.HomeBtnClicked(Constants.MAP_ID);
+                break;
+            case R.id.btnSettings:
+                iComFragments.HomeBtnClicked(Constants.SETTINGS_ID);
                 break;
         }
     }

@@ -1,6 +1,6 @@
 package com.example.mqttandroid;
 
 public interface IComFragments {
-    void SendData(int graph);
+    void HomeBtnClicked(int graph);
     void SendRoom(Room room);
 }

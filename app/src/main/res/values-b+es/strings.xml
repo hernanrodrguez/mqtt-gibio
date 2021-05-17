@@ -37,8 +37,8 @@
     <string name="lbl_select">Elija una opción</string>
     <string name="lbl_room">Habitación</string>
     <string name="lbl_rooms">Habitaciones</string>
-    <string name="lbl_person">Persona</string>
-    <string name="lbl_air">Aire</string>
+    <string name="lbl_people">Personas</string>
+    <string name="lbl_map">Mapa</string>
     <string name="lbl_conf">Configuración</string>
     <string name="lbl_settings">Ajustes</string>
     <string name="lbl_communicate">Comunicate</string>
@@ -64,6 +64,7 @@
     <string name="lbl_axis_co2">Concentración (ppm)</string>
     <string name="lbl_axis_spo2">Concentración(%)</string>
     <string name="lbl_select_room">Elija una Habitación:</string>
+    <string name="lbl_select_person">Elija una Persona:</string>
     <string name="lbl_no_meas">Aún no hay mediciones…</string>
     <string name="err_field">Este campo no puede estar vacío</string>
     <string name="err_broker">No se agregó ningún broker</string>
