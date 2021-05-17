@@ -71,6 +71,7 @@ public class PlotFragment extends Fragment implements IComData{
                     measLists = (ArrayList<MeasList>) bundle.getSerializable(Constants.DATA_KEY);
                     break;
                 case Constants.ROOMS_ID:
+                case Constants.PEOPLE_ID:
                     room = (Room) bundle.getSerializable(Constants.DATA_KEY);
                     break;
             }
@@ -91,7 +92,7 @@ public class PlotFragment extends Fragment implements IComData{
         LinearLayout ll = CustomLinearLayout();
         CustomGraphTitle(v);
 
-        if(id_graph == Constants.ROOMS_ID)
+        if(id_graph == Constants.ROOMS_ID || id_graph == Constants.PEOPLE_ID)
             measLists = LoadList();
 
         for(MeasList measList : measLists) {
@@ -150,7 +151,10 @@ public class PlotFragment extends Fragment implements IComData{
     private void CustomAxis(MeasList measList, GraphView graph){
         switch (measList.GetMeas()) {
             case Constants.TEMP_OBJ_ID:
-                CustomSamplesGraph();
+                if(id_graph == Constants.PEOPLE_ID)
+                    CustomTimeGraph(graph);
+                else
+                    CustomSamplesGraph();
                 CustomObjGraph();
                 break;
             case Constants.TEMP_AMB_ID:
@@ -162,7 +166,10 @@ public class PlotFragment extends Fragment implements IComData{
                 CustomCO2Graph();
                 break;
             case Constants.SPO2_ID:
-                CustomSamplesGraph();
+                if(id_graph == Constants.PEOPLE_ID)
+                    CustomTimeGraph(graph);
+                else
+                    CustomSamplesGraph();
                 CustomSPO2Graph();
                 break;
         }
@@ -349,11 +356,15 @@ public class PlotFragment extends Fragment implements IComData{
             MeasList measList = measLists.get(i);
             if(id_room.equals(measList.GetRoom())) {
                 if(id_meas == measList.GetMeas()){
-                    if(id_meas == Constants.TEMP_AMB_ID || id_meas == Constants.CO2_ID)
+                    if(id_graph == Constants.ROOMS_ID){
+                        if(id_meas == Constants.TEMP_AMB_ID || id_meas == Constants.CO2_ID)
+                            series.get(i).appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
+                        else {
+                            series.get(i).appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
+                            UpdateThreshold(i, id_meas, m);
+                        }
+                    } else {
                         series.get(i).appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
-                    else {
-                        series.get(i).appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
-                        UpdateThreshold(i, id_meas, m);
                     }
                 }
             }

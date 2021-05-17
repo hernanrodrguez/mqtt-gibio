@@ -83,8 +83,11 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         } else {
             switch (currentView){
                 case R.layout.activity_settings:
-                case R.layout.activity_send_message:
+                case R.layout.activity_main:
                     SetUpHomeActivity();
+                    break;
+                case R.layout.activity_send_message:
+                    SetUpMainActivity();
                     break;
                 default:
                     if(getSupportFragmentManager().findFragmentById(R.id.fragHome) instanceof PlotFragment)
@@ -131,8 +134,8 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         currentView = R.layout.activity_main;
         setContentView(currentView);
 
-        Button btnAddNewBroker = findViewById(R.id.btnAddNewBroker);
-        btnAddNewBroker.setOnClickListener(this::btnAddNewBrokerClick);
+        //Button btnAddNewBroker = findViewById(R.id.btnAddNewBroker);
+        //btnAddNewBroker.setOnClickListener(this::btnAddNewBrokerClick);
         Button btnSendMessage = findViewById(R.id.btnSendMessage);
         btnSendMessage.setOnClickListener(this::btnSendMessageClick);
 
@@ -183,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             case R.id.nav_info:
                 break;
             case R.id.nav_bug:
+                SetUpMainActivity();
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -221,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         CharSequence[] cs = people_id.toArray(new CharSequence[people_id.size()]);
 
         builderSingle.setItems(cs, (dialog, which) -> {
-            SendRoom(people.get(which));
+            SendPerson(people.get(which));
         });
 
         builderSingle.setNegativeButton(R.string.lbl_cancel, (dialog, which) -> dialog.dismiss());
@@ -363,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     private String ObtainIdRoom(String topic){
         try{
-            return topic.split("/")[1];
+            return topic.split("/")[2];
         } catch (Exception e){
             return null;
         }
@@ -421,7 +425,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     private String ObtainIdPerson(String topic){
         try{
-            return topic.split("/")[1];
+            return topic.split("/")[2];
         } catch (Exception e){
             return null;
         }
@@ -449,7 +453,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             String id_person = ObtainIdPerson(topic);
             if(id_person != null) {
                 if (PersonExists(id_person)) {
-                    current_person = GetCurrentRoom(id_person);
+                    current_person = GetCurrentPerson(id_person);
                 } else {
                     current_person = people.size();
                     people.add(new Room(id_person));
@@ -485,8 +489,12 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     @Override
     public void MessageArrived(String topic, String msg) {
-        HandleMessage(topic, msg);
-        HandleMessage_Person(topic, msg);
+        messages.add(topic + ": " + msg);
+        adapter.notifyDataSetChanged();
+        if(topic.split("/")[1].equals("room"))
+            HandleMessage(topic, msg);
+        else if(topic.split("/")[1].equals("person"))
+            HandleMessage_Person(topic, msg);
     }
 
     @Override
@@ -547,6 +555,18 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
     }
 
+    @Override
+    public void SendPerson(Room person) {
+        plotFragment = new PlotFragment();
+        Bundle bundle = new Bundle();
+
+        bundle.putInt(Constants.CASE_KEY, Constants.PEOPLE_ID);
+        bundle.putSerializable(Constants.DATA_KEY, person);
+
+        plotFragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
+    }
+
     private ArrayList<MeasList> GetListsById(int id){
         ArrayList<MeasList> list = new ArrayList<>();
         for(Room room : rooms)
@@ -574,6 +594,6 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         if(people.size() > 1)
             ShowPeople();
         else
-            SendRoom(people.get(0));
+            SendPerson(people.get(0));
     }
 }

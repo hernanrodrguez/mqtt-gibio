@@ -43,7 +43,7 @@
     <string name="lbl_settings">Settings</string>
     <string name="lbl_communicate">Communicate</string>
     <string name="lbl_info">More information</string>
-    <string name="lbl_bug">Report a bug</string>
+    <string name="lbl_bug">Debug Mode</string>
     <string name="lbl_nav_open">Navigation drawer opened</string>
     <string name="lbl_nav_closed">Navigation drawer closed</string>
     <string name="lbl_warning">Warning</string>

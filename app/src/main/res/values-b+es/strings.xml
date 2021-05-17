@@ -43,7 +43,7 @@
     <string name="lbl_settings">Ajustes</string>
     <string name="lbl_communicate">Comunicate</string>
     <string name="lbl_info">Más información</string>
-    <string name="lbl_bug">Reportar un error</string>
+    <string name="lbl_bug">Modo Debug</string>
     <string name="lbl_nav_open">Menú de navegación abierto</string>
     <string name="lbl_nav_closed">Menú de navegación cerrado</string>
     <string name="lbl_warning">Advertencia</string>
