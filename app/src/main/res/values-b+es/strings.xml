@@ -56,7 +56,7 @@
     <string name="lbl_graph_obj">TEMPERATURA DEL SUJETO</string>
     <string name="lbl_graph_hr">FRECUENCIA CARDÍACA</string>
     <string name="lbl_subject">SUJETO</string>
-    <string name="lbl_graph_co2">CONCENTRACION CO2</string>
+    <string name="lbl_graph_co2">NIVEL DE CO2</string>
     <string name="lbl_graph_spo2">NIVEL DE SPO2</string>
     <string name="lbl_graph_room_obj">%1$s - TEMPERATURA DEL SUJETO</string>
     <string name="lbl_graph_room_spo2">%1$s - NIVEL DE SPO2</string>
@@ -69,6 +69,7 @@
     <string name="lbl_select_person">Elija una Persona:</string>
     <string name="lbl_no_meas">Aún no hay mediciones…</string>
     <string name="lbl_last_meas">Última medición</string>
+    <string name="lbl_history">Ver historial completo</string>
     <string name="err_field">Este campo no puede estar vacío</string>
     <string name="err_broker">No se agregó ningún broker</string>
     <string name="err_connect">No se pudo conectar al broker</string>
