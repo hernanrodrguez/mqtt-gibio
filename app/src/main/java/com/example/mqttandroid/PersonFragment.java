@@ -9,6 +9,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,14 @@ public class PersonFragment extends Fragment implements IComData {
     private ArrayList<MeasList> measLists;
     private Room person;
     private int id_person;
+
+    private View view;
+
+    private RelativeLayout btnSubjectTemperature;
+    private RelativeLayout btnSPO2Level;
+    private RelativeLayout btnHeartRate;
+    private RelativeLayout btnRoomTemperature;
+    private RelativeLayout btnCO2Level;
 
     private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
@@ -78,9 +87,9 @@ public class PersonFragment extends Fragment implements IComData {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_person, container, false);
-        SetUpListeners(view);
-        SetUpLastMeasurement(view);
+        view = inflater.inflate(R.layout.fragment_person, container, false);
+        SetUpListeners();
+        SetUpLastMeasurement();
         return view;
     }
 
@@ -93,14 +102,14 @@ public class PersonFragment extends Fragment implements IComData {
         }
     }
 
-    private void SetUpListeners(View v){
-        TextView tvTitle = v.findViewById(R.id.tv_title_last_meas);
-        TextView btnHistory = v.findViewById(R.id.btnHistory);
-        RelativeLayout btnSubjectTemperature = v.findViewById(R.id.btnSubjectTemperature);
-        RelativeLayout btnSPO2Level = v.findViewById(R.id.btnSPO2Level);
-        RelativeLayout btnHeartRate = v.findViewById(R.id.btnHeartRate);
-        RelativeLayout btnRoomTemperature = v.findViewById(R.id.btnRoomTemperature);
-        RelativeLayout btnCO2Level = v.findViewById(R.id.btnCO2Level);
+    private void SetUpListeners(){
+        TextView tvTitle = view.findViewById(R.id.tv_title_last_meas);
+        TextView btnHistory = view.findViewById(R.id.btnHistory);
+        btnSubjectTemperature = view.findViewById(R.id.btnSubjectTemperature);
+        btnSPO2Level = view.findViewById(R.id.btnSPO2Level);
+        btnHeartRate = view.findViewById(R.id.btnHeartRate);
+        btnRoomTemperature = view.findViewById(R.id.btnRoomTemperature);
+        btnCO2Level = view.findViewById(R.id.btnCO2Level);
 
         tvTitle.setText(getString(R.string.lbl_last_meas, person.GetIdRoom().toUpperCase()));
 
@@ -112,31 +121,28 @@ public class PersonFragment extends Fragment implements IComData {
         btnCO2Level.setOnClickListener(this::OnClick);
     }
 
-    private void SetUpLastMeasurement(View v){
-        TextView tvTObjDesc = v.findViewById(R.id.tv_last_tobj);
-        TextView tvTAmbDesc = v.findViewById(R.id.tv_last_tamb);
-        TextView tvCO2Desc = v.findViewById(R.id.tv_last_co2);
-        TextView tvSPO2Desc = v.findViewById(R.id.tv_last_spo2);
-        TextView tvHRDesc = v.findViewById(R.id.tv_last_hr);
+    private void SetUpLastMeasurement(){
+        TextView tvTObjDesc = view.findViewById(R.id.tv_last_tobj);
+        TextView tvTAmbDesc = view.findViewById(R.id.tv_last_tamb);
+        TextView tvCO2Desc = view.findViewById(R.id.tv_last_co2);
+        TextView tvSPO2Desc = view.findViewById(R.id.tv_last_spo2);
+        TextView tvHRDesc = view.findViewById(R.id.tv_last_hr);
 
-        RelativeLayout btnSubjectTemperature = v.findViewById(R.id.btnSubjectTemperature);
-        RelativeLayout btnSPO2Level = v.findViewById(R.id.btnSPO2Level);
-        RelativeLayout btnHeartRate = v.findViewById(R.id.btnHeartRate);
-        RelativeLayout btnRoomTemperature = v.findViewById(R.id.btnRoomTemperature);
-        RelativeLayout btnCO2Level = v.findViewById(R.id.btnCO2Level);
+        btnSubjectTemperature = view.findViewById(R.id.btnSubjectTemperature);
+        btnSPO2Level = view.findViewById(R.id.btnSPO2Level);
+        btnHeartRate = view.findViewById(R.id.btnHeartRate);
+        btnRoomTemperature = view.findViewById(R.id.btnRoomTemperature);
+        btnCO2Level = view.findViewById(R.id.btnCO2Level);
 
-        CustomBtnColor(btnSubjectTemperature, tvTObjDesc, Constants.TEMP_OBJ_ID);
-        CustomBtnColor(btnSPO2Level, tvSPO2Desc, Constants.SPO2_ID);
-        CustomBtnColor(btnRoomTemperature, tvTAmbDesc, Constants.TEMP_AMB_ID);
-        CustomBtnColor(btnCO2Level, tvCO2Desc, Constants.CO2_ID);
+        CustomBtnColor(btnSubjectTemperature, tvTObjDesc, person.GetLastMeasurement(Constants.TEMP_OBJ_ID), Constants.TEMP_OBJ_ID);
+        CustomBtnColor(btnSPO2Level, tvSPO2Desc, person.GetLastMeasurement(Constants.SPO2_ID), Constants.SPO2_ID);
+        CustomBtnColor(btnRoomTemperature, tvTAmbDesc, person.GetLastMeasurement(Constants.TEMP_AMB_ID), Constants.TEMP_AMB_ID);
+        CustomBtnColor(btnCO2Level, tvCO2Desc, person.GetLastMeasurement(Constants.CO2_ID), Constants.CO2_ID);
     }
 
-    private void CustomBtnColor(RelativeLayout btn, TextView tv, int id) {
-        Measurement m = person.GetLastMeasurement(id);
+    private void CustomBtnColor(RelativeLayout btn, TextView tv, Measurement m, int id) {
         double value = m.GetValue();
         Date date = m.GetDate();
-
-
 
         int red = ContextCompat.getColor(getActivity(), R.color.red);
         int green = ContextCompat.getColor(getActivity(), R.color.green_sea);
@@ -198,7 +204,32 @@ public class PersonFragment extends Fragment implements IComData {
     }
 
     private void UpdateLastMeasurement(int id, Measurement m){
-
+        RelativeLayout rl;
+        TextView tv;
+        switch (id){
+            case Constants.TEMP_OBJ_ID:
+                rl = view.findViewById(R.id.btnSubjectTemperature);
+                tv = view.findViewById(R.id.tv_last_tobj);
+                CustomBtnColor(rl, tv, m, id);
+                break;
+            case Constants.TEMP_AMB_ID:
+                rl = view.findViewById(R.id.btnRoomTemperature);
+                tv = view.findViewById(R.id.tv_last_tamb);
+                CustomBtnColor(rl, tv, m, id);
+                break;
+            case Constants.SPO2_ID:
+                rl = view.findViewById(R.id.btnSPO2Level);
+                tv = view.findViewById(R.id.tv_last_spo2);
+                CustomBtnColor(rl, tv, m, id);
+                break;
+            case Constants.CO2_ID:
+                rl = view.findViewById(R.id.btnCO2Level);
+                tv = view.findViewById(R.id.tv_last_co2);
+                CustomBtnColor(rl, tv, m, id);
+                break;
+            default:
+                break;
+        }
     }
 
     @Override

@@ -474,6 +474,8 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                     measurement = new Measurement(value, date); // Creo la nueva medicion
                     person.Add(measurement, id_meas); // Guardo la nueva medicion
                     plotFragment.MeasArrived(id_person, id_meas, measurement); // Envio la medicion al plot fragment para graficar en tiempo real
+                    if(getSupportFragmentManager().findFragmentById(R.id.fragHome) instanceof PersonFragment)
+                        personFragment.MeasArrived(id_person, id_meas, measurement);
                 }
             }
         } catch (Exception e){

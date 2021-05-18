@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">CheckING</string>
     <string name="lbl_by">by GIBIO</string>
-    <string name="lbl_props">Temperatura \nCO2 - SPO2 \nRitmo Cardíaco</string>
+    <string name="lbl_props">- CO2 \n- SPO2 \n- Temperatura \n- Frecuencia Cardíaca</string>
     <string name="lbl_home">Home</string>
     <string name="lbl_init_title">App de Monitoreo</string>
     <string name="lbl_init_desc">Esta aplicación, desarrollada por miembros del Grupo de Investigación y Desarrollo en Bioingeniería de la UTN FRBA, monitorea los dispositivos de medición colocados en las aulas y espacios comunes de la Universidad. Estos dispositivos son capaces de medir la temperatura ambiente, la temperatura de las personas y la concentración dióxido de carbono en el ambiente. La comunicación está basada en el protocolo MQTT, el estándar para aplicaciones IoT. Para comenzar, ingrese los datos del servidor.</string>
