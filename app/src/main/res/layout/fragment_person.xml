@@ -19,9 +19,9 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tv_title_last_meas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/lbl_last_meas"
                 android:textSize="30sp"
                 android:fontFamily="@font/poppins_bold"
                 android:textAlignment="center"/>
@@ -62,7 +62,6 @@
                     android:id="@+id/btnSubjectTemperature"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/design_default_color_error"
                     android:padding="10dp">
 
                     <TextView
@@ -75,10 +74,10 @@
                         android:layout_marginTop="10dp"
                         android:layout_marginStart="10dp"/>
                     <TextView
+                        android:id="@+id/tv_last_tobj"
                         android:layout_below="@id/tv_title_subj_temp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hora y valor de la medicion"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="3dp"
                         android:fontFamily="@font/poppins_light"/>
@@ -105,7 +104,6 @@
                     android:id="@+id/btnSPO2Level"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/design_default_color_error"
                     android:padding="10dp">
 
                     <TextView
@@ -118,10 +116,10 @@
                         android:layout_marginTop="10dp"
                         android:layout_marginStart="10dp"/>
                     <TextView
+                        android:id="@+id/tv_last_spo2"
                         android:layout_below="@id/tv_title_spo2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hora y valor de la medicion"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="3dp"
                         android:fontFamily="@font/poppins_light"/>
@@ -148,7 +146,7 @@
                     android:id="@+id/btnHeartRate"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/design_default_color_error"
+                    android:background="@color/red"
                     android:padding="10dp">
 
                     <TextView
@@ -161,6 +159,7 @@
                         android:layout_marginTop="10dp"
                         android:layout_marginStart="10dp"/>
                     <TextView
+                        android:id="@+id/tv_last_hr"
                         android:layout_below="@id/tv_title_heart_rate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -191,7 +190,6 @@
                     android:id="@+id/btnRoomTemperature"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/design_default_color_error"
                     android:padding="10dp">
 
                     <TextView
@@ -204,10 +202,10 @@
                         android:layout_marginTop="10dp"
                         android:layout_marginStart="10dp"/>
                     <TextView
+                        android:id="@+id/tv_last_tamb"
                         android:layout_below="@id/tv_title_amb_temp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hora y valor de la medicion"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="3dp"
                         android:fontFamily="@font/poppins_light"/>
@@ -234,7 +232,6 @@
                     android:id="@+id/btnCO2Level"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/design_default_color_error"
                     android:padding="10dp">
 
                     <TextView
@@ -247,10 +244,10 @@
                         android:layout_marginTop="10dp"
                         android:layout_marginStart="10dp"/>
                     <TextView
+                        android:id="@+id/tv_last_co2"
                         android:layout_below="@id/tv_title_co2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hora y valor de la medicion"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="3dp"
                         android:fontFamily="@font/poppins_light"/>

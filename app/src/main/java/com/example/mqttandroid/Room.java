@@ -1,6 +1,7 @@
 package com.example.mqttandroid;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Room implements Serializable {
     private final String id_room;
@@ -82,6 +83,26 @@ public class Room implements Serializable {
                 return spo2_meas.Size();
             default:
                 return -1;
+        }
+    }
+
+    public Measurement GetLastMeasurement(int id_meas){
+        ArrayList<Measurement> list;
+        switch (id_meas){
+            case Constants.TEMP_OBJ_ID:
+                list = tobj_meas.GetList();
+                return list.get(list.size()-1);
+            case Constants.TEMP_AMB_ID:
+                list = tamb_meas.GetList();
+                return list.get(list.size()-1);
+            case Constants.CO2_ID:
+                list = co2_meas.GetList();
+                return list.get(list.size()-1);
+            case Constants.SPO2_ID:
+                list = spo2_meas.GetList();
+                return list.get(list.size()-1);
+            default:
+                return null;
         }
     }
 

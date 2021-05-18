@@ -68,12 +68,17 @@
     <string name="lbl_select_room">Select a Room:</string>
     <string name="lbl_select_person">Select a Person:</string>
     <string name="lbl_no_meas">There are no measurements yet…</string>
-    <string name="lbl_last_meas">Last measurement</string>
+    <string name="lbl_last_meas">%1$s - Last measurement</string>
+    <string name="lbl_last_desc">Value: %1$.2f%2$s - Time: %3$s</string>
     <string name="lbl_history">See full history</string>
     <string name="err_field">This field cannot be empty</string>
     <string name="err_broker">There is no broker</string>
     <string name="err_connect">Can\'t connect to the broker</string>
     <string name="err_send">There was a problem</string>
     <color name="blue_elec">#1B74C4</color>
+    <color name="yellow">#FFD700</color>
+    <color name="green_lime">#32CD32</color>
+    <color name="green_sea">#3CB371</color>
+    <color name="red">#DC143C</color>
     <string name="hello_blank_fragment">ACA PONER GRAFICOS</string>
 </resources>

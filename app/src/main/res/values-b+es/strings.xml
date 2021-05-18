@@ -68,7 +68,8 @@
     <string name="lbl_select_room">Elija una Habitación:</string>
     <string name="lbl_select_person">Elija una Persona:</string>
     <string name="lbl_no_meas">Aún no hay mediciones…</string>
-    <string name="lbl_last_meas">Última medición</string>
+    <string name="lbl_last_meas">%1$s - Última medición</string>
+    <string name="lbl_last_desc">Valor: %1$.2f%2$s - Hora: %3$s</string>
     <string name="lbl_history">Ver historial completo</string>
     <string name="err_field">Este campo no puede estar vacío</string>
     <string name="err_broker">No se agregó ningún broker</string>
