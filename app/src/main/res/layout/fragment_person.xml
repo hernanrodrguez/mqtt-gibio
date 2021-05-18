@@ -27,13 +27,13 @@
                 android:textAlignment="center"/>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/btnHistory"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 app:cardCornerRadius="5dp">
 
                 <TextView
+                    android:id="@+id/btnHistory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"

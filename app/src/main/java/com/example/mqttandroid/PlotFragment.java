@@ -67,6 +67,11 @@ public class PlotFragment extends Fragment implements IComData{
             switch (id_graph){
                 case Constants.TEMP_AMB_ID:
                 case Constants.CO2_ID:
+                case Constants.TEMP_OBJ_ID:
+                case Constants.SPO2_ID:
+                    MeasList list = (MeasList) bundle.getSerializable(Constants.DATA_KEY);
+                    measLists.add(list);
+                    break;
                 case Constants.PERSON_ID:
                     measLists = (ArrayList<MeasList>) bundle.getSerializable(Constants.DATA_KEY);
                     break;
@@ -158,7 +163,7 @@ public class PlotFragment extends Fragment implements IComData{
     private void CustomAxis(MeasList measList, GraphView graph){
         switch (measList.GetMeas()) {
             case Constants.TEMP_OBJ_ID:
-                if(id_graph == Constants.PEOPLE_ID)
+                if(id_graph != Constants.ROOMS_ID)
                     CustomTimeGraph(graph);
                 else
                     CustomSamplesGraph();
@@ -173,7 +178,7 @@ public class PlotFragment extends Fragment implements IComData{
                 CustomCO2Graph();
                 break;
             case Constants.SPO2_ID:
-                if(id_graph == Constants.PEOPLE_ID)
+                if(id_graph != Constants.ROOMS_ID)
                     CustomTimeGraph(graph);
                 else
                     CustomSamplesGraph();
@@ -186,13 +191,24 @@ public class PlotFragment extends Fragment implements IComData{
         ArrayList<Measurement> list = measList.GetList();
         LineGraphSeries<DataPoint> aux_series = new LineGraphSeries<>();
         for (Measurement m : list) {
-            if(id_graph == Constants.ROOMS_ID){
-                if(measList.GetMeas() == Constants.TEMP_OBJ_ID || measList.GetMeas() == Constants.SPO2_ID)
-                    aux_series.appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
-                else
+            // ACA HAY QUE HACER UN SWITCH
+            switch (id_graph){
+                case Constants.ROOMS_ID:
+                    if(measList.GetMeas() == Constants.TEMP_OBJ_ID || measList.GetMeas() == Constants.SPO2_ID)
+                        aux_series.appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
+                    else
+                        aux_series.appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
+                    break;
+                case Constants.PEOPLE_ID:
+                case Constants.TEMP_OBJ_ID:
+                case Constants.TEMP_AMB_ID:
+                case Constants.SPO2_ID:
+                case Constants.CO2_ID:
                     aux_series.appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
-            } else if(id_graph == Constants.PEOPLE_ID)
-                aux_series.appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
+                    break;
+                default:
+                    break;
+            }
         }
         return aux_series;
     }

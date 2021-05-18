@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     private HomeFragment homeFragment;
     private PlotFragment plotFragment;
+    private PersonFragment personFragment;
 
     private DrawerLayout drawerLayout;
     private Menu menu;
@@ -91,8 +92,8 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                     SetUpMainActivity();
                     break;
                 default:
-                    if(getSupportFragmentManager().findFragmentById(R.id.fragHome) instanceof PlotFragment)
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, homeFragment).commit();
+                    if (getSupportFragmentManager().getBackStackEntryCount() > 1)
+                        getSupportFragmentManager().popBackStack();
                     else
                         finish();
                     break;
@@ -164,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         navigationView.setCheckedItem(R.id.nav_home);
 
         homeFragment = new HomeFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, homeFragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, homeFragment).addToBackStack(null).commit();
     }
 
     private boolean NavigationItemSelected(MenuItem menuItem) {
@@ -173,13 +174,13 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 SetUpHomeActivity();
                 break;
             case R.id.nav_rooms:
-                HomeBtnClicked(Constants.ROOMS_ID);
+                BtnClicked(Constants.ROOMS_ID);
                 break;
             case R.id.nav_people:
-                HomeBtnClicked(Constants.PEOPLE_ID);
+                BtnClicked(Constants.PEOPLE_ID);
                 break;
             case R.id.nav_map:
-                HomeBtnClicked(Constants.MAP_ID);
+                BtnClicked(Constants.MAP_ID);
                 break;
             case R.id.nav_settings:
                 SetUpSettingsActivity();
@@ -226,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         CharSequence[] cs = people_id.toArray(new CharSequence[people_id.size()]);
 
         builderSingle.setItems(cs, (dialog, which) -> {
-            SendPerson(people.get(which));
+            SendPersonLastMeasurement(people.get(which), which);
         });
 
         builderSingle.setNegativeButton(R.string.lbl_cancel, (dialog, which) -> dialog.dismiss());
@@ -529,11 +530,13 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     }
 
     @Override
-    public void HomeBtnClicked(int id) {
+    public void BtnClicked(int id) {
         switch (id){
             case Constants.ROOMS_ID:
-            case Constants.PEOPLE_ID:
                 SendPlotData(id);
+                break;
+            case Constants.PEOPLE_ID:
+                CheckPeople();
                 break;
             case Constants.MAP_ID:
                 break;
@@ -542,6 +545,30 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 break;
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void BtnClicked(int graph, int id) {
+        switch (graph) {
+            case Constants.PERSON_ID:
+                SendPerson(people.get(id));
+                break;
+            case Constants.TEMP_OBJ_ID:
+                SendMeasList(graph, people.get(id).GetTObjList());
+                break;
+            case Constants.SPO2_ID:
+                SendMeasList(graph, people.get(id).GetSpo2List());
+                break;
+            case Constants.TEMP_AMB_ID:
+                SendMeasList(graph, people.get(id).GetTAmbList());
+                break;
+            case Constants.CO2_ID:
+                SendMeasList(graph, people.get(id).GetCo2List());
+                break;
+            default:
+                break;
+
         }
     }
 
@@ -564,6 +591,18 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
         bundle.putInt(Constants.CASE_KEY, Constants.PEOPLE_ID);
         bundle.putSerializable(Constants.DATA_KEY, person);
+
+        plotFragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
+    }
+
+    @Override
+    public void SendMeasList(int graph, MeasList list) {
+        plotFragment = new PlotFragment();
+        Bundle bundle = new Bundle();
+
+        bundle.putInt(Constants.CASE_KEY, graph);
+        bundle.putSerializable(Constants.DATA_KEY, list);
 
         plotFragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
@@ -595,7 +634,20 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     private void CheckPeople(){
         if(people.size() > 1)
             ShowPeople();
+        else if(people.size() == 1)
+            SendPersonLastMeasurement(people.get(0), 0);
         else
-            SendPerson(people.get(0));
+            Toast.makeText(this, R.string.lbl_no_meas, Toast.LENGTH_SHORT).show();
+    }
+
+    private void SendPersonLastMeasurement(Room person, int id_person) {
+        personFragment = new PersonFragment();
+        Bundle bundle = new Bundle();
+
+        bundle.putInt(Constants.CASE_KEY, id_person);
+        bundle.putSerializable(Constants.DATA_KEY, person);
+
+        personFragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, personFragment).addToBackStack(null).commit();
     }
 }

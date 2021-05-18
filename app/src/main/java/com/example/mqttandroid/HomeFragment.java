@@ -53,16 +53,16 @@ public class HomeFragment extends Fragment {
     public void OnClick(View view){
         switch (view.getId()){
             case R.id.btnRooms:
-                iComFragments.HomeBtnClicked(Constants.ROOMS_ID);
+                iComFragments.BtnClicked(Constants.ROOMS_ID);
                 break;
             case R.id.btnPeople:
-                iComFragments.HomeBtnClicked(Constants.PEOPLE_ID);
+                iComFragments.BtnClicked(Constants.PEOPLE_ID);
                 break;
             case R.id.btnMap:
-                iComFragments.HomeBtnClicked(Constants.MAP_ID);
+                iComFragments.BtnClicked(Constants.MAP_ID);
                 break;
             case R.id.btnSettings:
-                iComFragments.HomeBtnClicked(Constants.SETTINGS_ID);
+                iComFragments.BtnClicked(Constants.SETTINGS_ID);
                 break;
         }
     }
