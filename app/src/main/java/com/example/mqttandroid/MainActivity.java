@@ -568,6 +568,9 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             case Constants.CO2_ID:
                 SendMeasList(graph, people.get(id).GetCo2List());
                 break;
+            case Constants.HR_ID:
+                SendMeasList(graph, people.get(id).GetHRList());
+                break;
             default:
                 break;
 

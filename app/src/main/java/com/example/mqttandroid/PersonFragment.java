@@ -138,6 +138,7 @@ public class PersonFragment extends Fragment implements IComData {
         CustomBtnColor(btnSPO2Level, tvSPO2Desc, person.GetLastMeasurement(Constants.SPO2_ID), Constants.SPO2_ID);
         CustomBtnColor(btnRoomTemperature, tvTAmbDesc, person.GetLastMeasurement(Constants.TEMP_AMB_ID), Constants.TEMP_AMB_ID);
         CustomBtnColor(btnCO2Level, tvCO2Desc, person.GetLastMeasurement(Constants.CO2_ID), Constants.CO2_ID);
+        CustomBtnColor(btnHeartRate, tvHRDesc, person.GetLastMeasurement(Constants.HR_ID), Constants.HR_ID);
     }
 
     private void CustomBtnColor(RelativeLayout btn, TextView tv, Measurement m, int id) {
@@ -176,6 +177,13 @@ public class PersonFragment extends Fragment implements IComData {
                 else
                     btn.setBackgroundColor(green);
                 break;
+            case Constants.HR_ID:
+                tv.setText(getString(R.string.lbl_last_desc, value, " bpm" ,sdf.format(date)));
+                if(value > Constants.TH_HR)
+                    btn.setBackgroundColor(red);
+                else
+                    btn.setBackgroundColor(green);
+                break;
             default:
                 break;
         }
@@ -197,6 +205,9 @@ public class PersonFragment extends Fragment implements IComData {
                 break;
             case R.id.btnCO2Level:
                 iComFragments.BtnClicked(Constants.CO2_ID, id_person);
+                break;
+            case R.id.btnHeartRate:
+                iComFragments.BtnClicked(Constants.HR_ID, id_person);
                 break;
             default:
                 break;
@@ -225,6 +236,11 @@ public class PersonFragment extends Fragment implements IComData {
             case Constants.CO2_ID:
                 rl = view.findViewById(R.id.btnCO2Level);
                 tv = view.findViewById(R.id.tv_last_co2);
+                CustomBtnColor(rl, tv, m, id);
+                break;
+            case Constants.HR_ID:
+                rl = view.findViewById(R.id.btnHeartRate);
+                tv = view.findViewById(R.id.tv_last_hr);
                 CustomBtnColor(rl, tv, m, id);
                 break;
             default:
