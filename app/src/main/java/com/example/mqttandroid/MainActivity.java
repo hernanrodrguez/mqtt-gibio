@@ -419,10 +419,13 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                         measurement = new Measurement(value, index); // Creo la nueva medicion
                     }
                     room.Add(measurement, id_meas); // Guardo la nueva medicion
-                    plotFragment.MeasArrived(id_room, id_meas, measurement); // Envio la medicion al plot fragment para graficar en tiempo real
+                    if(getSupportFragmentManager().findFragmentById(R.id.fragHome) instanceof PlotFragment)
+                        plotFragment.MeasArrived(id_room, id_meas, measurement); // Envio la medicion al plot fragment para graficar en tiempo real
                 }
             }
-        } catch (Exception ignored){} // Ante un mensaje erroneo o algun problema, simplemente ignoro el caso
+        } catch (Exception e){
+            Log.e("ERROR", e.getMessage());
+        } // Ante un mensaje erroneo o algun problema, simplemente ignoro el caso
     }
 
     private String ObtainIdPerson(String topic){
@@ -464,16 +467,16 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
                 for (String data : all_data) {
                     String key_meas = data.split(":")[0];
-                    Log.i("KEY_MEAS", key_meas);
                     int id_meas = Constants.Key2Id(key_meas); // Obtengo el tipo de medicion
                     double value = Double.parseDouble(data.split(":")[1]); // Obtengo el valor de la medicion
-                    Log.i("VALUE_MEAS", String.valueOf(value));
+
                     Room person = people.get(current_person); // Trabajo con la persona a la que pertenece la medicion
                     Measurement measurement;
                     Date date = Calendar.getInstance().getTime(); // Obtengo la hora de la medicion
                     measurement = new Measurement(value, date); // Creo la nueva medicion
                     person.Add(measurement, id_meas); // Guardo la nueva medicion
-                    plotFragment.MeasArrived(id_person, id_meas, measurement); // Envio la medicion al plot fragment para graficar en tiempo real
+                    if(getSupportFragmentManager().findFragmentById(R.id.fragHome) instanceof PlotFragment)
+                        plotFragment.MeasArrived(id_person, id_meas, measurement); // Envio la medicion al plot fragment para graficar en tiempo real
                     if(getSupportFragmentManager().findFragmentById(R.id.fragHome) instanceof PersonFragment)
                         personFragment.MeasArrived(id_person, id_meas, measurement);
                 }

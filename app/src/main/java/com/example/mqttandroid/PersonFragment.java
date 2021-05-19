@@ -111,7 +111,7 @@ public class PersonFragment extends Fragment implements IComData {
         btnRoomTemperature = view.findViewById(R.id.btnRoomTemperature);
         btnCO2Level = view.findViewById(R.id.btnCO2Level);
 
-        tvTitle.setText(getString(R.string.lbl_last_meas, person.GetIdRoom().toUpperCase()));
+        tvTitle.setText(person.GetIdRoom().toUpperCase());
 
         btnHistory.setOnClickListener(this::OnClick);
         btnSubjectTemperature.setOnClickListener(this::OnClick);
