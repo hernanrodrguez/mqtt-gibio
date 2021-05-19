@@ -69,6 +69,7 @@ public class PlotFragment extends Fragment implements IComData{
                 case Constants.CO2_ID:
                 case Constants.TEMP_OBJ_ID:
                 case Constants.SPO2_ID:
+                case Constants.HR_ID:
                     MeasList list = (MeasList) bundle.getSerializable(Constants.DATA_KEY);
                     measLists.add(list);
                     break;
@@ -137,6 +138,9 @@ public class PlotFragment extends Fragment implements IComData{
             case Constants.PERSON_ID:
                 tv.setText(R.string.lbl_subject);
                 break;
+            case Constants.HR_ID:
+                tv.setText(R.string.lbl_graph_hr);
+                break;
             case Constants.ROOMS_ID:
             case Constants.PEOPLE_ID:
                 tv.setText(room.GetIdRoom().toUpperCase());
@@ -151,9 +155,11 @@ public class PlotFragment extends Fragment implements IComData{
             list.add(room.GetCo2List());
             list.add(room.GetTObjList());
             list.add(room.GetSpo2List());
+            list.add(room.GetHRList());
         } else if(id_graph == Constants.PEOPLE_ID){
             list.add(room.GetTObjList());
             list.add(room.GetSpo2List());
+            list.add(room.GetHRList());
             list.add(room.GetTAmbList());
             list.add(room.GetCo2List());
         }
@@ -184,6 +190,15 @@ public class PlotFragment extends Fragment implements IComData{
                     CustomSamplesGraph();
                 CustomSPO2Graph();
                 break;
+            case Constants.HR_ID:
+                if(id_graph != Constants.ROOMS_ID)
+                    CustomTimeGraph(graph);
+                else
+                    CustomSamplesGraph();
+                CustomHRGraph();
+                break;
+            default:
+                break;
         }
     }
 
@@ -194,7 +209,7 @@ public class PlotFragment extends Fragment implements IComData{
             // ACA HAY QUE HACER UN SWITCH
             switch (id_graph){
                 case Constants.ROOMS_ID:
-                    if(measList.GetMeas() == Constants.TEMP_OBJ_ID || measList.GetMeas() == Constants.SPO2_ID)
+                    if(measList.GetMeas() == Constants.TEMP_OBJ_ID || measList.GetMeas() == Constants.SPO2_ID || measList.GetMeas() == Constants.HR_ID)
                         aux_series.appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
                     else
                         aux_series.appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
@@ -204,6 +219,7 @@ public class PlotFragment extends Fragment implements IComData{
                 case Constants.TEMP_AMB_ID:
                 case Constants.SPO2_ID:
                 case Constants.CO2_ID:
+                case Constants.HR_ID:
                     aux_series.appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
                     break;
                 default:
@@ -251,6 +267,9 @@ public class PlotFragment extends Fragment implements IComData{
                     break;
                 case Constants.SPO2_ID:
                     tv.setText(R.string.lbl_graph_spo2);
+                    break;
+                case Constants.HR_ID:
+                    tv.setText(R.string.lbl_graph_hr);
                     break;
             }
         }else{
@@ -330,6 +349,15 @@ public class PlotFragment extends Fragment implements IComData{
         viewport.setXAxisBoundsManual(true);
         viewport.setMinY(25);
         viewport.setMaxY(45);
+    }
+
+    private void CustomHRGraph() {
+        currentSeries.setColor(Color.rgb(114,188,212));
+        gridLabel.setVerticalAxisTitle(getString(R.string.lbl_axis_hr));
+        viewport.setYAxisBoundsManual(true);
+        viewport.setXAxisBoundsManual(true);
+        viewport.setMinY(40);
+        viewport.setMaxY(120);
     }
 
     private LineGraphSeries<DataPoint> SetThresholdLine(int id, LineGraphSeries<DataPoint> lgs){

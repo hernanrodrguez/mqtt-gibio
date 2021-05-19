@@ -164,14 +164,14 @@ public class PersonFragment extends Fragment implements IComData {
                 break;
             case Constants.TEMP_AMB_ID:
                 tv.setText(getString(R.string.lbl_last_desc, value, "°C" ,sdf.format(date)));
-                if(value > 30)
+                if(value > 35)
                     btn.setBackgroundColor(red);
                 else
                     btn.setBackgroundColor(green);
                 break;
             case Constants.CO2_ID:
                 tv.setText(getString(R.string.lbl_last_desc, value, " ppm" ,sdf.format(date)));
-                if(value > 1000)
+                if(value > Constants.TH_CO2)
                     btn.setBackgroundColor(red);
                 else
                     btn.setBackgroundColor(green);

@@ -65,6 +65,7 @@
     <string name="lbl_axis_temp">Temperatura(°C)</string>
     <string name="lbl_axis_co2">Concentración (ppm)</string>
     <string name="lbl_axis_spo2">Concentración(%)</string>
+    <string name="lbl_axis_hr">Latidos por minuto (bpm)</string>
     <string name="lbl_select_room">Elija una Habitación:</string>
     <string name="lbl_select_person">Elija una Persona:</string>
     <string name="lbl_no_meas">Aún no hay mediciones…</string>

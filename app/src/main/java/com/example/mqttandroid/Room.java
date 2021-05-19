@@ -10,6 +10,7 @@ public class Room implements Serializable {
     private final MeasList tobj_meas;
     private final MeasList co2_meas;
     private final MeasList spo2_meas;
+    private final MeasList hr_meas;
 
     public Room() throws Exception {
         this.id_room = "";
@@ -18,6 +19,7 @@ public class Room implements Serializable {
         this.tobj_meas = new MeasList(Constants.TEMP_OBJ_ID, id_room);
         this.co2_meas = new MeasList(Constants.CO2_ID, id_room);
         this.spo2_meas = new MeasList(Constants.SPO2_ID, id_room);
+        this.hr_meas = new MeasList(Constants.HR_ID, id_room);
     }
 
     public Room(String id_room) throws Exception {
@@ -27,7 +29,7 @@ public class Room implements Serializable {
         this.tobj_meas = new MeasList(Constants.TEMP_OBJ_ID, id_room);
         this.co2_meas = new MeasList(Constants.CO2_ID, id_room);
         this.spo2_meas = new MeasList(Constants.SPO2_ID, id_room);
-
+        this.hr_meas = new MeasList(Constants.HR_ID, id_room);
     }
 
     public void Add(Measurement measurement, int id_meas){
@@ -43,6 +45,9 @@ public class Room implements Serializable {
                 break;
             case Constants.SPO2_ID:
                 spo2_meas.Add(measurement);
+                break;
+            case Constants.HR_ID:
+                hr_meas.Add(measurement);
                 break;
             default:
                 break;
@@ -65,11 +70,16 @@ public class Room implements Serializable {
         spo2_meas.Add(measurement);
     }
 
+    public void AddHR(Measurement measurement){
+        hr_meas.Add(measurement);
+    }
+
     public String GetIdRoom(){ return id_room; }
     public MeasList GetTAmbList(){ return tamb_meas; }
     public MeasList GetTObjList(){ return tobj_meas; }
     public MeasList GetCo2List(){ return co2_meas; }
     public MeasList GetSpo2List(){ return spo2_meas; }
+    public MeasList GetHRList(){ return hr_meas; }
 
     public int GetLastIndex(int id_meas){
         switch (id_meas){
@@ -81,6 +91,8 @@ public class Room implements Serializable {
                 return co2_meas.Size();
             case Constants.SPO2_ID:
                 return spo2_meas.Size();
+            case Constants.HR_ID:
+                return hr_meas.Size();
             default:
                 return -1;
         }
@@ -101,6 +113,9 @@ public class Room implements Serializable {
             case Constants.SPO2_ID:
                 list = spo2_meas.GetList();
                 return list.get(list.size()-1);
+            case Constants.HR_ID:
+                list = hr_meas.GetList();
+                return list.get(list.size()-1);
             default:
                 return null;
         }
@@ -116,6 +131,8 @@ public class Room implements Serializable {
                 return co2_meas;
             case Constants.SPO2_ID:
                 return spo2_meas;
+            case Constants.HR_ID:
+                return hr_meas;
             default:
                 return null;
         }
