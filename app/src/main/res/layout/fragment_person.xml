@@ -49,8 +49,9 @@
                         android:id="@+id/tv_last_tobj_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:fontFamily="@font/poppins"
+                        android:textSize="30sp"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/poppins_bold"
                         android:layout_marginTop="15dp"
                         android:layout_marginStart="10dp"/>
                     <TextView
@@ -58,7 +59,8 @@
                         android:layout_below="@id/tv_last_tobj_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="20sp"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="3dp"
                         android:fontFamily="@font/poppins"/>
@@ -91,8 +93,9 @@
                         android:id="@+id/tv_last_spo2_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:fontFamily="@font/poppins"
+                        android:textSize="30sp"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/poppins_bold"
                         android:layout_marginTop="15dp"
                         android:layout_marginStart="10dp"/>
                     <TextView
@@ -100,7 +103,8 @@
                         android:layout_below="@id/tv_last_spo2_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="20sp"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="3dp"
                         android:fontFamily="@font/poppins"/>
@@ -133,8 +137,9 @@
                         android:id="@+id/tv_last_hr_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:fontFamily="@font/poppins"
+                        android:textSize="30sp"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/poppins_bold"
                         android:layout_marginTop="15dp"
                         android:layout_marginStart="10dp"/>
                     <TextView
@@ -142,7 +147,8 @@
                         android:layout_below="@id/tv_last_hr_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="20sp"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="3dp"
                         android:fontFamily="@font/poppins"/>
@@ -175,8 +181,9 @@
                         android:id="@+id/tv_last_tamb_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:fontFamily="@font/poppins"
+                        android:textSize="30sp"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/poppins_bold"
                         android:layout_marginTop="15dp"
                         android:layout_marginStart="10dp"/>
                     <TextView
@@ -184,7 +191,8 @@
                         android:layout_below="@id/tv_last_tamb_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="20sp"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="3dp"
                         android:fontFamily="@font/poppins"/>
@@ -217,8 +225,9 @@
                         android:id="@+id/tv_last_co2_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:fontFamily="@font/poppins"
+                        android:textSize="30sp"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/poppins_bold"
                         android:layout_marginTop="15dp"
                         android:layout_marginStart="10dp"/>
                     <TextView
@@ -226,7 +235,8 @@
                         android:layout_below="@id/tv_last_co2_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="20sp"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="3dp"
                         android:fontFamily="@font/poppins"/>
