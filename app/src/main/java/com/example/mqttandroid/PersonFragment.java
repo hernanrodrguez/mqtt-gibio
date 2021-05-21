@@ -20,11 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link PersonFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class PersonFragment extends Fragment implements IComData {
 
     private IComFragments iComFragments;
@@ -56,38 +51,10 @@ public class PersonFragment extends Fragment implements IComData {
     private TextView tvHRValue;
     private TextView tvHRTime;
 
-
     private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public PersonFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment PersonFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static PersonFragment newInstance(String param1, String param2) {
-        PersonFragment fragment = new PersonFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -213,54 +180,6 @@ public class PersonFragment extends Fragment implements IComData {
         }
     }
 
-    private void CustomBtnColor(RelativeLayout btn, TextView tv, Measurement m, int id) {
-        double value = m.GetValue();
-        Date date = m.GetDate();
-
-        int red = ContextCompat.getColor(getActivity(), R.color.red);
-        int green = ContextCompat.getColor(getActivity(), R.color.green_sea);
-
-        switch (id){
-            case Constants.TEMP_OBJ_ID:
-                tv.setText(getString(R.string.lbl_last_desc, value, "°C" ,sdf.format(date)));
-                if(value > Constants.TH_TEMP)
-                    btn.setBackgroundColor(red);
-                else
-                    btn.setBackgroundColor(green);
-                break;
-            case Constants.SPO2_ID:
-                tv.setText(getString(R.string.lbl_last_desc, value, "%" ,sdf.format(date)));
-                if(value < Constants.TH_SPO2)
-                    btn.setBackgroundColor(red);
-                else
-                    btn.setBackgroundColor(green);
-                break;
-            case Constants.TEMP_AMB_ID:
-                tv.setText(getString(R.string.lbl_last_desc, value, "°C" ,sdf.format(date)));
-                if(value > 35)
-                    btn.setBackgroundColor(red);
-                else
-                    btn.setBackgroundColor(green);
-                break;
-            case Constants.CO2_ID:
-                tv.setText(getString(R.string.lbl_last_desc, value, " ppm" ,sdf.format(date)));
-                if(value > Constants.TH_CO2)
-                    btn.setBackgroundColor(red);
-                else
-                    btn.setBackgroundColor(green);
-                break;
-            case Constants.HR_ID:
-                tv.setText(getString(R.string.lbl_last_desc, value, " bpm" ,sdf.format(date)));
-                if(value > Constants.TH_HR)
-                    btn.setBackgroundColor(red);
-                else
-                    btn.setBackgroundColor(green);
-                break;
-            default:
-                break;
-        }
-    }
-
     public void OnClick(View v){
         switch (v.getId()){
             case R.id.btnHistory:
@@ -285,38 +204,6 @@ public class PersonFragment extends Fragment implements IComData {
                 break;
         }
     }
-
-    /*private void UpdateLastMeasurement(int id, Measurement m){
-        RelativeLayout rl;
-        TextView tv;
-        switch (id){
-            case Constants.TEMP_OBJ_ID:
-                CustomBtnColor(m, id);
-                break;
-            case Constants.TEMP_AMB_ID:
-                rl = view.findViewById(R.id.btnRoomTemperature);
-                tv = view.findViewById(R.id.tv_last_tamb);
-                CustomBtnColor(rl, tv, m, id);
-                break;
-            case Constants.SPO2_ID:
-                rl = view.findViewById(R.id.btnSPO2Level);
-                tv = view.findViewById(R.id.tv_last_spo2);
-                CustomBtnColor(rl, tv, m, id);
-                break;
-            case Constants.CO2_ID:
-                rl = view.findViewById(R.id.btnCO2Level);
-                tv = view.findViewById(R.id.tv_last_co2);
-                CustomBtnColor(rl, tv, m, id);
-                break;
-            case Constants.HR_ID:
-                rl = view.findViewById(R.id.btnHeartRate);
-                tv = view.findViewById(R.id.tv_last_hr);
-                CustomBtnColor(rl, tv, m, id);
-                break;
-            default:
-                break;
-        }
-    }*/
 
     @Override
     public void MeasArrived(String id_room, int id_meas, Measurement measurement) {
