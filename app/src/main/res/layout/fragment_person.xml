@@ -26,25 +26,6 @@
                 android:fontFamily="@font/poppins_bold"
                 android:textAlignment="center"/>
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                app:cardCornerRadius="5dp">
-
-                <TextView
-                    android:id="@+id/btnHistory"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:text="@string/lbl_history"
-                    android:textSize="15sp"
-                    android:fontFamily="@font/poppins"
-                    android:textColor="@color/white"
-                    android:background="@color/cardview_dark_background"/>
-
-            </androidx.cardview.widget.CardView>
-
         </LinearLayout>
 
         <LinearLayout
@@ -65,22 +46,22 @@
                     android:padding="10dp">
 
                     <TextView
-                        android:id="@+id/tv_title_subj_temp"
+                        android:id="@+id/tv_last_tobj_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/lbl_graph_obj"
-                        android:textSize="22sp"
-                        android:fontFamily="@font/poppins_medium"
-                        android:layout_marginTop="10dp"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/poppins"
+                        android:layout_marginTop="15dp"
                         android:layout_marginStart="10dp"/>
                     <TextView
-                        android:id="@+id/tv_last_tobj"
-                        android:layout_below="@id/tv_title_subj_temp"
+                        android:id="@+id/tv_last_tobj_time"
+                        android:layout_below="@id/tv_last_tobj_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textSize="20sp"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="3dp"
-                        android:fontFamily="@font/poppins_light"/>
+                        android:fontFamily="@font/poppins"/>
                     <ImageView
                         android:layout_marginTop="10dp"
                         android:layout_width="100dp"
@@ -107,22 +88,22 @@
                     android:padding="10dp">
 
                     <TextView
-                        android:id="@+id/tv_title_spo2"
+                        android:id="@+id/tv_last_spo2_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/lbl_graph_spo2"
-                        android:textSize="22sp"
-                        android:fontFamily="@font/poppins_medium"
-                        android:layout_marginTop="10dp"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/poppins"
+                        android:layout_marginTop="15dp"
                         android:layout_marginStart="10dp"/>
                     <TextView
-                        android:id="@+id/tv_last_spo2"
-                        android:layout_below="@id/tv_title_spo2"
+                        android:id="@+id/tv_last_spo2_time"
+                        android:layout_below="@id/tv_last_spo2_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textSize="20sp"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="3dp"
-                        android:fontFamily="@font/poppins_light"/>
+                        android:fontFamily="@font/poppins"/>
                     <ImageView
                         android:layout_marginTop="10dp"
                         android:layout_width="100dp"
@@ -149,22 +130,22 @@
                     android:padding="10dp">
 
                     <TextView
-                        android:id="@+id/tv_title_heart_rate"
+                        android:id="@+id/tv_last_hr_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/lbl_graph_hr"
-                        android:textSize="22sp"
-                        android:fontFamily="@font/poppins_medium"
-                        android:layout_marginTop="10dp"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/poppins"
+                        android:layout_marginTop="15dp"
                         android:layout_marginStart="10dp"/>
                     <TextView
-                        android:id="@+id/tv_last_hr"
-                        android:layout_below="@id/tv_title_heart_rate"
+                        android:id="@+id/tv_last_hr_time"
+                        android:layout_below="@id/tv_last_hr_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textSize="20sp"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="3dp"
-                        android:fontFamily="@font/poppins_light"/>
+                        android:fontFamily="@font/poppins"/>
                     <ImageView
                         android:layout_marginTop="10dp"
                         android:layout_width="100dp"
@@ -191,22 +172,22 @@
                     android:padding="10dp">
 
                     <TextView
-                        android:id="@+id/tv_title_amb_temp"
+                        android:id="@+id/tv_last_tamb_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/lbl_graph_amb"
-                        android:textSize="22sp"
-                        android:fontFamily="@font/poppins_medium"
-                        android:layout_marginTop="10dp"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/poppins"
+                        android:layout_marginTop="15dp"
                         android:layout_marginStart="10dp"/>
                     <TextView
-                        android:id="@+id/tv_last_tamb"
-                        android:layout_below="@id/tv_title_amb_temp"
+                        android:id="@+id/tv_last_tamb_time"
+                        android:layout_below="@id/tv_last_tamb_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textSize="20sp"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="3dp"
-                        android:fontFamily="@font/poppins_light"/>
+                        android:fontFamily="@font/poppins"/>
                     <ImageView
                         android:layout_marginTop="10dp"
                         android:layout_width="100dp"
@@ -233,22 +214,22 @@
                     android:padding="10dp">
 
                     <TextView
-                        android:id="@+id/tv_title_co2"
+                        android:id="@+id/tv_last_co2_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/lbl_graph_co2"
-                        android:textSize="22sp"
-                        android:fontFamily="@font/poppins_medium"
-                        android:layout_marginTop="10dp"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/poppins"
+                        android:layout_marginTop="15dp"
                         android:layout_marginStart="10dp"/>
                     <TextView
-                        android:id="@+id/tv_last_co2"
-                        android:layout_below="@id/tv_title_co2"
+                        android:id="@+id/tv_last_co2_time"
+                        android:layout_below="@id/tv_last_co2_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textSize="20sp"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="3dp"
-                        android:fontFamily="@font/poppins_light"/>
+                        android:fontFamily="@font/poppins"/>
                     <ImageView
                         android:layout_marginTop="10dp"
                         android:layout_width="100dp"
@@ -263,6 +244,33 @@
             </androidx.cardview.widget.CardView>
 
         </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            app:cardCornerRadius="5dp"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:id="@+id/btnHistory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="@string/lbl_history"
+                android:textSize="15sp"
+                android:fontFamily="@font/poppins"
+                android:textColor="@color/white"
+                android:background="@color/cardview_dark_background"/>
+
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
 
     </LinearLayout>
 

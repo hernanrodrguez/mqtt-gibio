@@ -41,6 +41,22 @@ public class PersonFragment extends Fragment implements IComData {
     private RelativeLayout btnRoomTemperature;
     private RelativeLayout btnCO2Level;
 
+    private TextView tvTObjValue;
+    private TextView tvTObjTime;
+
+    private TextView tvTAmbValue;
+    private TextView tvTAmbTime;
+
+    private TextView tvCO2Value;
+    private TextView tvCO2Time;
+
+    private TextView tvSPO2Value;
+    private TextView tvSPO2Time;
+
+    private TextView tvHRValue;
+    private TextView tvHRTime;
+
+
     private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
     // TODO: Rename parameter arguments, choose names that match
@@ -122,23 +138,79 @@ public class PersonFragment extends Fragment implements IComData {
     }
 
     private void SetUpLastMeasurement(){
-        TextView tvTObjDesc = view.findViewById(R.id.tv_last_tobj);
-        TextView tvTAmbDesc = view.findViewById(R.id.tv_last_tamb);
-        TextView tvCO2Desc = view.findViewById(R.id.tv_last_co2);
-        TextView tvSPO2Desc = view.findViewById(R.id.tv_last_spo2);
-        TextView tvHRDesc = view.findViewById(R.id.tv_last_hr);
+        tvTObjValue = view.findViewById(R.id.tv_last_tobj_value);
+        tvTObjTime = view.findViewById(R.id.tv_last_tobj_time);
 
-        btnSubjectTemperature = view.findViewById(R.id.btnSubjectTemperature);
-        btnSPO2Level = view.findViewById(R.id.btnSPO2Level);
-        btnHeartRate = view.findViewById(R.id.btnHeartRate);
-        btnRoomTemperature = view.findViewById(R.id.btnRoomTemperature);
-        btnCO2Level = view.findViewById(R.id.btnCO2Level);
+        tvTAmbValue = view.findViewById(R.id.tv_last_tamb_value);
+        tvTAmbTime = view.findViewById(R.id.tv_last_tamb_time);
 
-        CustomBtnColor(btnSubjectTemperature, tvTObjDesc, person.GetLastMeasurement(Constants.TEMP_OBJ_ID), Constants.TEMP_OBJ_ID);
-        CustomBtnColor(btnSPO2Level, tvSPO2Desc, person.GetLastMeasurement(Constants.SPO2_ID), Constants.SPO2_ID);
-        CustomBtnColor(btnRoomTemperature, tvTAmbDesc, person.GetLastMeasurement(Constants.TEMP_AMB_ID), Constants.TEMP_AMB_ID);
-        CustomBtnColor(btnCO2Level, tvCO2Desc, person.GetLastMeasurement(Constants.CO2_ID), Constants.CO2_ID);
-        CustomBtnColor(btnHeartRate, tvHRDesc, person.GetLastMeasurement(Constants.HR_ID), Constants.HR_ID);
+        tvCO2Value = view.findViewById(R.id.tv_last_co2_value);
+        tvCO2Time = view.findViewById(R.id.tv_last_co2_time);
+
+        tvSPO2Value = view.findViewById(R.id.tv_last_spo2_value);
+        tvSPO2Time = view.findViewById(R.id.tv_last_spo2_time);
+
+        tvHRValue = view.findViewById(R.id.tv_last_hr_value);
+        tvHRTime = view.findViewById(R.id.tv_last_hr_time);
+
+        CustomBtnColor(person.GetLastMeasurement(Constants.TEMP_OBJ_ID), Constants.TEMP_OBJ_ID);
+        CustomBtnColor(person.GetLastMeasurement(Constants.SPO2_ID), Constants.SPO2_ID);
+        CustomBtnColor(person.GetLastMeasurement(Constants.TEMP_AMB_ID), Constants.TEMP_AMB_ID);
+        CustomBtnColor(person.GetLastMeasurement(Constants.CO2_ID), Constants.CO2_ID);
+        CustomBtnColor(person.GetLastMeasurement(Constants.HR_ID), Constants.HR_ID);
+    }
+
+    private void CustomBtnColor(Measurement m, int id) {
+        double value = m.GetValue();
+        Date date = m.GetDate();
+
+        int red = ContextCompat.getColor(getActivity(), R.color.red);
+        int green = ContextCompat.getColor(getActivity(), R.color.green_sea);
+
+        switch (id){
+            case Constants.TEMP_OBJ_ID:
+                tvTObjValue.setText(getString(R.string.lbl_last_value, value, "°C"));
+                tvTObjTime.setText(getString(R.string.lbl_last_time, sdf.format(date)));
+                if(value > Constants.TH_TEMP)
+                    btnSubjectTemperature.setBackgroundColor(red);
+                else
+                    btnSubjectTemperature.setBackgroundColor(green);
+                break;
+            case Constants.SPO2_ID:
+                tvSPO2Value.setText(getString(R.string.lbl_last_value, value, "%"));
+                tvSPO2Time.setText(getString(R.string.lbl_last_time, sdf.format(date)));
+                if(value < Constants.TH_SPO2)
+                    btnSPO2Level.setBackgroundColor(red);
+                else
+                    btnSPO2Level.setBackgroundColor(green);
+                break;
+            case Constants.TEMP_AMB_ID:
+                tvTAmbValue.setText(getString(R.string.lbl_last_value, value, "°C"));
+                tvTAmbTime.setText(getString(R.string.lbl_last_time, sdf.format(date)));
+                if(value > 35)
+                    btnRoomTemperature.setBackgroundColor(red);
+                else
+                    btnRoomTemperature.setBackgroundColor(green);
+                break;
+            case Constants.CO2_ID:
+                tvCO2Value.setText(getString(R.string.lbl_last_value, value, " ppm"));
+                tvCO2Time.setText(getString(R.string.lbl_last_time, sdf.format(date)));
+                if(value > Constants.TH_CO2)
+                    btnCO2Level.setBackgroundColor(red);
+                else
+                    btnCO2Level.setBackgroundColor(green);
+                break;
+            case Constants.HR_ID:
+                tvHRValue.setText(getString(R.string.lbl_last_value, value, " bpm"));
+                tvHRTime.setText(getString(R.string.lbl_last_time, sdf.format(date)));
+                if(value > Constants.TH_HR)
+                    btnHeartRate.setBackgroundColor(red);
+                else
+                    btnHeartRate.setBackgroundColor(green);
+                break;
+            default:
+                break;
+        }
     }
 
     private void CustomBtnColor(RelativeLayout btn, TextView tv, Measurement m, int id) {
@@ -214,14 +286,12 @@ public class PersonFragment extends Fragment implements IComData {
         }
     }
 
-    private void UpdateLastMeasurement(int id, Measurement m){
+    /*private void UpdateLastMeasurement(int id, Measurement m){
         RelativeLayout rl;
         TextView tv;
         switch (id){
             case Constants.TEMP_OBJ_ID:
-                rl = view.findViewById(R.id.btnSubjectTemperature);
-                tv = view.findViewById(R.id.tv_last_tobj);
-                CustomBtnColor(rl, tv, m, id);
+                CustomBtnColor(m, id);
                 break;
             case Constants.TEMP_AMB_ID:
                 rl = view.findViewById(R.id.btnRoomTemperature);
@@ -246,11 +316,11 @@ public class PersonFragment extends Fragment implements IComData {
             default:
                 break;
         }
-    }
+    }*/
 
     @Override
     public void MeasArrived(String id_room, int id_meas, Measurement measurement) {
         if(person.GetIdRoom().equals(id_room))
-            UpdateLastMeasurement(id_meas, measurement);
+            CustomBtnColor(measurement, id_meas);
     }
 }
