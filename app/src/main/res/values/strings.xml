@@ -4,7 +4,7 @@
     <string name="lbl_props">CO2 \nSPO2 \nHeart Rate \nBody Temperature \nRoom Temperature</string>
     <string name="lbl_home">Home</string>
     <string name="lbl_init_title">Monitoring App</string>
-    <string name="lbl_init_desc">This App, developed by members of Grupo de Investigación y Desarrollo en Bioingeniería from UTN FRBA, monitors the measurement devices placed in the classrooms and common spaces of the University. These devices are capable of measuring the ambient temperature, people\'s temperature and the carbon dioxide concentration in the environment. The communication is based on MQTT protocol, the standard for IoT applications. To get started, enter your server details.</string>
+    <string name="lbl_init_desc">This App, developed by members of Grupo de Investigación y Desarrollo en Bioingeniería from UTN FRBA, monitors the measurement devices placed in the classrooms and common spaces of the University. These devices are capable of measuring temperature and carbon dioxide concentration in the environment and people\'s temperature, oxygen saturation and heart rate . The communication is based on MQTT protocol, the standard for IoT applications. To get started, enter your server details.</string>
     <string name="lbl_sett_desc">These are your current server properties:</string>
     <string name="lbl_edit">Edit server</string>
     <string name="lbl_send_message">Send Message</string>
