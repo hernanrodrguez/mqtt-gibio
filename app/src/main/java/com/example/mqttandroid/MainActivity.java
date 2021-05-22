@@ -497,10 +497,14 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     @Override
     public void MessageArrived(String topic, String msg) {
-        if(topic.split("/")[1].equals("room"))
-            HandleMessage(topic, msg);
-        else if(topic.split("/")[1].equals("person"))
-            HandleMessage_Person(topic, msg);
+        try{
+            if(topic.split("/")[1].equals("room"))
+                HandleMessage(topic, msg);
+            else if(topic.split("/")[1].equals("person"))
+                HandleMessage_Person(topic, msg);
+        } catch (Exception e){
+            Log.e("ERROR", e.getLocalizedMessage());
+        }
 
         messages.add(topic + ": " + msg);
         adapter.notifyDataSetChanged();

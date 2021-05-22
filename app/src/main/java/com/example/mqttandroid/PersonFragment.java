@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,11 +121,43 @@ public class PersonFragment extends Fragment implements IComData {
         tvHRValue = view.findViewById(R.id.tv_last_hr_value);
         tvHRTime = view.findViewById(R.id.tv_last_hr_time);
 
-        CustomBtnColor(person.GetLastMeasurement(Constants.TEMP_OBJ_ID), Constants.TEMP_OBJ_ID);
-        CustomBtnColor(person.GetLastMeasurement(Constants.SPO2_ID), Constants.SPO2_ID);
-        CustomBtnColor(person.GetLastMeasurement(Constants.TEMP_AMB_ID), Constants.TEMP_AMB_ID);
-        CustomBtnColor(person.GetLastMeasurement(Constants.CO2_ID), Constants.CO2_ID);
-        CustomBtnColor(person.GetLastMeasurement(Constants.HR_ID), Constants.HR_ID);
+        for(int id : Constants.MEAS_IDS){
+            try {
+                CustomBtnColor(person.GetLastMeasurement(id), id);
+            } catch (Exception e){
+                CustomNotMeas(id);
+            }
+        }
+    }
+
+    private void CustomNotMeas(int id){
+
+        int red = ContextCompat.getColor(getActivity(), R.color.red);
+
+        switch (id) {
+            case Constants.TEMP_OBJ_ID:
+                tvTObjTime.setText(getString(R.string.lbl_no_meas));
+                btnSubjectTemperature.setBackgroundColor(red);
+                break;
+            case Constants.SPO2_ID:
+                tvSPO2Time.setText(getString(R.string.lbl_no_meas));
+                btnSPO2Level.setBackgroundColor(red);
+                break;
+            case Constants.TEMP_AMB_ID:
+                tvTAmbTime.setText(getString(R.string.lbl_no_meas));
+                btnRoomTemperature.setBackgroundColor(red);
+                break;
+            case Constants.CO2_ID:
+                tvCO2Time.setText(getString(R.string.lbl_no_meas));
+                btnCO2Level.setBackgroundColor(red);
+                break;
+            case Constants.HR_ID:
+                tvHRTime.setText(getString(R.string.lbl_no_meas));
+                btnHeartRate.setBackgroundColor(red);
+                break;
+            default:
+                break;
+        }
     }
 
     private void CustomBtnColor(Measurement m, int id) {
