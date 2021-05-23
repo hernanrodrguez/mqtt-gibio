@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">CheckING</string>
     <string name="lbl_by">by GIBIO</string>
-    <string name="lbl_props">Temperature \nCO2 - SPO2 \nHeart Rate</string>
+    <string name="lbl_props">CO2 \nSPO2 \nHeart Rate \nBody Temperature \nRoom Temperature</string>
     <string name="lbl_home">Home</string>
     <string name="lbl_init_title">Monitoring App</string>
-    <string name="lbl_init_desc">This App, developed by members of Grupo de Investigación y Desarrollo en Bioingeniería from UTN FRBA, monitors the measurement devices placed in the classrooms and common spaces of the University. These devices are capable of measuring the ambient temperature, people\'s temperature and the carbon dioxide concentration in the environment. The communication is based on MQTT protocol, the standard for IoT applications. To get started, enter your server details.</string>
+    <string name="lbl_init_desc">This App, developed by members of Grupo de Investigación y Desarrollo en Bioingeniería from UTN FRBA, monitors the measurement devices placed in the classrooms and common spaces of the University. These devices are capable of measuring temperature and carbon dioxide concentration in the environment and people\'s temperature, oxygen saturation and heart rate . The communication is based on MQTT protocol, the standard for IoT applications. To get started, enter your server details.</string>
     <string name="lbl_sett_desc">These are your current server properties:</string>
     <string name="lbl_edit">Edit server</string>
     <string name="lbl_send_message">Send Message</string>
@@ -54,8 +54,9 @@
     <string name="lbl_cancel">Cancel</string>
     <string name="lbl_graph_amb">ROOM TEMPERATURE</string>
     <string name="lbl_graph_obj">SUBJECT TEMPERATURE</string>
+    <string name="lbl_graph_hr">HEART RATE</string>
     <string name="lbl_subject">SUBJECT</string>
-    <string name="lbl_graph_co2">CO2 CONCENTRATION</string>
+    <string name="lbl_graph_co2">CO2 LEVEL</string>
     <string name="lbl_graph_spo2">SPO2 LEVEL</string>
     <string name="lbl_graph_room_obj">%1$s - SUBJECT TEMPERATURE</string>
     <string name="lbl_graph_room_spo2">%1$s - SPO2 LEVEL</string>
@@ -64,13 +65,23 @@
     <string name="lbl_axis_temp">Temperature(°C)</string>
     <string name="lbl_axis_co2">Concentration (ppm)</string>
     <string name="lbl_axis_spo2">Concentration(%)</string>
+    <string name="lbl_axis_hr">Beats per minute (bpm)</string>
     <string name="lbl_select_room">Select a Room:</string>
     <string name="lbl_select_person">Select a Person:</string>
     <string name="lbl_no_meas">There are no measurements yet…</string>
+    <string name="lbl_last_meas">%1$s - Last measurement</string>
+    <string name="lbl_last_desc">Value: %1$.2f%2$s - Time: %3$s</string>
+    <string name="lbl_last_value">%1$.2f%2$s</string>
+    <string name="lbl_last_time">Time: %1$s</string>
+    <string name="lbl_history">See full history</string>
     <string name="err_field">This field cannot be empty</string>
     <string name="err_broker">There is no broker</string>
     <string name="err_connect">Can\'t connect to the broker</string>
     <string name="err_send">There was a problem</string>
     <color name="blue_elec">#1B74C4</color>
+    <color name="yellow">#FFD700</color>
+    <color name="green_lime">#32CD32</color>
+    <color name="green_sea">#3CB371</color>
+    <color name="red">#DC143C</color>
     <string name="hello_blank_fragment">ACA PONER GRAFICOS</string>
 </resources>

@@ -14,12 +14,14 @@ public final class Constants {
     public final static String TEMP_AMB_KEY = "TA";
     public final static String CO2_KEY = "C";
     public final static String SPO2_KEY = "S";
+    public final static String HR_KEY = "HR";
     public final static ArrayList<String> KEYS = new ArrayList<String>(){
         {
             add(TEMP_OBJ_KEY);
             add(TEMP_AMB_KEY);
             add(CO2_KEY);
             add(SPO2_KEY);
+            add(HR_KEY);
         }
     };
 
@@ -32,10 +34,14 @@ public final class Constants {
     public final static int PEOPLE_ID = 7;
     public final static int MAP_ID = 8;
     public final static int SETTINGS_ID = 9;
-    public final static int[] IDS = new int[]{TEMP_OBJ_ID, TEMP_AMB_ID, CO2_ID, SPO2_ID, ROOMS_ID, PERSON_ID, PEOPLE_ID, MAP_ID, SETTINGS_ID};
+    public final static int HR_ID = 10;
+    public final static int[] IDS = new int[]{TEMP_OBJ_ID, TEMP_AMB_ID, CO2_ID, SPO2_ID, ROOMS_ID, PERSON_ID, PEOPLE_ID, MAP_ID, SETTINGS_ID, HR_ID};
+    public final static int[] MEAS_IDS = new int[]{TEMP_OBJ_ID, TEMP_AMB_ID, CO2_ID, SPO2_ID, HR_ID};
 
     public final static double TH_TEMP = 37.5;
-    public final static double TH_SPO2 = 95;
+    public final static double TH_SPO2 = 94;
+    public final static double TH_CO2 = 800;
+    public final static double TH_HR = 90;
 
     public static boolean CheckIdMeas(int id_meas){
         for(int id : IDS) {
@@ -59,6 +65,8 @@ public final class Constants {
                 return CO2_ID;
             case SPO2_KEY:
                 return SPO2_ID;
+            case HR_KEY:
+                return HR_ID;
             default:
                 throw new Exception("Invalid Key");
         }
@@ -74,6 +82,8 @@ public final class Constants {
                 return CO2_KEY;
             case SPO2_ID:
                 return SPO2_KEY;
+            case HR_ID:
+                return HR_KEY;
             default:
                 throw new Exception("Invalid Id");
         }

@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp">
+
+    <!-->src: https://www.youtube.com/watch?v=LX61IJI6wGw <-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_title_last_meas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="30sp"
+                android:fontFamily="@font/poppins_bold"
+                android:textAlignment="center"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                app:cardCornerRadius="15dp"
+                android:layout_marginTop="20dp">
+
+                <RelativeLayout
+                    android:id="@+id/btnSubjectTemperature"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:id="@+id/tv_last_tobj_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="30sp"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/poppins_bold"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginStart="10dp"/>
+                    <TextView
+                        android:id="@+id/tv_last_tobj_time"
+                        android:layout_below="@id/tv_last_tobj_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="@font/poppins"/>
+                    <ImageView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="100dp"
+                        android:maxWidth="150dp"
+                        android:layout_height="75dp"
+                        android:maxHeight="100dp"
+                        android:src="@drawable/fever"
+                        android:layout_alignParentEnd="true"/>
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                app:cardCornerRadius="15dp"
+                android:layout_marginTop="20dp">
+
+                <RelativeLayout
+                    android:id="@+id/btnSPO2Level"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:id="@+id/tv_last_spo2_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="30sp"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/poppins_bold"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginStart="10dp"/>
+                    <TextView
+                        android:id="@+id/tv_last_spo2_time"
+                        android:layout_below="@id/tv_last_spo2_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="@font/poppins"/>
+                    <ImageView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="100dp"
+                        android:maxWidth="150dp"
+                        android:layout_height="75dp"
+                        android:maxHeight="100dp"
+                        android:src="@drawable/oximeter"
+                        android:layout_alignParentEnd="true"/>
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                app:cardCornerRadius="15dp"
+                android:layout_marginTop="20dp">
+
+                <RelativeLayout
+                    android:id="@+id/btnHeartRate"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:id="@+id/tv_last_hr_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="30sp"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/poppins_bold"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginStart="10dp"/>
+                    <TextView
+                        android:id="@+id/tv_last_hr_time"
+                        android:layout_below="@id/tv_last_hr_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="@font/poppins"/>
+                    <ImageView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="100dp"
+                        android:maxWidth="150dp"
+                        android:layout_height="75dp"
+                        android:maxHeight="100dp"
+                        android:src="@drawable/heart_rate"
+                        android:layout_alignParentEnd="true"/>
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                app:cardCornerRadius="15dp"
+                android:layout_marginTop="20dp">
+
+                <RelativeLayout
+                    android:id="@+id/btnRoomTemperature"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:id="@+id/tv_last_tamb_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="30sp"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/poppins_bold"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginStart="10dp"/>
+                    <TextView
+                        android:id="@+id/tv_last_tamb_time"
+                        android:layout_below="@id/tv_last_tamb_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="@font/poppins"/>
+                    <ImageView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="100dp"
+                        android:maxWidth="150dp"
+                        android:layout_height="75dp"
+                        android:maxHeight="100dp"
+                        android:src="@drawable/thermometer_thin"
+                        android:layout_alignParentEnd="true"/>
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                app:cardCornerRadius="15dp"
+                android:layout_marginTop="20dp">
+
+                <RelativeLayout
+                    android:id="@+id/btnCO2Level"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:id="@+id/tv_last_co2_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="30sp"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/poppins_bold"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginStart="10dp"/>
+                    <TextView
+                        android:id="@+id/tv_last_co2_time"
+                        android:layout_below="@id/tv_last_co2_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="@font/poppins"/>
+                    <ImageView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="100dp"
+                        android:maxWidth="150dp"
+                        android:layout_height="75dp"
+                        android:maxHeight="100dp"
+                        android:src="@drawable/co2"
+                        android:layout_alignParentEnd="true"/>
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            app:cardCornerRadius="5dp"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:id="@+id/btnHistory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="@string/lbl_history"
+                android:textSize="15sp"
+                android:fontFamily="@font/poppins"
+                android:textColor="@color/white"
+                android:background="@color/cardview_dark_background"/>
+
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
