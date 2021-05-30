@@ -49,7 +49,7 @@ public class MeasList implements Serializable {
 
     public int GetMeas(){ return id_meas; }
     public String GetRoom(){ return id_room; }
-    public ArrayList<Measurement> GetList(){ return measurements; }
+    public ArrayList<Measurement>GetList(){ return measurements; }
 
     public int Size(){ return measurements.size(); }
     public void Add(Measurement measurement){ measurements.add(measurement); }

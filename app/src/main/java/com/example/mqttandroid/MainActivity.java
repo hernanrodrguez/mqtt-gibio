@@ -153,7 +153,6 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
-        TextView textView = findViewById(R.id.textView);
         Toolbar toolbar = findViewById(R.id.toolbar);
 
         navigationView.bringToFront();
@@ -261,9 +260,9 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         if(CheckFields(arr)){
             ShowProgressDialog();
 
-            Editable address = etAddress.getText();
-            Editable topic = etTopic.getText();
-            Editable port = etPort.getText();
+            String address = etAddress.getText().toString().trim();
+            String topic = etTopic.getText().toString().trim();
+            String port = etPort.getText().toString().trim();
 
             String PROTOCOL = "tcp://";
             mqttClient = new MyMqttClient(this, PROTOCOL + address + ":" + port);
@@ -304,10 +303,10 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         };
 
         if(CheckFields(arr)){
-            Editable topic = etTopicSend.getText();
-            Editable payload = etMessage.getText();
+            String topic = etTopicSend.getText().toString().trim();
+            String payload = etMessage.getText().toString().trim();
 
-            mqttClient.Publish(String.valueOf(topic), String.valueOf(payload));
+            mqttClient.Publish(topic, payload);
             SetUpMainActivity();
         }
     }
