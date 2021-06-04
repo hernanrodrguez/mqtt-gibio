@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     private HomeFragment homeFragment;
     private PlotFragment plotFragment;
+    private CalibrateFragment calibrateFragment;
     private PersonFragment personFragment;
 
     private DrawerLayout drawerLayout;
@@ -188,6 +189,9 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 break;
             case R.id.nav_bug:
                 SetUpMainActivity();
+                break;
+            case R.id.nav_calibration:
+                BtnClicked(Constants.CALIBRATE_ID);
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -494,6 +498,11 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             Toast.makeText(this, R.string.lbl_no_meas, Toast.LENGTH_SHORT).show();
     }
 
+    private void SetUpCalibrateFragment(){
+        calibrateFragment = new CalibrateFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, calibrateFragment).addToBackStack(null).commit();
+    }
+
     @Override
     public void MessageArrived(String topic, String msg) {
         try{
@@ -550,6 +559,9 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 break;
             case Constants.SETTINGS_ID:
                 SetUpSettingsActivity();
+                break;
+            case Constants.CALIBRATE_ID:
+                SetUpCalibrateFragment();
                 break;
             default:
                 break;

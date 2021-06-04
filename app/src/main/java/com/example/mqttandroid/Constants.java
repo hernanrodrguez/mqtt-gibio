@@ -35,7 +35,8 @@ public final class Constants {
     public final static int MAP_ID = 8;
     public final static int SETTINGS_ID = 9;
     public final static int HR_ID = 10;
-    public final static int[] IDS = new int[]{TEMP_OBJ_ID, TEMP_AMB_ID, CO2_ID, SPO2_ID, ROOMS_ID, PERSON_ID, PEOPLE_ID, MAP_ID, SETTINGS_ID, HR_ID};
+    public final static int CALIBRATE_ID = 11;
+    public final static int[] IDS = new int[]{TEMP_OBJ_ID, TEMP_AMB_ID, CO2_ID, SPO2_ID, ROOMS_ID, PERSON_ID, PEOPLE_ID, MAP_ID, SETTINGS_ID, HR_ID, CALIBRATE_ID};
     public final static int[] MEAS_IDS = new int[]{TEMP_OBJ_ID, TEMP_AMB_ID, CO2_ID, SPO2_ID, HR_ID};
 
     public final static double TH_TEMP = 37.5;

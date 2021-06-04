@@ -58,6 +58,10 @@
     <string name="lbl_subject">SUJETO</string>
     <string name="lbl_graph_co2">NIVEL DE CO2</string>
     <string name="lbl_graph_spo2">NIVEL DE SPO2</string>
+    <string name="lbl_temp_lower">Temperatura</string>
+    <string name="lbl_hr_lower">Frecuencia</string>
+    <string name="lbl_co2_lower">Nivel CO2</string>
+    <string name="lbl_spo2_lower">Nivel SPO2</string>
     <string name="lbl_graph_room_obj">%1$s - TEMPERATURA DEL SUJETO</string>
     <string name="lbl_graph_room_spo2">%1$s - NIVEL DE SPO2</string>
     <string name="lbl_axis_samples">Muestras[n]</string>
@@ -74,6 +78,9 @@
     <string name="lbl_last_value">%1$.2f%2$s</string>
     <string name="lbl_last_time">Hora: %1$s</string>
     <string name="lbl_history">Ver historial completo</string>
+    <string name="lbl_calibrate_title">Menú de calibración</string>
+    <string name="lbl_calibrate">Calibrar</string>
+    <string name="lbl_correlation">Ver diagramas de correlación</string>
     <string name="err_field">Este campo no puede estar vacío</string>
     <string name="err_broker">No se agregó ningún broker</string>
     <string name="err_connect">No se pudo conectar al broker</string>
