@@ -83,6 +83,10 @@
     <string name="lbl_correlation">Ver diagramas de correlación</string>
     <string name="lbl_save_meas">Guardar medición</string>
     <string name="lbl_value">Valor</string>
+    <string name="lbl_no_corr">Aún no hay información de correlación…</string>
+    <string name="lbl_corr">Correlación</string>
+    <string name="lbl_real_values">Valores reales</string>
+    <string name="lbl_meas_values">Valores medidos</string>
     <string name="err_value">Valor no válido recibido</string>
     <string name="err_field">Este campo no puede estar vacío</string>
     <string name="err_broker">No se agregó ningún broker</string>

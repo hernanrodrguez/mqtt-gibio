@@ -1,5 +1,6 @@
 package com.example.mqttandroid;
 
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
@@ -24,7 +25,9 @@ import com.jjoe64.graphview.SecondScale;
 import com.jjoe64.graphview.Viewport;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.DataPointInterface;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.jjoe64.graphview.series.PointsGraphSeries;
 import com.jjoe64.graphview.series.Series;
 
 import java.text.SimpleDateFormat;
@@ -37,6 +40,9 @@ public class PlotFragment extends Fragment implements IComData{
     private int id_graph;
     private ArrayList<MeasList> measLists;
     private Room room;
+
+    private String real_values;
+    private String meas_values;
 
     private GridLabelRenderer gridLabel;
     private Viewport viewport;
@@ -80,6 +86,10 @@ public class PlotFragment extends Fragment implements IComData{
                 case Constants.PEOPLE_ID:
                     room = (Room) bundle.getSerializable(Constants.DATA_KEY);
                     break;
+                case Constants.CORRELATION_ID:
+                    real_values = bundle.getString(Constants.REAL_VALUES_KEY);
+                    meas_values = bundle.getString(Constants.MEAS_VALUES_KEY);
+                    break;
             }
         }
     }
@@ -87,8 +97,47 @@ public class PlotFragment extends Fragment implements IComData{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_plot, container, false);
-        SetUpGraphView(view);
+        if(id_graph != Constants.CORRELATION_ID)
+            SetUpGraphView(view);
+        else
+            SetUpCorrelationView(view);
         return view;
+    }
+
+    private void SetUpCorrelationView(View v){
+        ScrollView sv = v.findViewById(R.id.scrollView);
+        LinearLayout ll = CustomLinearLayout();
+        CustomGraphTitle(v);
+        GraphView graph = CustomGraphView();
+
+        PointsGraphSeries<DataPoint> series = LoadDataPoints();
+        series.setColor(Color.RED);
+        series.setCustomShape((canvas, paint, x, y, dataPoint) -> {
+            paint.setStrokeWidth(5);
+            canvas.drawLine(x-10, y-10, x+10, y+10, paint);
+            canvas.drawLine(x+10, y-10, x-10, y+10, paint);
+        });
+
+        gridLabel = graph.getGridLabelRenderer();
+        gridLabel.setVerticalAxisTitle(getString(R.string.lbl_real_values));
+        gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_meas_values));
+        viewport = graph.getViewport();
+        graph.addSeries(series);
+        viewport.setScalable(true);
+
+        ll.addView(graph);
+        sv.addView(ll);
+    }
+
+    private PointsGraphSeries<DataPoint> LoadDataPoints(){
+        PointsGraphSeries<DataPoint> ret = new PointsGraphSeries<>();
+        String[] values_meas = meas_values.split("-");
+        String[] values_real = real_values.split("-");
+        for(int i=0; i<values_meas.length; i++){
+            if(!values_meas[i].equals(""))
+                ret.appendData(new DataPoint(Double.parseDouble(values_meas[i]), Double.parseDouble(values_real[i])), true, 40);
+        }
+        return ret;
     }
 
     private void SetUpGraphView(View v) {
@@ -130,6 +179,8 @@ public class PlotFragment extends Fragment implements IComData{
         TextView tv = v.findViewById(R.id.tvGraphTitle);
         if(id_graph == Constants.ROOMS_ID || id_graph == Constants.PEOPLE_ID)
             tv.setText(room.GetIdRoom().toUpperCase());
+        else if(id_graph == Constants.CORRELATION_ID)
+            tv.setText(R.string.lbl_corr);
         else
             tv.setText(measLists.get(0).GetRoom().toUpperCase());
     }

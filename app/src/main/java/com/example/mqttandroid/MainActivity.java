@@ -32,6 +32,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -567,7 +568,6 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         AlertDialog dialog = new AlertDialog.Builder(this).create();
         View viewInflated = LayoutInflater.from(this).inflate(R.layout.custom_dialog, null);
 
-
         TextView dialogTitle = (TextView) viewInflated.findViewById(R.id.dialog_title);
         TextView dialogDesc = (TextView) viewInflated.findViewById(R.id.dialog_desc);
         TextView dialogBtn = (TextView) viewInflated.findViewById(R.id.dialog_btn);
@@ -580,14 +580,82 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             public void onClick(View v) {
                 ArrayList<EditText> arr = new ArrayList<EditText>(){{ add(dialogInput); }};
                 if(CheckFields(arr)){
-                    float val = Float.parseFloat(dialogInput.getText().toString().trim());
+                    float real_value = Float.parseFloat(dialogInput.getText().toString().trim());
+                    SaveMeasurement(real_value, value);
                     dialog.dismiss();
-                    Toast.makeText(getApplicationContext(), "value: " + val, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "value: " + real_value, Toast.LENGTH_SHORT).show();
                 }
             }
         });
         dialog.setView(viewInflated);
         dialog.show();
+    }
+
+    private void SaveMeasurement(float real_value, float meas_value){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        String real_values = prefs.getString(Constants.REAL_VALUES_KEY, "");
+        String meas_values = prefs.getString(Constants.MEAS_VALUES_KEY, "");
+
+        if(real_values.length() == 0) {
+            real_values = String.valueOf(real_value);
+            meas_values = String.valueOf(meas_value);
+        } else {
+            real_values += ("-" + real_value);
+            meas_values += ("-" + meas_value);
+        }
+
+        String[] arr_real = real_values.split("-");
+        String[] arr_meas = meas_values.split("-");
+
+        // Sort arrays
+        for(int i=0; i<arr_meas.length-1; i++) {
+            for (int j = i+1; j<arr_meas.length; j++) {
+                if(arr_meas[i].compareTo(arr_meas[j])>0) {
+                    String temp = arr_meas[i];
+                    arr_meas[i] = arr_meas[j];
+                    arr_meas[j] = temp;
+
+                    temp = arr_real[i];
+                    arr_real[i] = arr_real[j];
+                    arr_real[j] = temp;
+                }
+            }
+        }
+        StringBuilder real_values_builder = new StringBuilder();
+        StringBuilder meas_values_builder = new StringBuilder();
+
+        // Arrays to string
+        for(int i=0; i<arr_real.length; i++){
+            real_values_builder.append(arr_real[i]).append("-");
+            meas_values_builder.append(arr_meas[i]).append("-");
+        }
+
+        editor.putString(Constants.REAL_VALUES_KEY, real_values_builder.toString());
+        editor.putString(Constants.MEAS_VALUES_KEY, meas_values_builder.toString());
+        editor.apply();
+    }
+
+    private void SetUpCorrelationPlot(){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String real_values = prefs.getString(Constants.REAL_VALUES_KEY, "");
+        String meas_values = prefs.getString(Constants.MEAS_VALUES_KEY, "");
+
+        if(!real_values.equals("") && !meas_values.equals("")){
+            plotFragment = new PlotFragment();
+            Bundle bundle = new Bundle();
+
+            bundle.putInt(Constants.CASE_KEY, Constants.CORRELATION_ID);
+            bundle.putString(Constants.REAL_VALUES_KEY, real_values);
+            bundle.putString(Constants.MEAS_VALUES_KEY, meas_values);
+
+            plotFragment.setArguments(bundle);
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
+        } else {
+            Toast.makeText(this, R.string.lbl_no_corr, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -606,6 +674,9 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 break;
             case Constants.CALIBRATE_ID:
                 SetUpCalibrateFragment();
+                break;
+            case Constants.CORRELATION_ID:
+                SetUpCorrelationPlot();
                 break;
             default:
                 break;

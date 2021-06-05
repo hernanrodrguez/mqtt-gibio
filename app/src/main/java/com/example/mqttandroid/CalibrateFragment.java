@@ -19,7 +19,7 @@ import android.widget.Toast;
  * Use the {@link CalibrateFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CalibrateFragment extends Fragment implements IComData{
+public class CalibrateFragment extends Fragment{
 
     private View view;
     private IComFragments iComFragments;
@@ -120,16 +120,11 @@ public class CalibrateFragment extends Fragment implements IComData{
                 //Toast.makeText(getContext(), "Request HR", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btnCorrelation:
-                Toast.makeText(getContext(), "Show diagrams", Toast.LENGTH_SHORT).show();
+                iComFragments.BtnClicked(Constants.CORRELATION_ID);
+                //Toast.makeText(getContext(), "Show diagrams", Toast.LENGTH_SHORT).show();
                 break;
             default:
                 break;
         }
     }
-
-    @Override
-    public void MeasArrived(String id_room, int id_meas, Measurement measurement) {
-
-    }
-
 }
