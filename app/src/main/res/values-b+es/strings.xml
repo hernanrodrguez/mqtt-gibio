@@ -81,6 +81,9 @@
     <string name="lbl_calibrate_title">Menú de calibración</string>
     <string name="lbl_calibrate">Calibrar</string>
     <string name="lbl_correlation">Ver diagramas de correlación</string>
+    <string name="lbl_save_meas">Guardar medición</string>
+    <string name="lbl_value">Valor</string>
+    <string name="err_value">Valor no válido recibido</string>
     <string name="err_field">Este campo no puede estar vacío</string>
     <string name="err_broker">No se agregó ningún broker</string>
     <string name="err_connect">No se pudo conectar al broker</string>

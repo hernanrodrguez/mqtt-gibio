@@ -6,4 +6,5 @@ public interface IComFragments {
     void SendRoom(Room room);
     void SendPerson(Room person);
     void SendMeasList(int graph, MeasList list);
+    void RequestMeasurement(int id);
 }

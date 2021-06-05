@@ -1,13 +1,16 @@
 package com.example.mqttandroid;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,6 +64,11 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     private CheckBox cbRemember;
 
     private ProgressDialog progressDialog;
+
+    private EditText dialogInput;
+
+    private volatile boolean request_finished;
+    private String request_answer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -510,17 +518,25 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 HandleMessage(topic, msg);
             else if(topic.split("/")[1].equals("person"))
                 HandleMessage_Person(topic, msg);
+            if( topic.split("/")[1].equals("request_topic") &&
+                getSupportFragmentManager().findFragmentById(R.id.fragHome) instanceof CalibrateFragment) {
+                HideProgressDialog();
+                try {
+                    ShowMeasurementDialog(Float.parseFloat(msg));
+                } catch (Exception e){
+                    Toast.makeText(this, R.string.err_value, Toast.LENGTH_SHORT).show();
+                }
+            }
         } catch (Exception e){
             Log.e("ERROR", e.getLocalizedMessage());
         }
-
         messages.add(topic + ": " + msg);
         adapter.notifyDataSetChanged();
     }
 
     @Override
     public void MessageSent() {
-        Toast.makeText(this, R.string.lbl_msg_sent, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, R.string.lbl_msg_sent, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -544,6 +560,34 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     @Override
     public void ConnectionLost() {
         Toast.makeText(this, R.string.lbl_conn_lost, Toast.LENGTH_LONG).show();
+    }
+
+    private void ShowMeasurementDialog(float value){
+        //AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog dialog = new AlertDialog.Builder(this).create();
+        View viewInflated = LayoutInflater.from(this).inflate(R.layout.custom_dialog, null);
+
+
+        TextView dialogTitle = (TextView) viewInflated.findViewById(R.id.dialog_title);
+        TextView dialogDesc = (TextView) viewInflated.findViewById(R.id.dialog_desc);
+        TextView dialogBtn = (TextView) viewInflated.findViewById(R.id.dialog_btn);
+        dialogInput = (EditText) viewInflated.findViewById(R.id.dialog_input);
+
+        dialogTitle.setText("Valor recibido");
+        dialogDesc.setText("El valor recibido es " + String.valueOf(value));
+        dialogBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<EditText> arr = new ArrayList<EditText>(){{ add(dialogInput); }};
+                if(CheckFields(arr)){
+                    float val = Float.parseFloat(dialogInput.getText().toString().trim());
+                    dialog.dismiss();
+                    Toast.makeText(getApplicationContext(), "value: " + val, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        dialog.setView(viewInflated);
+        dialog.show();
     }
 
     @Override
@@ -629,6 +673,16 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
         plotFragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
+    }
+
+    @Override
+    public void RequestMeasurement(int id) {
+        try{
+            mqttClient.Publish("request_topic", Constants.Id2Key(id));
+            ShowProgressDialog();
+        } catch (Exception e){
+            Log.println(Log.ERROR, "ERROR", "Request Measurement Exception");
+        }
     }
 
     private ArrayList<MeasList> GetListsById(int id){
