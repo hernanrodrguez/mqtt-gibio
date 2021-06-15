@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment;
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;
+import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.SecondScale;
 import com.jjoe64.graphview.Viewport;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
@@ -43,6 +44,7 @@ public class PlotFragment extends Fragment implements IComData{
 
     private String real_values;
     private String meas_values;
+    private double factor;
 
     private GridLabelRenderer gridLabel;
     private Viewport viewport;
@@ -89,6 +91,7 @@ public class PlotFragment extends Fragment implements IComData{
                 case Constants.CORRELATION_ID:
                     real_values = bundle.getString(Constants.REAL_VALUES_KEY);
                     meas_values = bundle.getString(Constants.MEAS_VALUES_KEY);
+                    factor = bundle.getDouble(Constants.FACTOR_KEY);
                     break;
             }
         }
@@ -110,34 +113,70 @@ public class PlotFragment extends Fragment implements IComData{
         CustomGraphTitle(v);
         GraphView graph = CustomGraphView();
 
-        PointsGraphSeries<DataPoint> series = LoadDataPoints();
-        series.setColor(Color.RED);
-        series.setCustomShape((canvas, paint, x, y, dataPoint) -> {
+        PointsGraphSeries.CustomShape shape = (canvas, paint, x, y, dataPoint) -> {
             paint.setStrokeWidth(5);
             canvas.drawLine(x-10, y-10, x+10, y+10, paint);
             canvas.drawLine(x+10, y-10, x-10, y+10, paint);
-        });
+        };
+
+        LineGraphSeries<DataPoint> calibratedSeries = GetCalibratedLine();
+        calibratedSeries.setColor(Color.GREEN);
+
+        PointsGraphSeries<DataPoint> series = LoadDataPoints(1);
+        series.setColor(Color.RED);
+        series.setCustomShape(shape);
+
+        PointsGraphSeries<DataPoint> cal_series = LoadDataPoints(factor);
+        cal_series.setColor(Color.BLUE);
+        cal_series.setCustomShape(shape);
+
+        series.setTitle(getString(R.string.lbl_meas_values));
+        cal_series.setTitle(getString(R.string.lbl_cal_values));
+        calibratedSeries.setTitle(getString(R.string.lbl_real_values));
+        graph.getLegendRenderer().setVisible(true);
+        graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
 
         gridLabel = graph.getGridLabelRenderer();
         gridLabel.setVerticalAxisTitle(getString(R.string.lbl_real_values));
         gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_meas_values));
         viewport = graph.getViewport();
+
         graph.addSeries(series);
+        graph.addSeries(cal_series);
+        graph.addSeries(calibratedSeries);
+        
         viewport.setScalable(true);
 
         ll.addView(graph);
         sv.addView(ll);
     }
 
-    private PointsGraphSeries<DataPoint> LoadDataPoints(){
+    private PointsGraphSeries<DataPoint> LoadDataPoints(double f){
         PointsGraphSeries<DataPoint> ret = new PointsGraphSeries<>();
         String[] values_meas = meas_values.split("-");
         String[] values_real = real_values.split("-");
         for(int i=0; i<values_meas.length; i++){
             if(!values_meas[i].equals(""))
-                ret.appendData(new DataPoint(Double.parseDouble(values_meas[i]), Double.parseDouble(values_real[i])), true, 40);
+                ret.appendData(new DataPoint(Double.parseDouble(values_meas[i])*f, Double.parseDouble(values_real[i])), true, 40);
         }
         return ret;
+    }
+
+    private LineGraphSeries<DataPoint> GetCalibratedLine(){
+        double min = 0;
+        double max = Double.parseDouble(real_values.split("-")[real_values.split("-").length-1]);
+
+        for(String str : real_values.split("-")){
+            if(!str.equals("")){
+                min = Double.parseDouble(str);
+                break;
+            }
+        }
+
+        return new LineGraphSeries<>(new DataPoint[] {
+                new DataPoint(min, min),
+                new DataPoint(max, max)
+        });
     }
 
     private void SetUpGraphView(View v) {

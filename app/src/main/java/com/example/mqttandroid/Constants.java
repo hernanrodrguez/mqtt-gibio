@@ -11,6 +11,7 @@ public final class Constants {
     public final static String QUANT_KEY = "Quant";
     public final static String REAL_VALUES_KEY = "Real";
     public final static String MEAS_VALUES_KEY = "Meas";
+    public final static String FACTOR_KEY = "Factor";
 
     public final static String TEMP_OBJ_KEY = "TO";
     public final static String TEMP_AMB_KEY = "TA";

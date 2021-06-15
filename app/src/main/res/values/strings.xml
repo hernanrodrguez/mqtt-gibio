@@ -49,6 +49,7 @@
     <string name="lbl_nav_closed">Navigation drawer closed</string>
     <string name="lbl_warning">Warning</string>
     <string name="lbl_warning_msg">Do you want to delete the current server and set a new one?</string>
+    <string name="lbl_warning_cal">Do you want to delete all calibration data?</string>
     <string name="lbl_yes">Yes</string>
     <string name="lbl_no">No</string>
     <string name="lbl_cancel">Cancel</string>
@@ -87,6 +88,7 @@
     <string name="lbl_corr">Correlation</string>
     <string name="lbl_real_values">Real values</string>
     <string name="lbl_meas_values">Measured values</string>
+    <string name="lbl_cal_values">Calibrated values</string>
     <string name="err_value">Not valid value received</string>
     <string name="err_field">This field cannot be empty</string>
     <string name="err_broker">There is no broker</string>

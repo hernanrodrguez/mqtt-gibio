@@ -49,6 +49,7 @@
     <string name="lbl_nav_closed">Menú de navegación cerrado</string>
     <string name="lbl_warning">Advertencia</string>
     <string name="lbl_warning_msg">¿Desea eliminar el servidor actual y configurar uno nuevo?</string>
+    <string name="lbl_warning_cal">¿Desea eliminar toda la información de calibración?</string>
     <string name="lbl_yes">Sí</string>
     <string name="lbl_no">No</string>
     <string name="lbl_cancel">Cancelar</string>
@@ -87,6 +88,7 @@
     <string name="lbl_corr">Correlación</string>
     <string name="lbl_real_values">Valores reales</string>
     <string name="lbl_meas_values">Valores medidos</string>
+    <string name="lbl_cal_values">Valores calibrados</string>
     <string name="err_value">Valor no válido recibido</string>
     <string name="err_field">Este campo no puede estar vacío</string>
     <string name="err_broker">No se agregó ningún broker</string>

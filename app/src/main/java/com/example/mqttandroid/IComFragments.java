@@ -7,4 +7,5 @@ public interface IComFragments {
     void SendPerson(Room person);
     void SendMeasList(int graph, MeasList list);
     void RequestMeasurement(int id);
+    void ClearCalibrationData();
 }

@@ -637,11 +637,32 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         editor.apply();
     }
 
+    private double GetFactor(String meas, String real){
+        if(!meas.equals("") && !real.equals("")){
+            double sum_real = 0;
+            double sum_meas = 0;
+            for(String val : real.split("-")){
+                try{
+                    sum_real += Double.parseDouble(val);
+                } catch (Exception ignore){}
+            }
+            for(String val : meas.split("-")){
+                try{
+                    sum_meas += Double.parseDouble(val);
+                } catch (Exception ignore){}
+            }
+            return sum_real/sum_meas;
+        } else
+            return 0;
+    }
+
     private void SetUpCorrelationPlot(){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         String real_values = prefs.getString(Constants.REAL_VALUES_KEY, "");
         String meas_values = prefs.getString(Constants.MEAS_VALUES_KEY, "");
+
+        double factor = GetFactor(meas_values, real_values);
 
         if(!real_values.equals("") && !meas_values.equals("")){
             plotFragment = new PlotFragment();
@@ -650,6 +671,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             bundle.putInt(Constants.CASE_KEY, Constants.CORRELATION_ID);
             bundle.putString(Constants.REAL_VALUES_KEY, real_values);
             bundle.putString(Constants.MEAS_VALUES_KEY, meas_values);
+            bundle.putDouble(Constants.FACTOR_KEY, factor);
 
             plotFragment.setArguments(bundle);
             getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
@@ -754,6 +776,25 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         } catch (Exception e){
             Log.println(Log.ERROR, "ERROR", "Request Measurement Exception");
         }
+    }
+
+    @Override
+    public void ClearCalibrationData(){
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.lbl_warning)
+                .setMessage(R.string.lbl_warning_cal)
+                .setPositiveButton(R.string.lbl_yes, (dialog, which) -> ClearData())
+                .setNegativeButton(R.string.lbl_no, null)
+                .setIcon(R.drawable.warning)
+                .show();
+    }
+
+    public void ClearData(){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(Constants.MEAS_VALUES_KEY, "");
+        editor.putString(Constants.REAL_VALUES_KEY, "");
+        editor.apply();
     }
 
     private ArrayList<MeasList> GetListsById(int id){
