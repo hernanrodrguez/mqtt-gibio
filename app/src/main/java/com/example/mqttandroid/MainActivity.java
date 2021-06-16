@@ -1,5 +1,6 @@
 package com.example.mqttandroid;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -498,6 +499,21 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         } // Ante un mensaje erroneo o algun problema, simplemente ignoro el caso
     }
 
+    private void HandleMessage_Calibration(String topic, String msg){
+        try {
+            int current_person;
+            String id_person = ObtainIdPerson(topic);
+            if(id_person != null) {
+                current_person = GetCurrentPerson(id_person);
+                int id_meas = Constants.Key2Id(msg.split(":")[0]);
+                float value = Float.parseFloat(msg.split(":")[1]);
+                ShowMeasurementDialog(value, id_meas, current_person);
+            }
+        } catch (Exception e){
+            Toast.makeText(this, R.string.err_value, Toast.LENGTH_SHORT).show();
+        } // Ante un mensaje erroneo o algun problema, simplemente ignoro el caso
+    }
+
     private void SendPlotData(int id){
         if(rooms.size() > 0 && id == Constants.ROOMS_ID)
             CheckRooms();
@@ -519,14 +535,10 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 HandleMessage(topic, msg);
             else if(topic.split("/")[1].equals("person"))
                 HandleMessage_Person(topic, msg);
-            if( topic.split("/")[1].equals("request_topic") &&
+            if(topic.split("/")[1].equals("cal") &&
                 getSupportFragmentManager().findFragmentById(R.id.fragHome) instanceof CalibrateFragment) {
                 HideProgressDialog();
-                try {
-                    ShowMeasurementDialog(Float.parseFloat(msg));
-                } catch (Exception e){
-                    Toast.makeText(this, R.string.err_value, Toast.LENGTH_SHORT).show();
-                }
+                HandleMessage_Calibration(topic, msg);
             }
         } catch (Exception e){
             Log.e("ERROR", e.getLocalizedMessage());
@@ -563,8 +575,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         Toast.makeText(this, R.string.lbl_conn_lost, Toast.LENGTH_LONG).show();
     }
 
-    private void ShowMeasurementDialog(float value){
-        //AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    private void ShowMeasurementDialog(float value, int id_meas, int room){
         AlertDialog dialog = new AlertDialog.Builder(this).create();
         View viewInflated = LayoutInflater.from(this).inflate(R.layout.custom_dialog, null);
 
@@ -573,17 +584,37 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         TextView dialogBtn = (TextView) viewInflated.findViewById(R.id.dialog_btn);
         dialogInput = (EditText) viewInflated.findViewById(R.id.dialog_input);
 
-        dialogTitle.setText("Valor recibido");
-        dialogDesc.setText("El valor recibido es " + String.valueOf(value));
+        switch (id_meas){
+            case Constants.TEMP_OBJ_ID:
+                dialogTitle.setText(R.string.lbl_tobj_received);
+                dialogDesc.setText(getString(R.string.lbl_value_received, value, "°C"));
+                break;
+            case Constants.TEMP_AMB_ID:
+                dialogTitle.setText(R.string.lbl_tamb_received);
+                dialogDesc.setText(getString(R.string.lbl_value_received, value, "°C"));
+                break;
+            case Constants.CO2_ID:
+                dialogTitle.setText(R.string.lbl_co2_received);
+                dialogDesc.setText(getString(R.string.lbl_value_received, value, " ppm"));
+                break;
+            case Constants.SPO2_ID:
+                dialogTitle.setText(R.string.lbl_spo2_received);
+                dialogDesc.setText(getString(R.string.lbl_value_received, value, "%"));
+                break;
+            case Constants.HR_ID:
+                dialogTitle.setText(R.string.lbl_hr_received);
+                dialogDesc.setText(getString(R.string.lbl_value_received, value, " bpm"));
+                break;
+        }
+
         dialogBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ArrayList<EditText> arr = new ArrayList<EditText>(){{ add(dialogInput); }};
                 if(CheckFields(arr)){
                     float real_value = Float.parseFloat(dialogInput.getText().toString().trim());
-                    SaveMeasurement(real_value, value);
+                    SaveMeasurement(real_value, value, id_meas, room);
                     dialog.dismiss();
-                    Toast.makeText(getApplicationContext(), "value: " + real_value, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -591,7 +622,20 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         dialog.show();
     }
 
-    private void SaveMeasurement(float real_value, float meas_value){
+    private String ComposeString(float val, int id_meas, int room){
+        try {
+            return rooms.get(room).GetIdRoom() +
+                    ":" +
+                    Constants.Id2Key(id_meas) +
+                    ":" +
+                    String.format("%.2f", val);
+        } catch (Exception e){
+            Toast.makeText(this, R.string.err_send, Toast.LENGTH_SHORT).show();
+        }
+        return "";
+    }
+
+    private void SaveMeasurement(float real_value, float meas_value, int id_meas, int room){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();
 
@@ -599,17 +643,20 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         String meas_values = prefs.getString(Constants.MEAS_VALUES_KEY, "");
 
         if(real_values.length() == 0) {
-            real_values = String.valueOf(real_value);
-            meas_values = String.valueOf(meas_value);
+            real_values = ComposeString(real_value, id_meas, room);
+            meas_values = ComposeString(meas_value, id_meas, room);
         } else {
-            real_values += ("-" + real_value);
-            meas_values += ("-" + meas_value);
+            real_values += ("-" + ComposeString(real_value, id_meas, room));
+            meas_values += ("-" + ComposeString(meas_value, id_meas, room));
         }
+
+        // Sort arrays
+        // Esto lo tengo que hacer antes de graficar una vez que tengo los valores diferenciados
+        /*
 
         String[] arr_real = real_values.split("-");
         String[] arr_meas = meas_values.split("-");
 
-        // Sort arrays
         for(int i=0; i<arr_meas.length-1; i++) {
             for (int j = i+1; j<arr_meas.length; j++) {
                 if(arr_meas[i].compareTo(arr_meas[j])>0) {
@@ -623,17 +670,18 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 }
             }
         }
+
+        // Arrays to string
         StringBuilder real_values_builder = new StringBuilder();
         StringBuilder meas_values_builder = new StringBuilder();
 
-        // Arrays to string
         for(int i=0; i<arr_real.length; i++){
             real_values_builder.append(arr_real[i]).append("-");
             meas_values_builder.append(arr_meas[i]).append("-");
         }
-
-        editor.putString(Constants.REAL_VALUES_KEY, real_values_builder.toString());
-        editor.putString(Constants.MEAS_VALUES_KEY, meas_values_builder.toString());
+        */
+        editor.putString(Constants.REAL_VALUES_KEY, real_values);
+        editor.putString(Constants.MEAS_VALUES_KEY, meas_values);
         editor.apply();
     }
 
@@ -728,7 +776,6 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 break;
             default:
                 break;
-
         }
     }
 
@@ -771,7 +818,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     @Override
     public void RequestMeasurement(int id) {
         try{
-            mqttClient.Publish("request_topic", Constants.Id2Key(id));
+            mqttClient.Publish(mqttClient.GetBaseTopic() + "/cal", Constants.Id2Key(id));
             ShowProgressDialog();
         } catch (Exception e){
             Log.println(Log.ERROR, "ERROR", "Request Measurement Exception");

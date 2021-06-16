@@ -88,7 +88,14 @@
     <string name="lbl_corr">Correlación</string>
     <string name="lbl_real_values">Valores reales</string>
     <string name="lbl_meas_values">Valores medidos</string>
+    <string name="lbl_meas_value">Valor medido</string>
     <string name="lbl_cal_values">Valores calibrados</string>
+    <string name="lbl_tamb_received">Temperatura ambiente recibida!</string>
+    <string name="lbl_tobj_received">Temperatura del sujeto recibida!</string>
+    <string name="lbl_co2_received">Nivel de CO2 recibida!</string>
+    <string name="lbl_spo2_received">Nivel de SPO2 recibida!</string>
+    <string name="lbl_hr_received">Frecuencia cardíaca recibida!</string>
+    <string name="lbl_value_received">Valor: %1$.2f%2$s</string>
     <string name="err_value">Valor no válido recibido</string>
     <string name="err_field">Este campo no puede estar vacío</string>
     <string name="err_broker">No se agregó ningún broker</string>
