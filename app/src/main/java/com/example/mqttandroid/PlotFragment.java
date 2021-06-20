@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
@@ -33,6 +34,8 @@ import com.jjoe64.graphview.series.Series;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -44,7 +47,6 @@ public class PlotFragment extends Fragment implements IComData{
 
     private String real_values;
     private String meas_values;
-    private double factor;
 
     private GridLabelRenderer gridLabel;
     private Viewport viewport;
@@ -91,7 +93,6 @@ public class PlotFragment extends Fragment implements IComData{
                 case Constants.CORRELATION_ID:
                     real_values = bundle.getString(Constants.REAL_VALUES_KEY);
                     meas_values = bundle.getString(Constants.MEAS_VALUES_KEY);
-                    factor = bundle.getDouble(Constants.FACTOR_KEY);
                     break;
             }
         }
@@ -111,7 +112,6 @@ public class PlotFragment extends Fragment implements IComData{
         ScrollView sv = v.findViewById(R.id.scrollView);
         LinearLayout ll = CustomLinearLayout();
         CustomGraphTitle(v);
-        GraphView graph = CustomGraphView();
 
         PointsGraphSeries.CustomShape shape = (canvas, paint, x, y, dataPoint) -> {
             paint.setStrokeWidth(5);
@@ -119,60 +119,98 @@ public class PlotFragment extends Fragment implements IComData{
             canvas.drawLine(x+10, y-10, x-10, y+10, paint);
         };
 
-        LineGraphSeries<DataPoint> calibratedSeries = GetCalibratedLine();
-        calibratedSeries.setColor(Color.GREEN);
+        for(String key : Constants.KEYS){
+            TextView tv = CustomTextView(Constants.Key2Id(key));
+            GraphView graph = CustomGraphView();
+            LineGraphSeries<DataPoint> calibratedSeries = GetCalibratedLine(key);
+            calibratedSeries.setColor(Color.GREEN);
 
-        PointsGraphSeries<DataPoint> series = LoadDataPoints(1);
-        series.setColor(Color.RED);
-        series.setCustomShape(shape);
+            PointsGraphSeries<DataPoint> series = LoadDataPoints(key, false);
+            series.setColor(Color.RED);
+            series.setCustomShape(shape);
 
-        PointsGraphSeries<DataPoint> cal_series = LoadDataPoints(factor);
-        cal_series.setColor(Color.BLUE);
-        cal_series.setCustomShape(shape);
+            PointsGraphSeries<DataPoint> cal_series = LoadDataPoints(key, true);
+            cal_series.setColor(Color.BLUE);
+            cal_series.setCustomShape(shape);
 
-        series.setTitle(getString(R.string.lbl_meas_values));
-        cal_series.setTitle(getString(R.string.lbl_cal_values));
-        calibratedSeries.setTitle(getString(R.string.lbl_real_values));
-        graph.getLegendRenderer().setVisible(true);
-        graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
+            series.setTitle(getString(R.string.lbl_meas_values));
+            cal_series.setTitle(getString(R.string.lbl_cal_values));
+            calibratedSeries.setTitle(getString(R.string.lbl_real_values));
+            graph.getLegendRenderer().setVisible(true);
+            graph.getLegendRenderer().setFixedPosition(0,0);
+            //graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
 
-        gridLabel = graph.getGridLabelRenderer();
-        gridLabel.setVerticalAxisTitle(getString(R.string.lbl_real_values));
-        gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_meas_values));
-        viewport = graph.getViewport();
+            gridLabel = graph.getGridLabelRenderer();
+            gridLabel.setVerticalAxisTitle(getString(R.string.lbl_real_values));
+            gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_meas_values));
+            viewport = graph.getViewport();
 
-        graph.addSeries(series);
-        graph.addSeries(cal_series);
-        graph.addSeries(calibratedSeries);
-        
-        viewport.setScalable(true);
+            graph.addSeries(series);
+            graph.addSeries(cal_series);
+            graph.addSeries(calibratedSeries);
 
-        ll.addView(graph);
+            viewport.setScalable(true);
+
+            ll.addView(tv);
+            ll.addView(graph);
+        }
         sv.addView(ll);
     }
 
-    private PointsGraphSeries<DataPoint> LoadDataPoints(double f){
+    private PointsGraphSeries<DataPoint> LoadDataPoints(String key, boolean calibrated){
+        double factor = 1;
         PointsGraphSeries<DataPoint> ret = new PointsGraphSeries<>();
+        ArrayList<Double> sorted_meas = new ArrayList<>();
+        ArrayList<Double> sorted_real = new ArrayList<>();
+
         String[] values_meas = meas_values.split("-");
         String[] values_real = real_values.split("-");
         for(int i=0; i<values_meas.length; i++){
-            if(!values_meas[i].equals(""))
-                ret.appendData(new DataPoint(Double.parseDouble(values_meas[i])*f, Double.parseDouble(values_real[i])), true, 40);
+            String _key = values_meas[i].split(":")[0];
+            String _meas_val = values_meas[i].split(":")[1];
+            String _real_val = values_real[i].split(":")[1];
+            if(_key.equals(key) && !_meas_val.equals("")){ // valor de interes
+                sorted_meas.add(Double.parseDouble(_meas_val));
+                sorted_real.add(Double.parseDouble(_real_val));
+            }
         }
+        Collections.sort(sorted_meas);
+        Collections.sort(sorted_real);
+        if(calibrated){
+            double sum_meas = 0;
+            double sum_real = 0;
+            for(Double n : sorted_meas)
+                sum_meas += n;
+            for(Double n : sorted_real)
+                sum_real += n;
+            factor = sum_real/sum_meas;
+        }
+        for(int i=0; i<sorted_meas.size(); i++)
+            ret.appendData(new DataPoint(sorted_meas.get(i)*factor, sorted_real.get(i)), true, 40);
+
         return ret;
     }
 
-    private LineGraphSeries<DataPoint> GetCalibratedLine(){
+    private LineGraphSeries<DataPoint> GetCalibratedLine(String key){
         double min = 0;
-        double max = Double.parseDouble(real_values.split("-")[real_values.split("-").length-1]);
+        double max = 0;
+        ArrayList<Double> list = new ArrayList<>();
 
-        for(String str : real_values.split("-")){
-            if(!str.equals("")){
-                min = Double.parseDouble(str);
-                break;
-            }
+        String[] values_array = real_values.split("-");
+
+        for(String str : values_array){
+            String _key = str.split(":")[0];
+            String _val = str.split(":")[1];
+            if(_key.equals(key) && !_val.equals(""))
+                list.add(Double.parseDouble(_val));
         }
-
+        try{
+            min = Collections.min(list);
+            max = Collections.max(list);
+        } catch (Exception e){
+            min = 0;
+            max = 0;
+        }
         return new LineGraphSeries<>(new DataPoint[] {
                 new DataPoint(min, min),
                 new DataPoint(max, max)
@@ -190,7 +228,7 @@ public class PlotFragment extends Fragment implements IComData{
             measLists = LoadList();
 
         for(MeasList measList : measLists) {
-            TextView tv = CustomTextView(id_graph, measList);
+            TextView tv = CustomTextView(measList.GetMeas());
             LineGraphSeries<DataPoint> currentThreshold;
 
             GraphView graph = CustomGraphView();
@@ -219,7 +257,7 @@ public class PlotFragment extends Fragment implements IComData{
         if(id_graph == Constants.ROOMS_ID || id_graph == Constants.PEOPLE_ID)
             tv.setText(room.GetIdRoom().toUpperCase());
         else if(id_graph == Constants.CORRELATION_ID)
-            tv.setText(R.string.lbl_corr);
+            tv.setText(getString(R.string.lbl_corr).toUpperCase());
         else
             tv.setText(measLists.get(0).GetRoom().toUpperCase());
     }
@@ -316,7 +354,7 @@ public class PlotFragment extends Fragment implements IComData{
         return ll;
     }
 
-    private TextView CustomTextView(int id_graph, MeasList list){
+    private TextView CustomTextView(int id_graph){
         TextView tv = new TextView(getContext());
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -330,7 +368,7 @@ public class PlotFragment extends Fragment implements IComData{
         tv.setTypeface(typeface);
         tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
-        switch (list.GetMeas()) {
+        switch (id_graph) {
             case Constants.TEMP_OBJ_ID:
                 tv.setText(R.string.lbl_graph_obj);
                 break;

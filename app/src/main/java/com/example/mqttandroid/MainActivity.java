@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         dialog.show();
     }
 
-    private void ShowPeople(){
+    private void ShowPeople(int id){
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
         builderSingle.setIcon(R.drawable.thermometer_person);
         builderSingle.setTitle(R.string.lbl_select_person);
@@ -239,9 +239,27 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
         CharSequence[] cs = people_id.toArray(new CharSequence[people_id.size()]);
 
-        builderSingle.setItems(cs, (dialog, which) -> {
-            SendPersonLastMeasurement(people.get(which), which);
-        });
+        switch (id){
+            case Constants.PEOPLE_ID:
+                builderSingle.setItems(cs, (dialog, which) -> {
+                    SendPersonLastMeasurement(people.get(which), which);
+                });
+                break;
+            case Constants.CORRELATION_ID:
+                builderSingle.setItems(cs, (dialog, which) -> {
+                    SetUpCorrelationPlot(which);
+                });
+                break;
+            case Constants.TEMP_OBJ_ID:
+            case Constants.TEMP_AMB_ID:
+            case Constants.CO2_ID:
+            case Constants.SPO2_ID:
+            case Constants.HR_ID:
+                builderSingle.setItems(cs, (dialog, which) -> {
+                    SendRequest(id, which);
+                });
+                break;
+        }
 
         builderSingle.setNegativeButton(R.string.lbl_cancel, (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builderSingle.create();
@@ -441,14 +459,6 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         } // Ante un mensaje erroneo o algun problema, simplemente ignoro el caso
     }
 
-    private String ObtainIdPerson(String topic){
-        try{
-            return topic.split("/")[2];
-        } catch (Exception e){
-            return null;
-        }
-    }
-
     private boolean PersonExists(String id_person){
         for(Room person : people){
             if(person.GetIdRoom().equals(id_person))
@@ -468,7 +478,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     private void HandleMessage_Person(String topic, String msg){
         try {
             int current_person;
-            String id_person = ObtainIdPerson(topic);
+            String id_person = ObtainIdRoom(topic);
             if(id_person != null) {
                 if (PersonExists(id_person)) {
                     current_person = GetCurrentPerson(id_person);
@@ -502,7 +512,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     private void HandleMessage_Calibration(String topic, String msg){
         try {
             int current_person;
-            String id_person = ObtainIdPerson(topic);
+            String id_person = ObtainIdRoom(topic);
             if(id_person != null) {
                 current_person = GetCurrentPerson(id_person);
                 int id_meas = Constants.Key2Id(msg.split(":")[0]);
@@ -518,7 +528,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         if(rooms.size() > 0 && id == Constants.ROOMS_ID)
             CheckRooms();
         else if(people.size() > 0 && id == Constants.PEOPLE_ID)
-            CheckPeople();
+            CheckPeople(id);
         else
             Toast.makeText(this, R.string.lbl_no_meas, Toast.LENGTH_SHORT).show();
     }
@@ -535,7 +545,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 HandleMessage(topic, msg);
             else if(topic.split("/")[1].equals("person"))
                 HandleMessage_Person(topic, msg);
-            if(topic.split("/")[1].equals("cal") &&
+            if(topic.split("/")[3].equals("meas") &&
                 getSupportFragmentManager().findFragmentById(R.id.fragHome) instanceof CalibrateFragment) {
                 HideProgressDialog();
                 HandleMessage_Calibration(topic, msg);
@@ -624,11 +634,11 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     private String ComposeString(float val, int id_meas, int room){
         try {
-            return rooms.get(room).GetIdRoom() +
+            return people.get(room).GetIdRoom() +
                     ":" +
                     Constants.Id2Key(id_meas) +
                     ":" +
-                    String.format("%.2f", val);
+                    String.format(java.util.Locale.US,"%.2f", val);
         } catch (Exception e){
             Toast.makeText(this, R.string.err_send, Toast.LENGTH_SHORT).show();
         }
@@ -650,36 +660,6 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             meas_values += ("-" + ComposeString(meas_value, id_meas, room));
         }
 
-        // Sort arrays
-        // Esto lo tengo que hacer antes de graficar una vez que tengo los valores diferenciados
-        /*
-
-        String[] arr_real = real_values.split("-");
-        String[] arr_meas = meas_values.split("-");
-
-        for(int i=0; i<arr_meas.length-1; i++) {
-            for (int j = i+1; j<arr_meas.length; j++) {
-                if(arr_meas[i].compareTo(arr_meas[j])>0) {
-                    String temp = arr_meas[i];
-                    arr_meas[i] = arr_meas[j];
-                    arr_meas[j] = temp;
-
-                    temp = arr_real[i];
-                    arr_real[i] = arr_real[j];
-                    arr_real[j] = temp;
-                }
-            }
-        }
-
-        // Arrays to string
-        StringBuilder real_values_builder = new StringBuilder();
-        StringBuilder meas_values_builder = new StringBuilder();
-
-        for(int i=0; i<arr_real.length; i++){
-            real_values_builder.append(arr_real[i]).append("-");
-            meas_values_builder.append(arr_meas[i]).append("-");
-        }
-        */
         editor.putString(Constants.REAL_VALUES_KEY, real_values);
         editor.putString(Constants.MEAS_VALUES_KEY, meas_values);
         editor.apply();
@@ -704,13 +684,29 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             return 0;
     }
 
-    private void SetUpCorrelationPlot(){
+    private String CleanValues(String values, String id_person){
+        StringBuilder ret = new StringBuilder();
+        for(String meas : values.split("-")){
+            String[] data = meas.split(":");
+            if(id_person.equals(data[0])){
+                ret.append(data[1]).append(":").append(data[2]).append("-");
+            }
+        }
+        return ret.toString();
+    }
+
+    private void SetUpCorrelationPlot(int id_person){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
+        String str_id_person = people.get(id_person).GetIdRoom();
         String real_values = prefs.getString(Constants.REAL_VALUES_KEY, "");
         String meas_values = prefs.getString(Constants.MEAS_VALUES_KEY, "");
 
-        double factor = GetFactor(meas_values, real_values);
+        real_values = CleanValues(real_values, str_id_person);
+        meas_values = CleanValues(meas_values, str_id_person);
+
+        //double factor = GetFactor(meas_values, real_values);
+        // ESTO DEL FACTOR VOY A HACERLO EN EL FRAGMENT PLOT
 
         if(!real_values.equals("") && !meas_values.equals("")){
             plotFragment = new PlotFragment();
@@ -719,7 +715,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             bundle.putInt(Constants.CASE_KEY, Constants.CORRELATION_ID);
             bundle.putString(Constants.REAL_VALUES_KEY, real_values);
             bundle.putString(Constants.MEAS_VALUES_KEY, meas_values);
-            bundle.putDouble(Constants.FACTOR_KEY, factor);
+            //bundle.putDouble(Constants.FACTOR_KEY, factor);
 
             plotFragment.setArguments(bundle);
             getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
@@ -735,7 +731,8 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 SendPlotData(id);
                 break;
             case Constants.PEOPLE_ID:
-                CheckPeople();
+            case Constants.CORRELATION_ID:
+                CheckPeople(id);
                 break;
             case Constants.MAP_ID:
                 break;
@@ -744,9 +741,6 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 break;
             case Constants.CALIBRATE_ID:
                 SetUpCalibrateFragment();
-                break;
-            case Constants.CORRELATION_ID:
-                SetUpCorrelationPlot();
                 break;
             default:
                 break;
@@ -817,12 +811,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     @Override
     public void RequestMeasurement(int id) {
-        try{
-            mqttClient.Publish(mqttClient.GetBaseTopic() + "/cal", Constants.Id2Key(id));
-            ShowProgressDialog();
-        } catch (Exception e){
-            Log.println(Log.ERROR, "ERROR", "Request Measurement Exception");
-        }
+        CheckPeople(id);
     }
 
     @Override
@@ -867,13 +856,43 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             SendRoom(rooms.get(0));
     }
 
-    private void CheckPeople(){
+    private void CheckPeople(int id){
         if(people.size() > 1)
-            ShowPeople();
-        else if(people.size() == 1)
-            SendPersonLastMeasurement(people.get(0), 0);
-        else
+            ShowPeople(id);
+        else if(people.size() == 1){
+            switch (id){
+                case Constants.PEOPLE_ID:
+                    SendPersonLastMeasurement(people.get(0), 0);
+                    break;
+                case Constants.CORRELATION_ID:
+                    SetUpCorrelationPlot(0); // REVISAR SI ACA TENGO QUE PASAR ALGUN OTRO PARAMETRO!!!!
+                    break;
+                case Constants.TEMP_OBJ_ID:
+                case Constants.TEMP_AMB_ID:
+                case Constants.CO2_ID:
+                case Constants.SPO2_ID:
+                case Constants.HR_ID:
+                    SendRequest(id, 0);
+                    break;
+            }
+        } else
             Toast.makeText(this, R.string.lbl_no_meas, Toast.LENGTH_SHORT).show();
+    }
+
+    private void SendRequest(int id_meas, int id_person){
+        try{
+            // ACA TENGO QUE HACER QUE SEA ESPECIFICO PARA UN DISPOSITIVO!!!
+            mqttClient.Publish(
+                    mqttClient.GetBaseTopic() +
+                            "/person/" +
+                            people.get(id_person).GetIdRoom() +
+                            "/cal",
+                    Constants.Id2Key(id_meas));
+            ShowProgressDialog();
+        } catch (Exception e){
+            Log.println(Log.ERROR, "ERROR", "Request Measurement Exception");
+        }
+
     }
 
     private void SendPersonLastMeasurement(Room person, int id_person) {

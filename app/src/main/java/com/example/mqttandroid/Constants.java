@@ -21,10 +21,10 @@ public final class Constants {
     public final static ArrayList<String> KEYS = new ArrayList<String>(){
         {
             add(TEMP_OBJ_KEY);
-            add(TEMP_AMB_KEY);
-            add(CO2_KEY);
             add(SPO2_KEY);
             add(HR_KEY);
+            add(TEMP_AMB_KEY);
+            add(CO2_KEY);
         }
     };
 
@@ -60,7 +60,7 @@ public final class Constants {
         return KEYS.contains(id_meas);
     }
 
-    public static int Key2Id(String key) throws Exception {
+    public static int Key2Id(String key){
         switch (key){
             case TEMP_OBJ_KEY:
                 return TEMP_OBJ_ID;
@@ -73,7 +73,7 @@ public final class Constants {
             case HR_KEY:
                 return HR_ID;
             default:
-                throw new Exception("Invalid Key");
+                return -1;
         }
     }
 
