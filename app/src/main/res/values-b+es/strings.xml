@@ -87,7 +87,9 @@
     <string name="lbl_no_corr">Aún no hay información de correlación…</string>
     <string name="lbl_corr">Correlación</string>
     <string name="lbl_real_values">Valores reales</string>
+    <string name="lbl_real_values_graph">Valores reales (%1$s)</string>
     <string name="lbl_meas_values">Valores medidos</string>
+    <string name="lbl_meas_values_graph">Valores medidos (%1$s)</string>
     <string name="lbl_meas_value">Valor medido</string>
     <string name="lbl_cal_values">Valores calibrados</string>
     <string name="lbl_tamb_received">Temperatura ambiente recibida!</string>

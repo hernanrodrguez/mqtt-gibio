@@ -138,11 +138,10 @@ public class PlotFragment extends Fragment implements IComData{
             calibratedSeries.setTitle(getString(R.string.lbl_real_values));
             graph.getLegendRenderer().setVisible(true);
             graph.getLegendRenderer().setFixedPosition(0,0);
-            //graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
 
             gridLabel = graph.getGridLabelRenderer();
-            gridLabel.setVerticalAxisTitle(getString(R.string.lbl_real_values));
-            gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_meas_values));
+            CustomGridLabel(Constants.Key2Id(key));
+
             viewport = graph.getViewport();
 
             graph.addSeries(series);
@@ -155,6 +154,28 @@ public class PlotFragment extends Fragment implements IComData{
             ll.addView(graph);
         }
         sv.addView(ll);
+    }
+
+    private void CustomGridLabel(int id){
+        switch (id){
+            case Constants.TEMP_OBJ_ID:
+            case Constants.TEMP_AMB_ID:
+                gridLabel.setVerticalAxisTitle(getString(R.string.lbl_real_values_graph, "°C"));
+                gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_meas_values_graph, "°C"));
+                break;
+            case Constants.CO2_ID:
+                gridLabel.setVerticalAxisTitle(getString(R.string.lbl_real_values_graph, "ppm"));
+                gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_meas_values_graph, "ppm"));
+                break;
+            case Constants.SPO2_ID:
+                gridLabel.setVerticalAxisTitle(getString(R.string.lbl_real_values_graph, "%"));
+                gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_meas_values_graph, "%"));
+                break;
+            case Constants.HR_ID:
+                gridLabel.setVerticalAxisTitle(getString(R.string.lbl_real_values_graph, "bpm"));
+                gridLabel.setHorizontalAxisTitle(getString(R.string.lbl_meas_values_graph, "bpm"));
+                break;
+        }
     }
 
     private PointsGraphSeries<DataPoint> LoadDataPoints(String key, boolean calibrated){
@@ -320,7 +341,6 @@ public class PlotFragment extends Fragment implements IComData{
         ArrayList<Measurement> list = measList.GetList();
         LineGraphSeries<DataPoint> aux_series = new LineGraphSeries<>();
         for (Measurement m : list) {
-            // ACA HAY QUE HACER UN SWITCH
             switch (id_graph){
                 case Constants.ROOMS_ID:
                     if(measList.GetMeas() == Constants.TEMP_OBJ_ID || measList.GetMeas() == Constants.SPO2_ID || measList.GetMeas() == Constants.HR_ID)

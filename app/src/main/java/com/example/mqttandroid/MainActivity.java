@@ -69,9 +69,6 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     private EditText dialogInput;
 
-    private volatile boolean request_finished;
-    private String request_answer;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -559,7 +556,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     @Override
     public void MessageSent() {
-        //Toast.makeText(this, R.string.lbl_msg_sent, Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
@@ -665,25 +662,6 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         editor.apply();
     }
 
-    private double GetFactor(String meas, String real){
-        if(!meas.equals("") && !real.equals("")){
-            double sum_real = 0;
-            double sum_meas = 0;
-            for(String val : real.split("-")){
-                try{
-                    sum_real += Double.parseDouble(val);
-                } catch (Exception ignore){}
-            }
-            for(String val : meas.split("-")){
-                try{
-                    sum_meas += Double.parseDouble(val);
-                } catch (Exception ignore){}
-            }
-            return sum_real/sum_meas;
-        } else
-            return 0;
-    }
-
     private String CleanValues(String values, String id_person){
         StringBuilder ret = new StringBuilder();
         for(String meas : values.split("-")){
@@ -705,9 +683,6 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         real_values = CleanValues(real_values, str_id_person);
         meas_values = CleanValues(meas_values, str_id_person);
 
-        //double factor = GetFactor(meas_values, real_values);
-        // ESTO DEL FACTOR VOY A HACERLO EN EL FRAGMENT PLOT
-
         if(!real_values.equals("") && !meas_values.equals("")){
             plotFragment = new PlotFragment();
             Bundle bundle = new Bundle();
@@ -715,7 +690,6 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             bundle.putInt(Constants.CASE_KEY, Constants.CORRELATION_ID);
             bundle.putString(Constants.REAL_VALUES_KEY, real_values);
             bundle.putString(Constants.MEAS_VALUES_KEY, meas_values);
-            //bundle.putDouble(Constants.FACTOR_KEY, factor);
 
             plotFragment.setArguments(bundle);
             getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
@@ -865,7 +839,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                     SendPersonLastMeasurement(people.get(0), 0);
                     break;
                 case Constants.CORRELATION_ID:
-                    SetUpCorrelationPlot(0); // REVISAR SI ACA TENGO QUE PASAR ALGUN OTRO PARAMETRO!!!!
+                    SetUpCorrelationPlot(0);
                     break;
                 case Constants.TEMP_OBJ_ID:
                 case Constants.TEMP_AMB_ID:
@@ -881,7 +855,6 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     private void SendRequest(int id_meas, int id_person){
         try{
-            // ACA TENGO QUE HACER QUE SEA ESPECIFICO PARA UN DISPOSITIVO!!!
             mqttClient.Publish(
                     mqttClient.GetBaseTopic() +
                             "/person/" +
