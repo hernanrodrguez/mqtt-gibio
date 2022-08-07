@@ -4,7 +4,7 @@
     <string name="lbl_props">CO2 \nSPO2 \nHeart Rate \nBody Temperature \nRoom Temperature</string>
     <string name="lbl_home">Home</string>
     <string name="lbl_init_title">Monitoring App</string>
-    <string name="lbl_init_desc">This App, developed by members of Grupo de Investigación y Desarrollo en Bioingeniería from UTN FRBA, monitors the measurement devices placed in the classrooms and common spaces of the University. These devices are capable of measuring temperature and carbon dioxide concentration in the environment and people\'s temperature, oxygen saturation and heart rate . The communication is based on MQTT protocol, the standard for IoT applications. To get started, enter your server details.</string>
+    <string name="lbl_init_desc">This App, developed by members of Grupo de Investigación y Desarrollo en Bioingeniería from UTN FRBA, monitors the medicion devices placed in the classrooms and common spaces of the University. These devices are capable of measuring temperature and carbon dioxide concentration in the environment and people\'s temperature, oxygen saturation and heart rate . The communication is based on MQTT protocol, the standard for IoT applications. To get started, enter your server details.</string>
     <string name="lbl_sett_desc">These are your current server properties:</string>
     <string name="lbl_edit">Edit server</string>
     <string name="lbl_send_message">Send Message</string>
@@ -73,8 +73,8 @@
     <string name="lbl_axis_hr">Beats per minute (bpm)</string>
     <string name="lbl_select_room">Select a Room:</string>
     <string name="lbl_select_person">Select a Person:</string>
-    <string name="lbl_no_meas">There are no measurements yet…</string>
-    <string name="lbl_last_meas">%1$s - Last measurement</string>
+    <string name="lbl_no_meas">There are no medicions yet…</string>
+    <string name="lbl_last_meas">%1$s - Last medicion</string>
     <string name="lbl_last_desc">Value: %1$.2f%2$s - Time: %3$s</string>
     <string name="lbl_last_value">%1$.2f%2$s</string>
     <string name="lbl_last_time">Time: %1$s</string>
@@ -82,7 +82,7 @@
     <string name="lbl_calibrate_title">Calibration menu</string>
     <string name="lbl_calibrate">Calibrate</string>
     <string name="lbl_correlation">See correlation diagrams</string>
-    <string name="lbl_save_meas">Save measurement</string>
+    <string name="lbl_save_meas">Save medicion</string>
     <string name="lbl_value">Value</string>
     <string name="lbl_no_corr">There is no correlation data yet…</string>
     <string name="lbl_corr">Correlation</string>

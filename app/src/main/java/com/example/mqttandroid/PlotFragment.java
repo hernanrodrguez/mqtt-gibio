@@ -1,12 +1,10 @@
 package com.example.mqttandroid;
 
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,35 +13,28 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;
-import com.jjoe64.graphview.LegendRenderer;
-import com.jjoe64.graphview.SecondScale;
 import com.jjoe64.graphview.Viewport;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.DataPointInterface;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.PointsGraphSeries;
-import com.jjoe64.graphview.series.Series;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 public class PlotFragment extends Fragment implements IComData{
 
     private int id_graph;
-    private ArrayList<MeasList> measLists;
-    private Room room;
+    private ArrayList<ArrayMediciones> arrayMediciones;
+    private Dispositivo dispositivo;
 
     private String real_values;
     private String meas_values;
@@ -72,7 +63,7 @@ public class PlotFragment extends Fragment implements IComData{
             Bundle bundle = getArguments();
 
             id_graph = bundle.getInt(Constants.CASE_KEY);
-            measLists = new ArrayList<>();
+            arrayMediciones = new ArrayList<>();
 
             switch (id_graph){
                 case Constants.TEMP_AMB_ID:
@@ -80,15 +71,15 @@ public class PlotFragment extends Fragment implements IComData{
                 case Constants.TEMP_OBJ_ID:
                 case Constants.SPO2_ID:
                 case Constants.HR_ID:
-                    MeasList list = (MeasList) bundle.getSerializable(Constants.DATA_KEY);
-                    measLists.add(list);
+                    ArrayMediciones list = (ArrayMediciones) bundle.getSerializable(Constants.DATA_KEY);
+                    arrayMediciones.add(list);
                     break;
                 case Constants.PERSON_ID:
-                    measLists = (ArrayList<MeasList>) bundle.getSerializable(Constants.DATA_KEY);
+                    arrayMediciones = (ArrayList<ArrayMediciones>) bundle.getSerializable(Constants.DATA_KEY);
                     break;
                 case Constants.ROOMS_ID:
                 case Constants.PEOPLE_ID:
-                    room = (Room) bundle.getSerializable(Constants.DATA_KEY);
+                    dispositivo = (Dispositivo) bundle.getSerializable(Constants.DATA_KEY);
                     break;
                 case Constants.CORRELATION_ID:
                     real_values = bundle.getString(Constants.REAL_VALUES_KEY);
@@ -246,18 +237,18 @@ public class PlotFragment extends Fragment implements IComData{
         CustomGraphTitle(v);
 
         if(id_graph == Constants.ROOMS_ID || id_graph == Constants.PEOPLE_ID)
-            measLists = LoadList();
+            arrayMediciones = LoadList();
 
-        for(MeasList measList : measLists) {
-            TextView tv = CustomTextView(measList.GetMeas());
+        for(ArrayMediciones arrayMediciones : this.arrayMediciones) {
+            TextView tv = CustomTextView(arrayMediciones.getTipoMedicion());
             LineGraphSeries<DataPoint> currentThreshold;
 
             GraphView graph = CustomGraphView();
             currentSeries = new LineGraphSeries<>();
             gridLabel = graph.getGridLabelRenderer();
             viewport = graph.getViewport();
-            currentSeries = LoadMeasurements(measList);
-            currentThreshold = SetThresholdLine(measList.GetMeas(), currentSeries);
+            currentSeries = LoadMeasurements(arrayMediciones);
+            currentThreshold = SetThresholdLine(arrayMediciones.getTipoMedicion(), currentSeries);
 
             graph.addSeries(currentSeries);
             graph.addSeries(currentThreshold);
@@ -265,7 +256,7 @@ public class PlotFragment extends Fragment implements IComData{
             thresholdSeries.add(currentThreshold);
 
             viewport.setScalable(true);
-            CustomAxis(measList, graph);
+            CustomAxis(arrayMediciones, graph);
 
             ll.addView(tv);
             ll.addView(graph);
@@ -276,33 +267,33 @@ public class PlotFragment extends Fragment implements IComData{
     private void CustomGraphTitle(View v){
         TextView tv = v.findViewById(R.id.tvGraphTitle);
         if(id_graph == Constants.ROOMS_ID || id_graph == Constants.PEOPLE_ID)
-            tv.setText(room.GetIdRoom().toUpperCase());
+            tv.setText(dispositivo.getKey().toUpperCase());
         else if(id_graph == Constants.CORRELATION_ID)
             tv.setText(getString(R.string.lbl_corr).toUpperCase());
         else
-            tv.setText(measLists.get(0).GetRoom().toUpperCase());
+            tv.setText(arrayMediciones.get(0).getKeyDispositivo().toUpperCase());
     }
 
-    private ArrayList<MeasList> LoadList(){
-        ArrayList<MeasList> list = new ArrayList<>();
+    private ArrayList<ArrayMediciones> LoadList(){
+        ArrayList<ArrayMediciones> list = new ArrayList<>();
         if(id_graph == Constants.ROOMS_ID) {
-            list.add(room.GetTAmbList());
-            list.add(room.GetCo2List());
-            list.add(room.GetTObjList());
-            list.add(room.GetSpo2List());
-            list.add(room.GetHRList());
+            list.add(dispositivo.getTAmbArray());
+            list.add(dispositivo.getCO2Array());
+            list.add(dispositivo.getTObjArray());
+            list.add(dispositivo.getSpo2Array());
+            list.add(dispositivo.getHRArray());
         } else if(id_graph == Constants.PEOPLE_ID){
-            list.add(room.GetTObjList());
-            list.add(room.GetSpo2List());
-            list.add(room.GetHRList());
-            list.add(room.GetTAmbList());
-            list.add(room.GetCo2List());
+            list.add(dispositivo.getTObjArray());
+            list.add(dispositivo.getSpo2Array());
+            list.add(dispositivo.getHRArray());
+            list.add(dispositivo.getTAmbArray());
+            list.add(dispositivo.getCO2Array());
         }
         return list;
     }
 
-    private void CustomAxis(MeasList measList, GraphView graph){
-        switch (measList.GetMeas()) {
+    private void CustomAxis(ArrayMediciones arrayMediciones, GraphView graph){
+        switch (arrayMediciones.getTipoMedicion()) {
             case Constants.TEMP_OBJ_ID:
                 if(id_graph != Constants.ROOMS_ID)
                     CustomTimeGraph(graph);
@@ -337,16 +328,16 @@ public class PlotFragment extends Fragment implements IComData{
         }
     }
 
-    private LineGraphSeries<DataPoint> LoadMeasurements(MeasList measList){
-        ArrayList<Measurement> list = measList.GetList();
+    private LineGraphSeries<DataPoint> LoadMeasurements(ArrayMediciones arrayMediciones){
+        ArrayList<Medicion> list = arrayMediciones.getMediciones();
         LineGraphSeries<DataPoint> aux_series = new LineGraphSeries<>();
-        for (Measurement m : list) {
+        for (Medicion m : list) {
             switch (id_graph){
                 case Constants.ROOMS_ID:
-                    if(measList.GetMeas() == Constants.TEMP_OBJ_ID || measList.GetMeas() == Constants.SPO2_ID || measList.GetMeas() == Constants.HR_ID)
-                        aux_series.appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
+                    if(arrayMediciones.getTipoMedicion() == Constants.TEMP_OBJ_ID || arrayMediciones.getTipoMedicion() == Constants.SPO2_ID || arrayMediciones.getTipoMedicion() == Constants.HR_ID)
+                        aux_series.appendData(new DataPoint(m.getSample(), m.getValue()), true, 20);
                     else
-                        aux_series.appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
+                        aux_series.appendData(new DataPoint(m.getDate(), m.getValue()), true, 40);
                     break;
                 case Constants.PEOPLE_ID:
                 case Constants.TEMP_OBJ_ID:
@@ -354,7 +345,7 @@ public class PlotFragment extends Fragment implements IComData{
                 case Constants.SPO2_ID:
                 case Constants.CO2_ID:
                 case Constants.HR_ID:
-                    aux_series.appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
+                    aux_series.appendData(new DataPoint(m.getDate(), m.getValue()), true, 40);
                     break;
                 default:
                     break;
@@ -521,49 +512,49 @@ public class PlotFragment extends Fragment implements IComData{
         return lgseries;
     }
 
-    private void UpdateThreshold(int index, int id_meas, Measurement m){
+    private void UpdateThreshold(int index, int id_meas, Medicion m){
         if(id_graph == Constants.ROOMS_ID){
             switch (id_meas) {
                 case Constants.TEMP_OBJ_ID:
-                    thresholdSeries.get(index).appendData(new DataPoint(m.GetSample(), Constants.TH_TEMP), true, 20);
+                    thresholdSeries.get(index).appendData(new DataPoint(m.getSample(), Constants.TH_TEMP), true, 20);
                     break;
                 case Constants.SPO2_ID:
-                    thresholdSeries.get(index).appendData(new DataPoint(m.GetSample(), Constants.TH_SPO2), true, 20);
+                    thresholdSeries.get(index).appendData(new DataPoint(m.getSample(), Constants.TH_SPO2), true, 20);
                     break;
                 case Constants.HR_ID:
-                    thresholdSeries.get(index).appendData(new DataPoint(m.GetSample(), Constants.TH_HR), true, 20);
+                    thresholdSeries.get(index).appendData(new DataPoint(m.getSample(), Constants.TH_HR), true, 20);
                     break;
             }
         } else {
             switch (id_meas) {
                 case Constants.TEMP_OBJ_ID:
-                    thresholdSeries.get(index).appendData(new DataPoint(m.GetDate(), Constants.TH_TEMP), true, 20);
+                    thresholdSeries.get(index).appendData(new DataPoint(m.getDate(), Constants.TH_TEMP), true, 20);
                     break;
                 case Constants.SPO2_ID:
-                    thresholdSeries.get(index).appendData(new DataPoint(m.GetDate(), Constants.TH_SPO2), true, 20);
+                    thresholdSeries.get(index).appendData(new DataPoint(m.getDate(), Constants.TH_SPO2), true, 20);
                     break;
                 case Constants.HR_ID:
-                    thresholdSeries.get(index).appendData(new DataPoint(m.GetDate(), Constants.TH_HR), true, 20);
+                    thresholdSeries.get(index).appendData(new DataPoint(m.getDate(), Constants.TH_HR), true, 20);
                     break;
             }
         }
     }
 
     @Override
-    public void MeasArrived(String id_room, int id_meas, Measurement m) {
-        for(int i=0; i<measLists.size();i++){
-            MeasList measList = measLists.get(i);
-            if(id_room.equals(measList.GetRoom())) {
-                if(id_meas == measList.GetMeas()){
+    public void MeasArrived(String id_room, int id_meas, Medicion m) {
+        for(int i = 0; i< arrayMediciones.size(); i++){
+            ArrayMediciones arrayMediciones = this.arrayMediciones.get(i);
+            if(id_room.equals(arrayMediciones.getKeyDispositivo())) {
+                if(id_meas == arrayMediciones.getTipoMedicion()){
                     if(id_graph == Constants.ROOMS_ID){
                         if(id_meas == Constants.TEMP_AMB_ID || id_meas == Constants.CO2_ID)
-                            series.get(i).appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
+                            series.get(i).appendData(new DataPoint(m.getDate(), m.getValue()), true, 40);
                         else {
-                            series.get(i).appendData(new DataPoint(m.GetSample(), m.GetValue()), true, 20);
+                            series.get(i).appendData(new DataPoint(m.getSample(), m.getValue()), true, 20);
                             UpdateThreshold(i, id_meas, m);
                         }
                     } else {
-                        series.get(i).appendData(new DataPoint(m.GetDate(), m.GetValue()), true, 40);
+                        series.get(i).appendData(new DataPoint(m.getDate(), m.getValue()), true, 40);
                         if(id_meas != Constants.TEMP_AMB_ID && id_meas != Constants.CO2_ID)
                             UpdateThreshold(i, id_meas, m);
                     }

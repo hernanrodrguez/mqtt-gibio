@@ -5,12 +5,9 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +22,8 @@ public class PersonFragment extends Fragment implements IComData {
 
     private IComFragments iComFragments;
 
-    private ArrayList<MeasList> measLists;
-    private Room person;
+    private ArrayList<ArrayMediciones> arrayMediciones;
+    private Dispositivo person;
     private int id_person;
 
     private View view;
@@ -61,10 +58,10 @@ public class PersonFragment extends Fragment implements IComData {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        measLists = new ArrayList<>();
+        arrayMediciones = new ArrayList<>();
         if (getArguments() != null) {
             Bundle bundle = getArguments();
-            person = (Room) bundle.getSerializable(Constants.DATA_KEY);
+            person = (Dispositivo) bundle.getSerializable(Constants.DATA_KEY);
             id_person = bundle.getInt(Constants.CASE_KEY);
         }
     }
@@ -95,7 +92,7 @@ public class PersonFragment extends Fragment implements IComData {
         btnRoomTemperature = view.findViewById(R.id.btnRoomTemperature);
         btnCO2Level = view.findViewById(R.id.btnCO2Level);
 
-        tvTitle.setText(person.GetIdRoom().toUpperCase());
+        tvTitle.setText(person.getKey().toUpperCase());
 
         btnHistory.setOnClickListener(this::OnClick);
         btnSubjectTemperature.setOnClickListener(this::OnClick);
@@ -123,7 +120,7 @@ public class PersonFragment extends Fragment implements IComData {
 
         for(int id : Constants.MEAS_IDS){
             try {
-                CustomBtnColor(person.GetLastMeasurement(id), id);
+                CustomBtnColor(person.getUltimaMedicion(id), id);
             } catch (Exception e){
                 CustomNotMeas(id);
             }
@@ -160,9 +157,9 @@ public class PersonFragment extends Fragment implements IComData {
         }
     }
 
-    private void CustomBtnColor(Measurement m, int id) {
-        double value = m.GetValue();
-        Date date = m.GetDate();
+    private void CustomBtnColor(Medicion m, int id) {
+        double value = m.getValue();
+        Date date = m.getDate();
 
         int red = ContextCompat.getColor(getActivity(), R.color.red);
         int green = ContextCompat.getColor(getActivity(), R.color.green_sea);
@@ -239,8 +236,8 @@ public class PersonFragment extends Fragment implements IComData {
     }
 
     @Override
-    public void MeasArrived(String id_room, int id_meas, Measurement measurement) {
-        if(person.GetIdRoom().equals(id_room))
-            CustomBtnColor(measurement, id_meas);
+    public void MeasArrived(String id_room, int id_meas, Medicion medicion) {
+        if(person.getKey().equals(id_room))
+            CustomBtnColor(medicion, id_meas);
     }
 }
