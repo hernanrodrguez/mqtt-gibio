@@ -13,37 +13,36 @@ public final class Constants {
     public final static String MEAS_VALUES_KEY = "Meas";
     public final static String FACTOR_KEY = "Factor";
 
-    public final static String TEMP_OBJ_KEY = "TO";
-    public final static String TEMP_AMB_KEY = "TA";
-    public final static String CO2_KEY = "C";
-    public final static String SPO2_KEY = "S";
-    public final static String HR_KEY = "HR";
+    public final static String KEY_TEMPERATURA_SUJETO = "TO";
+    public final static String KEY_TEMPERATURA_AMBIENTE = "TA";
+    public final static String KEY_CO2 = "C";
+    public final static String KEY_SPO2 = "S";
+    public final static String KEY_FRECUENCIA_CARDIACA = "HR";
     public final static ArrayList<String> KEYS = new ArrayList<String>(){
         {
-            add(TEMP_OBJ_KEY);
-            add(SPO2_KEY);
-            add(HR_KEY);
-            add(TEMP_AMB_KEY);
-            add(CO2_KEY);
+            add(KEY_TEMPERATURA_SUJETO);
+            add(KEY_SPO2);
+            add(KEY_FRECUENCIA_CARDIACA);
+            add(KEY_TEMPERATURA_AMBIENTE);
+            add(KEY_CO2);
         }
     };
 
-    public final static int ROOMS_ID = 1;
-    public final static int PEOPLE_ID = 2;
-    public final static int TEMP_OBJ_ID = 3;
-    public final static int TEMP_AMB_ID = 4;
-    public final static int CO2_ID = 5;
-    public final static int SPO2_ID = 6;
+    public final static int DISPO_HABITACION = 1;
+    public final static int DISPO_PERSONA = 2;
 
-    public final static int PERSON_ID = 7;
+    public final static int TEMPERATURA_AMBIENTE = 1;
+    public final static int TEMPERATURA_SUJETO = 2;
+    public final static int CO2 = 3;
+    public final static int SPO2 = 4;
+    public final static int FRECUENCIA_CARDIACA = 5;
 
     public final static int MAP_ID = 8;
     public final static int SETTINGS_ID = 9;
-    public final static int HR_ID = 10;
     public final static int CALIBRATE_ID = 11;
     public final static int CORRELATION_ID = 12;
-    public final static int[] IDS = new int[]{TEMP_OBJ_ID, TEMP_AMB_ID, CO2_ID, SPO2_ID, ROOMS_ID, PERSON_ID, PEOPLE_ID, MAP_ID, SETTINGS_ID, HR_ID, CALIBRATE_ID, CORRELATION_ID};
-    public final static int[] MEAS_IDS = new int[]{TEMP_OBJ_ID, TEMP_AMB_ID, CO2_ID, SPO2_ID, HR_ID};
+    public final static int[] IDS = new int[]{TEMPERATURA_SUJETO, TEMPERATURA_AMBIENTE, CO2, SPO2, DISPO_HABITACION, DISPO_PERSONA, DISPO_PERSONA, MAP_ID, SETTINGS_ID, FRECUENCIA_CARDIACA, CALIBRATE_ID, CORRELATION_ID};
+    public final static int[] MEAS_IDS = new int[]{TEMPERATURA_SUJETO, TEMPERATURA_AMBIENTE, CO2, SPO2, FRECUENCIA_CARDIACA};
 
     public final static double TH_TEMP = 37.5;
     public final static double TH_SPO2 = 94;
@@ -64,16 +63,16 @@ public final class Constants {
 
     public static int Key2Id(String key){
         switch (key){
-            case TEMP_OBJ_KEY:
-                return TEMP_OBJ_ID;
-            case TEMP_AMB_KEY:
-                return TEMP_AMB_ID;
-            case CO2_KEY:
-                return CO2_ID;
-            case SPO2_KEY:
-                return SPO2_ID;
-            case HR_KEY:
-                return HR_ID;
+            case KEY_TEMPERATURA_SUJETO:
+                return TEMPERATURA_SUJETO;
+            case KEY_TEMPERATURA_AMBIENTE:
+                return TEMPERATURA_AMBIENTE;
+            case KEY_CO2:
+                return CO2;
+            case KEY_SPO2:
+                return SPO2;
+            case KEY_FRECUENCIA_CARDIACA:
+                return FRECUENCIA_CARDIACA;
             default:
                 return -1;
         }
@@ -81,16 +80,16 @@ public final class Constants {
 
     public static String Id2Key(int id) throws Exception {
         switch (id){
-            case TEMP_OBJ_ID:
-                return TEMP_OBJ_KEY;
-            case TEMP_AMB_ID:
-                return TEMP_AMB_KEY;
-            case CO2_ID:
-                return CO2_KEY;
-            case SPO2_ID:
-                return SPO2_KEY;
-            case HR_ID:
-                return HR_KEY;
+            case TEMPERATURA_SUJETO:
+                return KEY_TEMPERATURA_SUJETO;
+            case TEMPERATURA_AMBIENTE:
+                return KEY_TEMPERATURA_AMBIENTE;
+            case CO2:
+                return KEY_CO2;
+            case SPO2:
+                return KEY_SPO2;
+            case FRECUENCIA_CARDIACA:
+                return KEY_FRECUENCIA_CARDIACA;
             default:
                 throw new Exception("Invalid Id");
         }

@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class CalibrateFragment extends Fragment{
 
@@ -63,26 +62,26 @@ public class CalibrateFragment extends Fragment{
     }
 
     private boolean OnLongClick(View view) {
-        iComFragments.ClearCalibrationData();
+        iComFragments.clearCalibrationData();
         return true;
     }
 
     public void OnClick(View v){
         switch (v.getId()){
             case R.id.btnCalibrateTempSubj:
-                iComFragments.RequestMeasurement(Constants.TEMP_OBJ_ID);
+                iComFragments.RequestMeasurement(Constants.TEMPERATURA_SUJETO);
                 break;
             case R.id.btnCalibrateTempAmb:
-                iComFragments.RequestMeasurement(Constants.TEMP_AMB_ID);
+                iComFragments.RequestMeasurement(Constants.TEMPERATURA_AMBIENTE);
                 break;
             case R.id.btnCalibrateCO2:
-                iComFragments.RequestMeasurement(Constants.CO2_ID);
+                iComFragments.RequestMeasurement(Constants.CO2);
                 break;
             case R.id.btnCalibrateSPO2:
-                iComFragments.RequestMeasurement(Constants.SPO2_ID);
+                iComFragments.RequestMeasurement(Constants.SPO2);
                 break;
             case R.id.btnCalibrateHeartRate:
-                iComFragments.RequestMeasurement(Constants.HR_ID);
+                iComFragments.RequestMeasurement(Constants.FRECUENCIA_CARDIACA);
                 break;
             case R.id.btnCorrelation:
                 iComFragments.BtnClicked(Constants.CORRELATION_ID);

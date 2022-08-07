@@ -132,23 +132,23 @@ public class PersonFragment extends Fragment implements IComData {
         int red = ContextCompat.getColor(getActivity(), R.color.red);
 
         switch (id) {
-            case Constants.TEMP_OBJ_ID:
+            case Constants.TEMPERATURA_SUJETO:
                 tvTObjTime.setText(getString(R.string.lbl_no_meas));
                 btnSubjectTemperature.setBackgroundColor(red);
                 break;
-            case Constants.SPO2_ID:
+            case Constants.SPO2:
                 tvSPO2Time.setText(getString(R.string.lbl_no_meas));
                 btnSPO2Level.setBackgroundColor(red);
                 break;
-            case Constants.TEMP_AMB_ID:
+            case Constants.TEMPERATURA_AMBIENTE:
                 tvTAmbTime.setText(getString(R.string.lbl_no_meas));
                 btnRoomTemperature.setBackgroundColor(red);
                 break;
-            case Constants.CO2_ID:
+            case Constants.CO2:
                 tvCO2Time.setText(getString(R.string.lbl_no_meas));
                 btnCO2Level.setBackgroundColor(red);
                 break;
-            case Constants.HR_ID:
+            case Constants.FRECUENCIA_CARDIACA:
                 tvHRTime.setText(getString(R.string.lbl_no_meas));
                 btnHeartRate.setBackgroundColor(red);
                 break;
@@ -165,7 +165,7 @@ public class PersonFragment extends Fragment implements IComData {
         int green = ContextCompat.getColor(getActivity(), R.color.green_sea);
 
         switch (id){
-            case Constants.TEMP_OBJ_ID:
+            case Constants.TEMPERATURA_SUJETO:
                 tvTObjValue.setText(getString(R.string.lbl_last_value, value, "°C"));
                 tvTObjTime.setText(getString(R.string.lbl_last_time, sdf.format(date)));
                 if(value > Constants.TH_TEMP)
@@ -173,7 +173,7 @@ public class PersonFragment extends Fragment implements IComData {
                 else
                     btnSubjectTemperature.setBackgroundColor(green);
                 break;
-            case Constants.SPO2_ID:
+            case Constants.SPO2:
                 tvSPO2Value.setText(getString(R.string.lbl_last_value, value, "%"));
                 tvSPO2Time.setText(getString(R.string.lbl_last_time, sdf.format(date)));
                 if(value < Constants.TH_SPO2)
@@ -181,7 +181,7 @@ public class PersonFragment extends Fragment implements IComData {
                 else
                     btnSPO2Level.setBackgroundColor(green);
                 break;
-            case Constants.TEMP_AMB_ID:
+            case Constants.TEMPERATURA_AMBIENTE:
                 tvTAmbValue.setText(getString(R.string.lbl_last_value, value, "°C"));
                 tvTAmbTime.setText(getString(R.string.lbl_last_time, sdf.format(date)));
                 if(value > 35)
@@ -189,7 +189,7 @@ public class PersonFragment extends Fragment implements IComData {
                 else
                     btnRoomTemperature.setBackgroundColor(green);
                 break;
-            case Constants.CO2_ID:
+            case Constants.CO2:
                 tvCO2Value.setText(getString(R.string.lbl_last_value, value, " ppm"));
                 tvCO2Time.setText(getString(R.string.lbl_last_time, sdf.format(date)));
                 if(value > Constants.TH_CO2)
@@ -197,7 +197,7 @@ public class PersonFragment extends Fragment implements IComData {
                 else
                     btnCO2Level.setBackgroundColor(green);
                 break;
-            case Constants.HR_ID:
+            case Constants.FRECUENCIA_CARDIACA:
                 tvHRValue.setText(getString(R.string.lbl_last_value, value, " bpm"));
                 tvHRTime.setText(getString(R.string.lbl_last_time, sdf.format(date)));
                 if(value > Constants.TH_HR)
@@ -213,22 +213,22 @@ public class PersonFragment extends Fragment implements IComData {
     public void OnClick(View v){
         switch (v.getId()){
             case R.id.btnHistory:
-                iComFragments.BtnClicked(Constants.PERSON_ID, id_person);
+                iComFragments.BtnClicked(Constants.DISPO_PERSONA, id_person);
                 break;
             case R.id.btnSubjectTemperature:
-                iComFragments.BtnClicked(Constants.TEMP_OBJ_ID, id_person);
+                iComFragments.BtnClicked(Constants.TEMPERATURA_SUJETO, id_person);
                 break;
             case R.id.btnSPO2Level:
-                iComFragments.BtnClicked(Constants.SPO2_ID, id_person);
+                iComFragments.BtnClicked(Constants.SPO2, id_person);
                 break;
             case R.id.btnRoomTemperature:
-                iComFragments.BtnClicked(Constants.TEMP_AMB_ID, id_person);
+                iComFragments.BtnClicked(Constants.TEMPERATURA_AMBIENTE, id_person);
                 break;
             case R.id.btnCO2Level:
-                iComFragments.BtnClicked(Constants.CO2_ID, id_person);
+                iComFragments.BtnClicked(Constants.CO2, id_person);
                 break;
             case R.id.btnHeartRate:
-                iComFragments.BtnClicked(Constants.HR_ID, id_person);
+                iComFragments.BtnClicked(Constants.FRECUENCIA_CARDIACA, id_person);
                 break;
             default:
                 break;

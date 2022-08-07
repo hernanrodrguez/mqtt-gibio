@@ -22,4 +22,9 @@ public class Medicion implements Serializable {
     public Date getDate(){ return date; }
     public int getSample(){ return sample; }
 
+    @Override
+    public String toString() {
+        return ("[MEDICION] Valor: " + this.value + " Fecha: " + this.date);
+    }
+
 }

@@ -30,7 +30,9 @@ import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONArray;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MqttListener, IComFragments{
@@ -180,10 +182,10 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 setUpHomeActivity();
                 break;
             case R.id.nav_rooms:
-                BtnClicked(Constants.ROOMS_ID);
+                BtnClicked(Constants.DISPO_HABITACION);
                 break;
             case R.id.nav_people:
-                BtnClicked(Constants.PEOPLE_ID);
+                BtnClicked(Constants.DISPO_PERSONA);
                 break;
             case R.id.nav_map:
                 BtnClicked(Constants.MAP_ID);
@@ -207,24 +209,32 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     private void mostrarDispositivos(int tipo_dispositivo){
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
         builderSingle.setIcon(R.drawable.room);
-        if(tipo_dispositivo == Constants.ROOMS_ID)
+        if(tipo_dispositivo == Constants.DISPO_HABITACION)
             builderSingle.setTitle(R.string.lbl_select_room);
-        if(tipo_dispositivo == Constants.PEOPLE_ID)
+        if(tipo_dispositivo == Constants.DISPO_PERSONA)
             builderSingle.setTitle(R.string.lbl_select_person);
 
-        ArrayList<String> dispositivos_id = new ArrayList<>();
+        ArrayList<String> dispositivos_key = new ArrayList<>();
         for(Dispositivo d : dispositivos) {
-            if(tipo_dispositivo == Constants.ROOMS_ID && d.getTipoDispositivo() == Constants.ROOMS_ID) {
-                dispositivos_id.add(d.getKey().toUpperCase());
+            if(tipo_dispositivo == Constants.DISPO_HABITACION && d.getTipoDispositivo() == Constants.DISPO_HABITACION) {
+                dispositivos_key.add(d.getKey().toUpperCase());
             }
-            if(tipo_dispositivo == Constants.PEOPLE_ID && d.getTipoDispositivo() == Constants.PEOPLE_ID) {
-                dispositivos_id.add(d.getKey().toUpperCase());
+            if(tipo_dispositivo == Constants.DISPO_PERSONA && d.getTipoDispositivo() == Constants.DISPO_PERSONA) {
+                dispositivos_key.add(d.getKey().toUpperCase());
             }
         }
-        CharSequence[] cs = dispositivos_id.toArray(new CharSequence[dispositivos_id.size()]);
+        CharSequence[] cs = dispositivos_key.toArray(new CharSequence[dispositivos_key.size()]);
 
         builderSingle.setItems(cs, (dialog, which) -> {
-            sendDispositivo(dispositivos.get(which));
+            Log.println(Log.DEBUG, "MOSTRAR DISPOSITIVOS", "Click en " + dispositivos_key.get(which));
+            for(Dispositivo d : dispositivos){
+                Log.println(Log.DEBUG, "MOSTRAR DISPOSITIVOS", "Iterando " + d.toString());
+                if(d.getKey().toUpperCase().equals(dispositivos_key.get(which))){
+                    Log.println(Log.DEBUG, "MOSTRAR DISPOSITIVOS", "Envio " + d.toString());
+                    mqttRequestMediciones(d);
+                    break;
+                }
+            }
         });
 
         builderSingle.setNegativeButton(R.string.lbl_cancel, (dialog, which) -> dialog.dismiss());
@@ -377,14 +387,14 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         builderSingle.setIcon(R.drawable.thermometer_person);
         builderSingle.setTitle(R.string.lbl_select_person);
 
-        ArrayList<String> people_id = new ArrayList<>();
+        ArrayList<String> people_keys = new ArrayList<>();
         for(Dispositivo persona : personas)
-            people_id.add(persona.getKey().toUpperCase());
+            people_keys.add(persona.getKey().toUpperCase());
 
-        CharSequence[] cs = people_id.toArray(new CharSequence[people_id.size()]);
+        CharSequence[] cs = people_keys.toArray(new CharSequence[people_keys.size()]);
 
         switch (id){
-            case Constants.PEOPLE_ID:
+            case Constants.DISPO_PERSONA:
                 builderSingle.setItems(cs, (dialog, which) -> {
                     SendPersonLastMeasurement(personas.get(which), which);
                 });
@@ -394,15 +404,15 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                     SetUpCorrelationPlot(which);
                 });
                 break;
-            case Constants.TEMP_OBJ_ID:
-            case Constants.TEMP_AMB_ID:
-            case Constants.CO2_ID:
-            case Constants.SPO2_ID:
-            case Constants.HR_ID:
+            /*case Constants.TEMPERATURA_SUJETO:
+            case Constants.TEMPERATURA_AMBIENTE:
+            case Constants.CO2:
+            case Constants.SPO2:
+            case Constants.FRECUENCIA_CARDIACA:
                 builderSingle.setItems(cs, (dialog, which) -> {
                     SendRequest(id, which);
                 });
-                break;
+                break;*/
         }
 
         builderSingle.setNegativeButton(R.string.lbl_cancel, (dialog, which) -> dialog.dismiss());
@@ -529,16 +539,39 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         } // Ante un mensaje erroneo o algun problema, simplemente ignoro el caso
     }
     */
-    private void enviarDatosGraficos(){
-        if(dispositivos.size() > 0)
-            chequearDispositivos();
-        else
+    private void verificarDispositivos(){
+        if(dispositivos.size() > 0) {
+            int personas = 0;
+            int habitaciones = 0;
+            for (Dispositivo d : dispositivos) {
+                if (d.getTipoDispositivo() == Constants.DISPO_PERSONA) personas++;
+                if (d.getTipoDispositivo() == Constants.DISPO_HABITACION) habitaciones++;
+            }
+            Log.println(Log.DEBUG, "DEBUG", "personas: " + personas);
+            Log.println(Log.DEBUG, "DEBUG", "habitaciones: " + habitaciones);
+            if (lastBtnClicked == Constants.DISPO_HABITACION) {
+                if (habitaciones > 0) mostrarDispositivos(lastBtnClicked);
+                else Toast.makeText(this, R.string.lbl_no_meas, Toast.LENGTH_SHORT).show();
+            } else if (lastBtnClicked == Constants.DISPO_PERSONA) {
+                if (personas > 0) mostrarDispositivos(lastBtnClicked);
+                else Toast.makeText(this, R.string.lbl_no_meas, Toast.LENGTH_SHORT).show();
+            }
+        } else
             Toast.makeText(this, R.string.lbl_no_meas, Toast.LENGTH_SHORT).show();
     }
 
     private void SetUpCalibrateFragment(){
         calibrateFragment = new CalibrateFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, calibrateFragment).addToBackStack(null).commit();
+    }
+
+    public static boolean containsId(ArrayList<Dispositivo> dispositivos, int id) {
+        for(Dispositivo d : dispositivos) {
+            if(d != null && d.getId() == id) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void guardarDispositivos(String msg){
@@ -548,15 +581,42 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 int id = arr.getJSONObject(i).getInt("id");
                 String key = arr.getJSONObject(i).getString("key");
                 int tipo = arr.getJSONObject(i).getInt("tipo_dispositivo");
-                Log.println(Log.DEBUG, "JSON", "DEVICE ARRIVED");
-                Log.println(Log.DEBUG, "JSON", "id: " + id);
-                Log.println(Log.DEBUG, "JSON", "key: " + key);
-                Log.println(Log.DEBUG, "JSON", "tipo_dispositivo: " + tipo);
                 Dispositivo d = new Dispositivo(id, key, tipo);
-                if (!dispositivos.contains(d))
+                Log.println(Log.DEBUG, "LLEGO DISPOSITIVO", d.toString());
+                if (!containsId(dispositivos, id))
                     dispositivos.add(d);
             }
-            enviarDatosGraficos();
+            verificarDispositivos();
+        } catch (Exception e){
+            Log.e("ERROR", e.getLocalizedMessage());
+        }
+    }
+
+    private void guardarMediciones(String msg){
+        try {
+            int id_dispositivo = 0;
+            JSONArray arr = new JSONArray(msg);
+            for (int i = 0; i < arr.length(); i++) {
+                double valor = arr.getJSONObject(i).getDouble("valor");
+                int tipo_medicion = arr.getJSONObject(i).getInt("tipo_medicion");
+                id_dispositivo = arr.getJSONObject(i).getInt("id_dispositivo");
+                long timestamp = arr.getJSONObject(i).getLong("fecha");
+                Date fecha = new Date(timestamp*1000);
+                Medicion m = new Medicion(valor, fecha);
+                for(Dispositivo d : dispositivos) {
+                    if (d.getId() == id_dispositivo) {
+                        d.addMedicion(m, tipo_medicion);
+                        Log.println(Log.DEBUG, "GUARDO MEDICION", m.toString());
+                        Log.println(Log.DEBUG, "GUARDO MEDICION", d.toString());
+                    }
+                }
+            }
+            if(id_dispositivo != 0){
+                for(Dispositivo d : dispositivos) {
+                    if (d.getId() == id_dispositivo)
+                        sendDispositivo(d);
+                }
+            }
         } catch (Exception e){
             Log.e("ERROR", e.getLocalizedMessage());
         }
@@ -564,25 +624,19 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     @Override
     public void MessageArrived(String topic, String msg) {
+        hideProgressDialog();
         if(topic.split("/")[1].equals("dispositivos"))
             guardarDispositivos(msg);
-        //else if(topic.split("/")[1].equals("dispo"))
-        //    HandleMessage_Person(topic, msg);
-//        try{
-//            if(topic.split("/")[1].equals("room"))
-//                HandleMessage(topic, msg);
-//            else if(topic.split("/")[1].equals("person"))
-//                HandleMessage_Person(topic, msg);
-//            if(topic.split("/")[3].equals("meas") &&
-//                getSupportFragmentManager().findFragmentById(R.id.fragHome) instanceof CalibrateFragment) {
-//                hideProgressDialog();
-//                HandleMessage_Calibration(topic, msg);
-//            }
-//        } catch (Exception e){
-//            Log.e("ERROR", e.getLocalizedMessage());
-//        }
-//        messages.addMedicion(topic + ": " + msg);
-//        adapter.notifyDataSetChanged();
+        else if(topic.split("/")[1].equals("mediciones")) {
+            guardarMediciones(msg);
+            try {
+                if (topic.split("/")[2].equals("last")) {
+                    Log.println(Log.DEBUG, "LLEGO MENSAJE", "Ultima medicion");
+                }
+            } catch (Exception e) {
+                Log.e("ERROR", e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -623,23 +677,23 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         dialogInput = (EditText) viewInflated.findViewById(R.id.dialog_input);
 
         switch (id_meas){
-            case Constants.TEMP_OBJ_ID:
+            case Constants.TEMPERATURA_SUJETO:
                 dialogTitle.setText(R.string.lbl_tobj_received);
                 dialogDesc.setText(getString(R.string.lbl_value_received, value, "°C"));
                 break;
-            case Constants.TEMP_AMB_ID:
+            case Constants.TEMPERATURA_AMBIENTE:
                 dialogTitle.setText(R.string.lbl_tamb_received);
                 dialogDesc.setText(getString(R.string.lbl_value_received, value, "°C"));
                 break;
-            case Constants.CO2_ID:
+            case Constants.CO2:
                 dialogTitle.setText(R.string.lbl_co2_received);
                 dialogDesc.setText(getString(R.string.lbl_value_received, value, " ppm"));
                 break;
-            case Constants.SPO2_ID:
+            case Constants.SPO2:
                 dialogTitle.setText(R.string.lbl_spo2_received);
                 dialogDesc.setText(getString(R.string.lbl_value_received, value, "%"));
                 break;
-            case Constants.HR_ID:
+            case Constants.FRECUENCIA_CARDIACA:
                 dialogTitle.setText(R.string.lbl_hr_received);
                 dialogDesc.setText(getString(R.string.lbl_value_received, value, " bpm"));
                 break;
@@ -729,23 +783,33 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         }
     }
 
-    private void MqttRequestPeople() {
+    private void mqttRequestMediciones(Dispositivo d) {
+        try{
+            mqttClient.Publish("request/mediciones/last",
+                    "id_dispositivo="+d.getId());
+            showProgressDialog();
+        } catch (Exception e){
+            Log.println(Log.ERROR, "ERROR", "Request Personas Exception");
+        }
+    }
+
+    private void mqttRequestPersonas() {
         try{
             mqttClient.Publish("request/dispositivos",
                                 "2");
             //showProgressDialog();
         } catch (Exception e){
-            Log.println(Log.ERROR, "ERROR", "Request Measurement Exception");
+            Log.println(Log.ERROR, "ERROR", "Request Personas Exception");
         }
     }
 
-    private void MqttRequestRooms() {
+    private void mqttRequestHabitaciones() {
         try{
             mqttClient.Publish("request/dispositivos",
                     "1");
-            //showProgressDialog();
+            showProgressDialog();
         } catch (Exception e){
-            Log.println(Log.ERROR, "ERROR", "Request Measurement Exception");
+            Log.println(Log.ERROR, "ERROR", "Request Habitaciones Exception");
         }
     }
 
@@ -753,13 +817,12 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     public void BtnClicked(int id) {
         lastBtnClicked = id;
         switch (id){
-            case Constants.ROOMS_ID:
-                MqttRequestRooms();
-                //enviarDatosGraficos(id);
+            case Constants.DISPO_HABITACION:
+                mqttRequestHabitaciones();
                 break;
-            case Constants.PEOPLE_ID:
+            case Constants.DISPO_PERSONA:
             case Constants.CORRELATION_ID:
-                MqttRequestPeople();
+                mqttRequestPersonas();
                 //CheckPeople(id);
                 break;
             case Constants.MAP_ID:
@@ -778,24 +841,24 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     @Override
     public void BtnClicked(int graph, int id) {
         switch (graph) {
-            case Constants.PERSON_ID:
+            case Constants.DISPO_PERSONA:
                 SendPerson(personas.get(id));
                 break;
-            case Constants.TEMP_OBJ_ID:
+            /*case Constants.TEMPERATURA_SUJETO:
                 SendMeasList(graph, personas.get(id).getTObjArray());
                 break;
-            case Constants.SPO2_ID:
+            case Constants.SPO2:
                 SendMeasList(graph, personas.get(id).getSpo2Array());
                 break;
-            case Constants.TEMP_AMB_ID:
+            case Constants.TEMPERATURA_AMBIENTE:
                 SendMeasList(graph, personas.get(id).getTAmbArray());
                 break;
-            case Constants.CO2_ID:
+            case Constants.CO2:
                 SendMeasList(graph, personas.get(id).getCO2Array());
                 break;
-            case Constants.HR_ID:
+            case Constants.FRECUENCIA_CARDIACA:
                 SendMeasList(graph, personas.get(id).getHRArray());
-                break;
+                break;*/
             default:
                 break;
         }
@@ -803,14 +866,29 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     @Override
     public void sendDispositivo(Dispositivo dispositivo) {
-        plotFragment = new PlotFragment();
         Bundle bundle = new Bundle();
+        switch(lastBtnClicked){
+            case Constants.DISPO_HABITACION:
+                plotFragment = new PlotFragment();
 
-        bundle.putInt(Constants.CASE_KEY, Constants.ROOMS_ID);
-        bundle.putSerializable(Constants.DATA_KEY, dispositivo);
+                Log.println(Log.DEBUG, "SEND DISPOSITIVO", dispositivo.toString());
+                bundle.putInt(Constants.CASE_KEY, dispositivo.getTipoDispositivo());
+                bundle.putSerializable(Constants.DATA_KEY, dispositivo);
 
-        plotFragment.setArguments(bundle);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
+                plotFragment.setArguments(bundle);
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
+                break;
+            case Constants.DISPO_PERSONA:
+                personFragment = new PersonFragment();
+
+                bundle.putInt(Constants.CASE_KEY, dispositivo.getTipoDispositivo());
+                bundle.putSerializable(Constants.DATA_KEY, dispositivo);
+
+                personFragment.setArguments(bundle);
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, personFragment).addToBackStack(null).commit();
+                break;
+        }
+
     }
 
     @Override
@@ -818,7 +896,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         plotFragment = new PlotFragment();
         Bundle bundle = new Bundle();
 
-        bundle.putInt(Constants.CASE_KEY, Constants.PEOPLE_ID);
+        bundle.putInt(Constants.CASE_KEY, Constants.DISPO_PERSONA);
         bundle.putSerializable(Constants.DATA_KEY, person);
 
         plotFragment.setArguments(bundle);
@@ -839,21 +917,21 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     @Override
     public void RequestMeasurement(int id) {
-        CheckPeople(id);
+        // CheckPeople(id);
     }
 
     @Override
-    public void ClearCalibrationData(){
+    public void clearCalibrationData(){
         new AlertDialog.Builder(this)
                 .setTitle(R.string.lbl_warning)
                 .setMessage(R.string.lbl_warning_cal)
-                .setPositiveButton(R.string.lbl_yes, (dialog, which) -> ClearData())
+                .setPositiveButton(R.string.lbl_yes, (dialog, which) -> clearData())
                 .setNegativeButton(R.string.lbl_no, null)
                 .setIcon(R.drawable.warning)
                 .show();
     }
 
-    public void ClearData(){
+    public void clearData(){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(Constants.MEAS_VALUES_KEY, "");
@@ -877,42 +955,24 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         return list;
     }
 
-    private void chequearDispositivos(){
-        int personas = 0;
-        int habitaciones = 0;
-        for(Dispositivo d : dispositivos){
-            if(d.getTipoDispositivo() == Constants.PEOPLE_ID) personas++;
-            if(d.getTipoDispositivo() == Constants.ROOMS_ID) habitaciones++;
-        }
-        Log.println(Log.DEBUG, "DEBUG", "personas: " + personas);
-        Log.println(Log.DEBUG, "DEBUG", "habitaciones: " + habitaciones);
-        if(lastBtnClicked == Constants.ROOMS_ID) {
-            if (habitaciones > 0) mostrarDispositivos(lastBtnClicked);
-            else Toast.makeText(this, R.string.lbl_no_meas, Toast.LENGTH_SHORT).show();
-        } else if(lastBtnClicked == Constants.PEOPLE_ID) {
-            if (personas > 0) mostrarDispositivos(lastBtnClicked);
-            else Toast.makeText(this, R.string.lbl_no_meas, Toast.LENGTH_SHORT).show();
-        }
-    }
-
     private void CheckPeople(int id){
         if(personas.size() > 1)
             mostrarPersonas(id);
         else if(personas.size() == 1){
             switch (id){
-                case Constants.PEOPLE_ID:
+                case Constants.DISPO_PERSONA:
                     SendPersonLastMeasurement(personas.get(0), 0);
                     break;
                 case Constants.CORRELATION_ID:
                     SetUpCorrelationPlot(0);
                     break;
-                case Constants.TEMP_OBJ_ID:
-                case Constants.TEMP_AMB_ID:
-                case Constants.CO2_ID:
-                case Constants.SPO2_ID:
-                case Constants.HR_ID:
+                /*case Constants.TEMPERATURA_SUJETO:
+                case Constants.TEMPERATURA_AMBIENTE:
+                case Constants.CO2:
+                case Constants.SPO2:
+                case Constants.FRECUENCIA_CARDIACA:
                     SendRequest(id, 0);
-                    break;
+                    break;*/
             }
         } else
             Toast.makeText(this, R.string.lbl_no_meas, Toast.LENGTH_SHORT).show();

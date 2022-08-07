@@ -7,5 +7,5 @@ public interface IComFragments {
     void SendPerson(Dispositivo person);
     void SendMeasList(int graph, ArrayMediciones list);
     void RequestMeasurement(int id);
-    void ClearCalibrationData();
+    void clearCalibrationData();
 }
