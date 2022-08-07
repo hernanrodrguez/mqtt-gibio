@@ -32,6 +32,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -535,23 +538,44 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, calibrateFragment).addToBackStack(null).commit();
     }
 
-    @Override
-    public void MessageArrived(String topic, String msg) {
-        try{
-            if(topic.split("/")[1].equals("room"))
-                HandleMessage(topic, msg);
-            else if(topic.split("/")[1].equals("person"))
-                HandleMessage_Person(topic, msg);
-            if(topic.split("/")[3].equals("meas") &&
-                getSupportFragmentManager().findFragmentById(R.id.fragHome) instanceof CalibrateFragment) {
-                HideProgressDialog();
-                HandleMessage_Calibration(topic, msg);
+    private void DevicesArrived(String msg){
+        try {
+            JSONArray arr = new JSONArray(msg);
+            for (int i = 0; i < arr.length(); i++) {
+                int id = arr.getJSONObject(i).getInt("id");
+                String key = arr.getJSONObject(i).getString("key");
+                int tipo = arr.getJSONObject(i).getInt("tipo_dispositivo");
+                Log.println(Log.DEBUG, "JSON", "DEVICE ARRIVED");
+                Log.println(Log.DEBUG, "JSON", "id: " + id);
+                Log.println(Log.DEBUG, "JSON", "key: " + key);
+                Log.println(Log.DEBUG, "JSON", "tipo_dispositivo: " + tipo);
             }
         } catch (Exception e){
             Log.e("ERROR", e.getLocalizedMessage());
         }
-        messages.add(topic + ": " + msg);
-        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void MessageArrived(String topic, String msg) {
+        if(topic.split("/")[1].equals("dispositivos"))
+            DevicesArrived(msg);
+        //else if(topic.split("/")[1].equals("dispo"))
+        //    HandleMessage_Person(topic, msg);
+//        try{
+//            if(topic.split("/")[1].equals("room"))
+//                HandleMessage(topic, msg);
+//            else if(topic.split("/")[1].equals("person"))
+//                HandleMessage_Person(topic, msg);
+//            if(topic.split("/")[3].equals("meas") &&
+//                getSupportFragmentManager().findFragmentById(R.id.fragHome) instanceof CalibrateFragment) {
+//                HideProgressDialog();
+//                HandleMessage_Calibration(topic, msg);
+//            }
+//        } catch (Exception e){
+//            Log.e("ERROR", e.getLocalizedMessage());
+//        }
+//        messages.add(topic + ": " + msg);
+//        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -698,15 +722,37 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         }
     }
 
+    private void MqttRequestPeople() {
+        try{
+            mqttClient.Publish("request/dispositivos",
+                                "2");
+            //ShowProgressDialog();
+        } catch (Exception e){
+            Log.println(Log.ERROR, "ERROR", "Request Measurement Exception");
+        }
+    }
+
+    private void MqttRequestRooms() {
+        try{
+            mqttClient.Publish("request/dispositivos",
+                    "1");
+            //ShowProgressDialog();
+        } catch (Exception e){
+            Log.println(Log.ERROR, "ERROR", "Request Measurement Exception");
+        }
+    }
+
     @Override
     public void BtnClicked(int id) {
         switch (id){
             case Constants.ROOMS_ID:
-                SendPlotData(id);
+                MqttRequestRooms();
+                //SendPlotData(id);
                 break;
             case Constants.PEOPLE_ID:
             case Constants.CORRELATION_ID:
-                CheckPeople(id);
+                MqttRequestPeople();
+                //CheckPeople(id);
                 break;
             case Constants.MAP_ID:
                 break;
