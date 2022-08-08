@@ -14,6 +14,18 @@ public class Dispositivo implements Serializable {
     private final ArrayMediciones mediciones_spo2;
     private final ArrayMediciones mediciones_hr;
 
+    public Dispositivo() {
+        this.id = 0;
+        this.key = "";
+        this.tipo_dispositivo = 0;
+
+        this.mediciones_temp_amb = new ArrayMediciones();
+        this.mediciones_temp_obj = new ArrayMediciones();
+        this.mediciones_co2 = new ArrayMediciones();
+        this.mediciones_spo2 = new ArrayMediciones();
+        this.mediciones_hr = new ArrayMediciones();
+    }
+
     public Dispositivo(Dispositivo d) {
         this.id = d.getId();
         this.key = d.getKey();

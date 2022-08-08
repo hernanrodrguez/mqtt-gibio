@@ -84,7 +84,7 @@ public class CalibrateFragment extends Fragment{
                 iComFragments.RequestMeasurement(Constants.FRECUENCIA_CARDIACA);
                 break;
             case R.id.btnCorrelation:
-                iComFragments.BtnClicked(Constants.CORRELATION_ID);
+                iComFragments.btnClicked(Constants.CORRELATION_ID);
                 break;
             default:
                 break;

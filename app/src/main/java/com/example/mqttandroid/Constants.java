@@ -37,10 +37,14 @@ public final class Constants {
     public final static int SPO2 = 4;
     public final static int FRECUENCIA_CARDIACA = 5;
 
+    public final static int GRAFICAR_PERSONA = 6;
+    public final static int GRAFICAR_HABITACION = 7;
+
     public final static int MAP_ID = 8;
     public final static int SETTINGS_ID = 9;
     public final static int CALIBRATE_ID = 11;
     public final static int CORRELATION_ID = 12;
+    public final static int ULTIMAS_MEDICIONES = 12;
     public final static int[] IDS = new int[]{TEMPERATURA_SUJETO, TEMPERATURA_AMBIENTE, CO2, SPO2, DISPO_HABITACION, DISPO_PERSONA, DISPO_PERSONA, MAP_ID, SETTINGS_ID, FRECUENCIA_CARDIACA, CALIBRATE_ID, CORRELATION_ID};
     public final static int[] MEAS_IDS = new int[]{TEMPERATURA_SUJETO, TEMPERATURA_AMBIENTE, CO2, SPO2, FRECUENCIA_CARDIACA};
 

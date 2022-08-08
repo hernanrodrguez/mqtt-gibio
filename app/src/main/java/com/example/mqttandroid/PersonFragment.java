@@ -23,8 +23,8 @@ public class PersonFragment extends Fragment implements IComData {
     private IComFragments iComFragments;
 
     private ArrayList<ArrayMediciones> arrayMediciones;
-    private Dispositivo person;
-    private int id_person;
+    private Dispositivo persona;
+    private int id_persona;
 
     private View view;
 
@@ -61,8 +61,8 @@ public class PersonFragment extends Fragment implements IComData {
         arrayMediciones = new ArrayList<>();
         if (getArguments() != null) {
             Bundle bundle = getArguments();
-            person = (Dispositivo) bundle.getSerializable(Constants.DATA_KEY);
-            id_person = bundle.getInt(Constants.CASE_KEY);
+            persona = (Dispositivo) bundle.getSerializable(Constants.DATA_KEY);
+            id_persona = bundle.getInt(Constants.CASE_KEY);
         }
     }
 
@@ -92,7 +92,7 @@ public class PersonFragment extends Fragment implements IComData {
         btnRoomTemperature = view.findViewById(R.id.btnRoomTemperature);
         btnCO2Level = view.findViewById(R.id.btnCO2Level);
 
-        tvTitle.setText(person.getKey().toUpperCase());
+        tvTitle.setText(persona.getKey().toUpperCase());
 
         btnHistory.setOnClickListener(this::OnClick);
         btnSubjectTemperature.setOnClickListener(this::OnClick);
@@ -120,7 +120,7 @@ public class PersonFragment extends Fragment implements IComData {
 
         for(int id : Constants.MEAS_IDS){
             try {
-                CustomBtnColor(person.getUltimaMedicion(id), id);
+                CustomBtnColor(persona.getUltimaMedicion(id), id);
             } catch (Exception e){
                 CustomNotMeas(id);
             }
@@ -213,22 +213,22 @@ public class PersonFragment extends Fragment implements IComData {
     public void OnClick(View v){
         switch (v.getId()){
             case R.id.btnHistory:
-                iComFragments.BtnClicked(Constants.DISPO_PERSONA, id_person);
+                iComFragments.btnClicked(Constants.GRAFICAR_PERSONA, id_persona);
                 break;
             case R.id.btnSubjectTemperature:
-                iComFragments.BtnClicked(Constants.TEMPERATURA_SUJETO, id_person);
+                iComFragments.btnClicked(Constants.TEMPERATURA_SUJETO, id_persona);
                 break;
             case R.id.btnSPO2Level:
-                iComFragments.BtnClicked(Constants.SPO2, id_person);
+                iComFragments.btnClicked(Constants.SPO2, id_persona);
                 break;
             case R.id.btnRoomTemperature:
-                iComFragments.BtnClicked(Constants.TEMPERATURA_AMBIENTE, id_person);
+                iComFragments.btnClicked(Constants.TEMPERATURA_AMBIENTE, id_persona);
                 break;
             case R.id.btnCO2Level:
-                iComFragments.BtnClicked(Constants.CO2, id_person);
+                iComFragments.btnClicked(Constants.CO2, id_persona);
                 break;
             case R.id.btnHeartRate:
-                iComFragments.BtnClicked(Constants.FRECUENCIA_CARDIACA, id_person);
+                iComFragments.btnClicked(Constants.FRECUENCIA_CARDIACA, id_persona);
                 break;
             default:
                 break;
@@ -237,7 +237,7 @@ public class PersonFragment extends Fragment implements IComData {
 
     @Override
     public void MeasArrived(String id_room, int id_meas, Medicion medicion) {
-        if(person.getKey().equals(id_room))
+        if(persona.getKey().equals(id_room))
             CustomBtnColor(medicion, id_meas);
     }
 }

@@ -5,6 +5,7 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,7 +67,6 @@ public class PlotFragment extends Fragment implements IComData{
             arrayMediciones = new ArrayList<>();
 
             switch (id_graph){
-                /*
                 case Constants.TEMPERATURA_AMBIENTE:
                 case Constants.CO2:
                 case Constants.TEMPERATURA_SUJETO:
@@ -74,12 +74,9 @@ public class PlotFragment extends Fragment implements IComData{
                 case Constants.FRECUENCIA_CARDIACA:
                     ArrayMediciones list = (ArrayMediciones) bundle.getSerializable(Constants.DATA_KEY);
                     arrayMediciones.add(list);
-                    break;*/
-                //case Constants.DISPO_PERSONA:
-                //    arrayMediciones = (ArrayList<ArrayMediciones>) bundle.getSerializable(Constants.DATA_KEY);
-                //    break;
-                case Constants.DISPO_HABITACION:
-                case Constants.DISPO_PERSONA:
+                    break;
+                case Constants.GRAFICAR_PERSONA:
+                case Constants.GRAFICAR_HABITACION:
                     dispositivo = (Dispositivo) bundle.getSerializable(Constants.DATA_KEY);
                     break;
                 case Constants.CORRELATION_ID:
@@ -237,19 +234,19 @@ public class PlotFragment extends Fragment implements IComData{
         LinearLayout ll = CustomLinearLayout();
         CustomGraphTitle(v);
 
-        if(id_graph == Constants.DISPO_HABITACION || id_graph == Constants.DISPO_PERSONA)
+        if(id_graph == Constants.GRAFICAR_HABITACION || id_graph == Constants.GRAFICAR_PERSONA)
             arrayMediciones = LoadList();
 
-        for(ArrayMediciones arrayMediciones : this.arrayMediciones) {
-            TextView tv = CustomTextView(arrayMediciones.getTipoMedicion());
+        for(ArrayMediciones mediciones : this.arrayMediciones) {
+            TextView tv = CustomTextView(mediciones.getTipoMedicion());
             LineGraphSeries<DataPoint> currentThreshold;
 
             GraphView graph = CustomGraphView();
             currentSeries = new LineGraphSeries<>();
             gridLabel = graph.getGridLabelRenderer();
             viewport = graph.getViewport();
-            currentSeries = LoadMeasurements(arrayMediciones);
-            currentThreshold = SetThresholdLine(arrayMediciones.getTipoMedicion(), currentSeries);
+            currentSeries = LoadMeasurements(mediciones);
+            currentThreshold = SetThresholdLine(mediciones.getTipoMedicion(), currentSeries);
 
             graph.addSeries(currentSeries);
             graph.addSeries(currentThreshold);
@@ -257,7 +254,7 @@ public class PlotFragment extends Fragment implements IComData{
             thresholdSeries.add(currentThreshold);
 
             viewport.setScalable(true);
-            CustomAxis(arrayMediciones, graph);
+            CustomAxis(mediciones, graph);
 
             ll.addView(tv);
             ll.addView(graph);
@@ -267,23 +264,23 @@ public class PlotFragment extends Fragment implements IComData{
 
     private void CustomGraphTitle(View v){
         TextView tv = v.findViewById(R.id.tvGraphTitle);
-        if(id_graph == Constants.DISPO_HABITACION || id_graph == Constants.DISPO_PERSONA)
+        if(id_graph == Constants.GRAFICAR_HABITACION || id_graph == Constants.GRAFICAR_PERSONA)
             tv.setText(dispositivo.getKey().toUpperCase());
         else if(id_graph == Constants.CORRELATION_ID)
             tv.setText(getString(R.string.lbl_corr).toUpperCase());
-        else
-            tv.setText(arrayMediciones.get(0).getKeyDispositivo().toUpperCase());
+        /*else
+            tv.setText(arrayMediciones.get(0).getKeyDispositivo().toUpperCase());*/
     }
 
     private ArrayList<ArrayMediciones> LoadList(){
         ArrayList<ArrayMediciones> list = new ArrayList<>();
-        if(id_graph == Constants.DISPO_HABITACION) {
+        if(id_graph == Constants.GRAFICAR_HABITACION) {
             list.add(dispositivo.getTAmbArray());
             list.add(dispositivo.getCO2Array());
             list.add(dispositivo.getTObjArray());
             list.add(dispositivo.getSpo2Array());
             list.add(dispositivo.getHRArray());
-        } else if(id_graph == Constants.DISPO_PERSONA){
+        } else if(id_graph == Constants.GRAFICAR_PERSONA){
             list.add(dispositivo.getTObjArray());
             list.add(dispositivo.getSpo2Array());
             list.add(dispositivo.getHRArray());
@@ -296,7 +293,7 @@ public class PlotFragment extends Fragment implements IComData{
     private void CustomAxis(ArrayMediciones arrayMediciones, GraphView graph){
         switch (arrayMediciones.getTipoMedicion()) {
             case Constants.TEMPERATURA_SUJETO:
-                if(id_graph != Constants.DISPO_HABITACION)
+                if(id_graph != Constants.GRAFICAR_HABITACION)
                     CustomTimeGraph(graph);
                 else
                     CustomSamplesGraph();
@@ -311,14 +308,14 @@ public class PlotFragment extends Fragment implements IComData{
                 CustomCO2Graph();
                 break;
             case Constants.SPO2:
-                if(id_graph != Constants.DISPO_HABITACION)
+                if(id_graph != Constants.GRAFICAR_HABITACION)
                     CustomTimeGraph(graph);
                 else
                     CustomSamplesGraph();
                 CustomSPO2Graph();
                 break;
             case Constants.FRECUENCIA_CARDIACA:
-                if(id_graph != Constants.DISPO_HABITACION)
+                if(id_graph != Constants.GRAFICAR_HABITACION)
                     CustomTimeGraph(graph);
                 else
                     CustomSamplesGraph();
@@ -332,24 +329,27 @@ public class PlotFragment extends Fragment implements IComData{
     private LineGraphSeries<DataPoint> LoadMeasurements(ArrayMediciones arrayMediciones){
         ArrayList<Medicion> list = arrayMediciones.getMediciones();
         LineGraphSeries<DataPoint> aux_series = new LineGraphSeries<>();
+        list.remove(0);
+        list.remove(list.size()-1);
         for (Medicion m : list) {
             switch (id_graph){
-                case Constants.DISPO_HABITACION:
+                case Constants.GRAFICAR_HABITACION:
                     if(arrayMediciones.getTipoMedicion() == Constants.TEMPERATURA_SUJETO || arrayMediciones.getTipoMedicion() == Constants.SPO2 || arrayMediciones.getTipoMedicion() == Constants.FRECUENCIA_CARDIACA)
                         aux_series.appendData(new DataPoint(m.getSample(), m.getValue()), true, 20);
                     else
                         aux_series.appendData(new DataPoint(m.getDate(), m.getValue()), true, 40);
                     break;
-                /*case Constants.DISPO_PERSONA:
+                case Constants.GRAFICAR_PERSONA:
                 case Constants.TEMPERATURA_SUJETO:
                 case Constants.TEMPERATURA_AMBIENTE:
                 case Constants.SPO2:
                 case Constants.CO2:
                 case Constants.FRECUENCIA_CARDIACA:
+                    Log.d("LoadMeasurements", m.toString());
                     aux_series.appendData(new DataPoint(m.getDate(), m.getValue()), true, 40);
                     break;
                 default:
-                    break;*/
+                    break;
             }
         }
         return aux_series;
@@ -514,7 +514,7 @@ public class PlotFragment extends Fragment implements IComData{
     }
 
     private void UpdateThreshold(int index, int id_meas, Medicion m){
-        if(id_graph == Constants.DISPO_HABITACION){
+        if(id_graph == Constants.GRAFICAR_HABITACION){
             switch (id_meas) {
                 case Constants.TEMPERATURA_SUJETO:
                     thresholdSeries.get(index).appendData(new DataPoint(m.getSample(), Constants.TH_TEMP), true, 20);
@@ -547,7 +547,7 @@ public class PlotFragment extends Fragment implements IComData{
             ArrayMediciones arrayMediciones = this.arrayMediciones.get(i);
             if(id_room.equals(arrayMediciones.getKeyDispositivo())) {
                 if(id_meas == arrayMediciones.getTipoMedicion()){
-                    if(id_graph == Constants.DISPO_HABITACION){
+                    if(id_graph == Constants.GRAFICAR_HABITACION){
                         if(id_meas == Constants.TEMPERATURA_AMBIENTE || id_meas == Constants.CO2)
                             series.get(i).appendData(new DataPoint(m.getDate(), m.getValue()), true, 40);
                         else {
