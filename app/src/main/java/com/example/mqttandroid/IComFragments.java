@@ -1,9 +1,12 @@
 package com.example.mqttandroid;
 
 public interface IComFragments {
-    void BtnClicked(int graph);
-    void BtnClicked(int graph, int id);
-    void SendRoom(Room room);
-    void SendPerson(Room person);
-    void SendMeasList(int graph, MeasList list);
+    void btnClicked(int graph);
+    void btnClicked(int graph, int id);
+    void sendDispositivo(Dispositivo dispositivo);
+    void sendArray(Dispositivo dispositivo, int graph);
+    void sendPersona(Dispositivo person);
+    void SendMeasList(int graph, ArrayMediciones list);
+    void RequestMeasurement(int id);
+    void clearCalibrationData();
 }

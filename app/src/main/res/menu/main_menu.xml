@@ -29,6 +29,10 @@
                 android:id="@+id/nav_bug"
                 android:icon="@drawable/bug_icon"
                 android:title="@string/lbl_bug" />
+            <item
+                android:id="@+id/nav_calibration"
+                android:icon="@drawable/calibrate"
+                android:title="@string/lbl_calibrate" />
         </menu>
     </item>
 

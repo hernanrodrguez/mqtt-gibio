@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp">
+
+    <!-->src: https://www.youtube.com/watch?v=LX61IJI6wGw <-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_title_calibrate"
+                android:text="@string/lbl_calibrate_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="30sp"
+                android:textAlignment="center"
+                android:fontFamily="@font/poppins_bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                app:cardCornerRadius="15dp"
+                android:layout_marginTop="20dp">
+
+                <RelativeLayout
+                    android:id="@+id/btnCalibrateTempSubj"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:id="@+id/tv_cal_tobj_title"
+                        android:text="@string/lbl_temp_lower"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:fontFamily="@font/poppins_bold"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginStart="10dp"/>
+                    <TextView
+                        android:id="@+id/tv_cal_tobj"
+                        android:layout_below="@id/tv_cal_tobj_title"
+                        android:text="@string/lbl_calibrate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="@font/poppins"/>
+                    <ImageView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="100dp"
+                        android:maxWidth="150dp"
+                        android:layout_height="75dp"
+                        android:maxHeight="100dp"
+                        android:src="@drawable/fever"
+                        android:layout_alignParentEnd="true"/>
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                app:cardCornerRadius="15dp"
+                android:layout_marginTop="20dp">
+
+                <RelativeLayout
+                    android:id="@+id/btnCalibrateSPO2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:id="@+id/tv_cal_spo2_title"
+                        android:text="@string/lbl_spo2_lower"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:fontFamily="@font/poppins_bold"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginStart="10dp"/>
+                    <TextView
+                        android:id="@+id/tv_cal_spo2"
+                        android:layout_below="@id/tv_cal_spo2_title"
+                        android:text="@string/lbl_calibrate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="@font/poppins"/>
+                    <ImageView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="100dp"
+                        android:maxWidth="150dp"
+                        android:layout_height="75dp"
+                        android:maxHeight="100dp"
+                        android:src="@drawable/oximeter"
+                        android:layout_alignParentEnd="true"/>
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                app:cardCornerRadius="15dp"
+                android:layout_marginTop="20dp">
+
+                <RelativeLayout
+                    android:id="@+id/btnCalibrateHeartRate"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:id="@+id/tv_cal_hr_title"
+                        android:text="@string/lbl_hr_lower"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:fontFamily="@font/poppins_bold"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginStart="10dp"/>
+                    <TextView
+                        android:id="@+id/tv_cal_hr"
+                        android:layout_below="@id/tv_cal_hr_title"
+                        android:text="@string/lbl_calibrate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="@font/poppins"/>
+                    <ImageView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="100dp"
+                        android:maxWidth="150dp"
+                        android:layout_height="75dp"
+                        android:maxHeight="100dp"
+                        android:src="@drawable/heart_rate"
+                        android:layout_alignParentEnd="true"/>
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                app:cardCornerRadius="15dp"
+                android:layout_marginTop="20dp">
+
+                <RelativeLayout
+                    android:id="@+id/btnCalibrateTempAmb"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:id="@+id/tv_cal_tamb_title"
+                        android:text="@string/lbl_temp_lower"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:fontFamily="@font/poppins_bold"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginStart="10dp"/>
+                    <TextView
+                        android:id="@+id/tv_cal_tamb"
+                        android:layout_below="@id/tv_cal_tamb_title"
+                        android:text="@string/lbl_calibrate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="@font/poppins"/>
+                    <ImageView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="100dp"
+                        android:maxWidth="150dp"
+                        android:layout_height="75dp"
+                        android:maxHeight="100dp"
+                        android:src="@drawable/thermometer_thin"
+                        android:layout_alignParentEnd="true"/>
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                app:cardCornerRadius="15dp"
+                android:layout_marginTop="20dp">
+
+                <RelativeLayout
+                    android:id="@+id/btnCalibrateCO2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:id="@+id/tv_cal_co2_title"
+                        android:text="@string/lbl_co2_lower"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:fontFamily="@font/poppins_bold"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginStart="10dp"/>
+                    <TextView
+                        android:id="@+id/tv_cal_co2"
+                        android:layout_below="@id/tv_cal_co2_title"
+                        android:text="@string/lbl_calibrate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="@font/poppins"/>
+                    <ImageView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="100dp"
+                        android:maxWidth="150dp"
+                        android:layout_height="75dp"
+                        android:maxHeight="100dp"
+                        android:src="@drawable/co2"
+                        android:layout_alignParentEnd="true"/>
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                app:cardCornerRadius="5dp"
+                android:layout_marginTop="15dp">
+
+                <TextView
+                    android:id="@+id/btnCorrelation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:text="@string/lbl_correlation"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/poppins"
+                    android:textColor="@color/white"
+                    android:background="@color/cardview_dark_background"/>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

@@ -5,12 +5,9 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,9 +22,9 @@ public class PersonFragment extends Fragment implements IComData {
 
     private IComFragments iComFragments;
 
-    private ArrayList<MeasList> measLists;
-    private Room person;
-    private int id_person;
+    private ArrayList<ArrayMediciones> arrayMediciones;
+    private Dispositivo persona;
+    private int id_persona;
 
     private View view;
 
@@ -61,11 +58,11 @@ public class PersonFragment extends Fragment implements IComData {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        measLists = new ArrayList<>();
+        arrayMediciones = new ArrayList<>();
         if (getArguments() != null) {
             Bundle bundle = getArguments();
-            person = (Room) bundle.getSerializable(Constants.DATA_KEY);
-            id_person = bundle.getInt(Constants.CASE_KEY);
+            persona = (Dispositivo) bundle.getSerializable(Constants.DATA_KEY);
+            id_persona = bundle.getInt(Constants.CASE_KEY);
         }
     }
 
@@ -95,7 +92,7 @@ public class PersonFragment extends Fragment implements IComData {
         btnRoomTemperature = view.findViewById(R.id.btnRoomTemperature);
         btnCO2Level = view.findViewById(R.id.btnCO2Level);
 
-        tvTitle.setText(person.GetIdRoom().toUpperCase());
+        tvTitle.setText(persona.getKey().toUpperCase());
 
         btnHistory.setOnClickListener(this::OnClick);
         btnSubjectTemperature.setOnClickListener(this::OnClick);
@@ -123,7 +120,7 @@ public class PersonFragment extends Fragment implements IComData {
 
         for(int id : Constants.MEAS_IDS){
             try {
-                CustomBtnColor(person.GetLastMeasurement(id), id);
+                CustomBtnColor(persona.getUltimaMedicion(id), id);
             } catch (Exception e){
                 CustomNotMeas(id);
             }
@@ -135,23 +132,23 @@ public class PersonFragment extends Fragment implements IComData {
         int red = ContextCompat.getColor(getActivity(), R.color.red);
 
         switch (id) {
-            case Constants.TEMP_OBJ_ID:
+            case Constants.TEMPERATURA_SUJETO:
                 tvTObjTime.setText(getString(R.string.lbl_no_meas));
                 btnSubjectTemperature.setBackgroundColor(red);
                 break;
-            case Constants.SPO2_ID:
+            case Constants.SPO2:
                 tvSPO2Time.setText(getString(R.string.lbl_no_meas));
                 btnSPO2Level.setBackgroundColor(red);
                 break;
-            case Constants.TEMP_AMB_ID:
+            case Constants.TEMPERATURA_AMBIENTE:
                 tvTAmbTime.setText(getString(R.string.lbl_no_meas));
                 btnRoomTemperature.setBackgroundColor(red);
                 break;
-            case Constants.CO2_ID:
+            case Constants.CO2:
                 tvCO2Time.setText(getString(R.string.lbl_no_meas));
                 btnCO2Level.setBackgroundColor(red);
                 break;
-            case Constants.HR_ID:
+            case Constants.FRECUENCIA_CARDIACA:
                 tvHRTime.setText(getString(R.string.lbl_no_meas));
                 btnHeartRate.setBackgroundColor(red);
                 break;
@@ -160,15 +157,15 @@ public class PersonFragment extends Fragment implements IComData {
         }
     }
 
-    private void CustomBtnColor(Measurement m, int id) {
-        double value = m.GetValue();
-        Date date = m.GetDate();
+    private void CustomBtnColor(Medicion m, int id) {
+        double value = m.getValue();
+        Date date = m.getDate();
 
         int red = ContextCompat.getColor(getActivity(), R.color.red);
         int green = ContextCompat.getColor(getActivity(), R.color.green_sea);
 
         switch (id){
-            case Constants.TEMP_OBJ_ID:
+            case Constants.TEMPERATURA_SUJETO:
                 tvTObjValue.setText(getString(R.string.lbl_last_value, value, "°C"));
                 tvTObjTime.setText(getString(R.string.lbl_last_time, sdf.format(date)));
                 if(value > Constants.TH_TEMP)
@@ -176,7 +173,7 @@ public class PersonFragment extends Fragment implements IComData {
                 else
                     btnSubjectTemperature.setBackgroundColor(green);
                 break;
-            case Constants.SPO2_ID:
+            case Constants.SPO2:
                 tvSPO2Value.setText(getString(R.string.lbl_last_value, value, "%"));
                 tvSPO2Time.setText(getString(R.string.lbl_last_time, sdf.format(date)));
                 if(value < Constants.TH_SPO2)
@@ -184,7 +181,7 @@ public class PersonFragment extends Fragment implements IComData {
                 else
                     btnSPO2Level.setBackgroundColor(green);
                 break;
-            case Constants.TEMP_AMB_ID:
+            case Constants.TEMPERATURA_AMBIENTE:
                 tvTAmbValue.setText(getString(R.string.lbl_last_value, value, "°C"));
                 tvTAmbTime.setText(getString(R.string.lbl_last_time, sdf.format(date)));
                 if(value > 35)
@@ -192,7 +189,7 @@ public class PersonFragment extends Fragment implements IComData {
                 else
                     btnRoomTemperature.setBackgroundColor(green);
                 break;
-            case Constants.CO2_ID:
+            case Constants.CO2:
                 tvCO2Value.setText(getString(R.string.lbl_last_value, value, " ppm"));
                 tvCO2Time.setText(getString(R.string.lbl_last_time, sdf.format(date)));
                 if(value > Constants.TH_CO2)
@@ -200,7 +197,7 @@ public class PersonFragment extends Fragment implements IComData {
                 else
                     btnCO2Level.setBackgroundColor(green);
                 break;
-            case Constants.HR_ID:
+            case Constants.FRECUENCIA_CARDIACA:
                 tvHRValue.setText(getString(R.string.lbl_last_value, value, " bpm"));
                 tvHRTime.setText(getString(R.string.lbl_last_time, sdf.format(date)));
                 if(value > Constants.TH_HR)
@@ -216,22 +213,22 @@ public class PersonFragment extends Fragment implements IComData {
     public void OnClick(View v){
         switch (v.getId()){
             case R.id.btnHistory:
-                iComFragments.BtnClicked(Constants.PERSON_ID, id_person);
+                iComFragments.btnClicked(Constants.GRAFICAR_PERSONA, id_persona);
                 break;
             case R.id.btnSubjectTemperature:
-                iComFragments.BtnClicked(Constants.TEMP_OBJ_ID, id_person);
+                iComFragments.btnClicked(Constants.TEMPERATURA_SUJETO, id_persona);
                 break;
             case R.id.btnSPO2Level:
-                iComFragments.BtnClicked(Constants.SPO2_ID, id_person);
+                iComFragments.btnClicked(Constants.SPO2, id_persona);
                 break;
             case R.id.btnRoomTemperature:
-                iComFragments.BtnClicked(Constants.TEMP_AMB_ID, id_person);
+                iComFragments.btnClicked(Constants.TEMPERATURA_AMBIENTE, id_persona);
                 break;
             case R.id.btnCO2Level:
-                iComFragments.BtnClicked(Constants.CO2_ID, id_person);
+                iComFragments.btnClicked(Constants.CO2, id_persona);
                 break;
             case R.id.btnHeartRate:
-                iComFragments.BtnClicked(Constants.HR_ID, id_person);
+                iComFragments.btnClicked(Constants.FRECUENCIA_CARDIACA, id_persona);
                 break;
             default:
                 break;
@@ -239,8 +236,8 @@ public class PersonFragment extends Fragment implements IComData {
     }
 
     @Override
-    public void MeasArrived(String id_room, int id_meas, Measurement measurement) {
-        if(person.GetIdRoom().equals(id_room))
-            CustomBtnColor(measurement, id_meas);
+    public void MeasArrived(String id_room, int id_meas, Medicion medicion) {
+        if(persona.getKey().equals(id_room))
+            CustomBtnColor(medicion, id_meas);
     }
 }
