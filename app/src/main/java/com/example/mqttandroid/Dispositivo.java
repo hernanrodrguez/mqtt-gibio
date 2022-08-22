@@ -156,6 +156,14 @@ public class Dispositivo implements Serializable {
         }
     }
 
+    public boolean tieneMediciones(){
+        return (mediciones_temp_obj.size()  > 0 &&
+                mediciones_temp_amb.size()  > 0 &&
+                mediciones_hr.size()        > 0 &&
+                mediciones_spo2.size()      > 0 &&
+                mediciones_co2.size()       > 0 );
+    }
+
     @Override
     public String toString() {
         return ("[DISPOSITIVO] Key: " + this.key + " Tipo dispositivo: " + this.tipo_dispositivo + " ID: " + this.id);

@@ -230,7 +230,10 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 Log.println(Log.DEBUG, "MOSTRAR DISPOSITIVOS", "Iterando " + d.toString());
                 if(d.getKey().toUpperCase().equals(dispositivos_key.get(which))){
                     Log.println(Log.DEBUG, "MOSTRAR DISPOSITIVOS", "Envio " + d.toString());
-                    mqttRequestMediciones(d, Constants.ULTIMAS_MEDICIONES);
+                    if(tipo_dispositivo == Constants.DISPO_HABITACION)
+                        mqttRequestMediciones(d, Constants.GRAFICAR_HABITACION);
+                    if(tipo_dispositivo == Constants.DISPO_PERSONA)
+                        mqttRequestMediciones(d, Constants.ULTIMAS_MEDICIONES);
                     break;
                 }
             }
@@ -434,44 +437,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         }
         return -1;
     }
-    /*
-    private void HandleMessage(String topic, String msg){
-        try {
-            int current_room;
-            String id_room = ObtainIdRoom(topic);
-            if(id_room != null) {
-                if (habitacionExiste(id_room)) {
-                    current_room = getHabitacionActual(id_room);
-                } else {
-                    current_room = habitaciones.size();
-                    habitaciones.add(new Dispositivo(id_room));
-                }
-                String[] all_data = msg.split("-");
 
-                for (String data : all_data) {
-                    String key_meas = data.split(":")[0];
-                    int id_meas = Constants.Key2Id(key_meas); // Obtengo el tipo de medicion
-                    double value = Double.parseDouble(data.split(":")[1]); // Obtengo el valor de la medicion
-
-                    Dispositivo dispositivo = habitaciones.get(current_room); // Trabajo con la habitacion a la que pertenece la medicion
-                    Medicion medicion;
-                    if(id_meas == Constants.TEMP_AMB_ID || id_meas == Constants.CO2_ID){
-                        Date date = Calendar.getInstance().getTime(); // Obtengo la hora de la medicion
-                        medicion = new Medicion(value, date); // Creo la nueva medicion
-                    } else{
-                        int index = dispositivo.getUltimoIndice(id_meas); // Obtengo el indice de la ultima medicion
-                        medicion = new Medicion(value, index); // Creo la nueva medicion
-                    }
-                    dispositivo.addMedicion(medicion, id_meas); // Guardo la nueva medicion
-                    if(getSupportFragmentManager().findFragmentById(R.id.fragHome) instanceof PlotFragment)
-                        plotFragment.MeasArrived(id_room, id_meas, medicion); // Envio la medicion al plot fragment para graficar en tiempo real
-                }
-            }
-        } catch (Exception e){
-            Log.e("ERROR", e.getMessage());
-        } // Ante un mensaje erroneo o algun problema, simplemente ignoro el caso
-    }
-    */
     private boolean personaExiste(String key_persona){
         for(Dispositivo persona : personas){
             if(persona.getKey().equals(key_persona))
@@ -487,41 +453,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         }
         return -1;
     }
-    /*
-    private void HandleMessage_Person(String topic, String msg){
-        try {
-            int current_person;
-            String id_person = ObtainIdRoom(topic);
-            if(id_person != null) {
-                if (personaExiste(id_person)) {
-                    current_person = getPersonaActual(id_person);
-                } else {
-                    current_person = personas.size();
-                    personas.add(new Dispositivo(id_person));
-                }
-                String[] all_data = msg.split("-");
 
-                for (String data : all_data) {
-                    String key_meas = data.split(":")[0];
-                    int id_meas = Constants.Key2Id(key_meas); // Obtengo el tipo de medicion
-                    double value = Double.parseDouble(data.split(":")[1]); // Obtengo el valor de la medicion
-
-                    Dispositivo person = personas.get(current_person); // Trabajo con la persona a la que pertenece la medicion
-                    Medicion medicion;
-                    Date date = Calendar.getInstance().getTime(); // Obtengo la hora de la medicion
-                    medicion = new Medicion(value, date); // Creo la nueva medicion
-                    person.addMedicion(medicion, id_meas); // Guardo la nueva medicion
-                    if(getSupportFragmentManager().findFragmentById(R.id.fragHome) instanceof PlotFragment)
-                        plotFragment.MeasArrived(id_person, id_meas, medicion); // Envio la medicion al plot fragment para graficar en tiempo real
-                    if(getSupportFragmentManager().findFragmentById(R.id.fragHome) instanceof PersonFragment)
-                        personFragment.MeasArrived(id_person, id_meas, medicion);
-                }
-            }
-        } catch (Exception e){
-            Log.e("ERROR", e.getMessage());
-        } // Ante un mensaje erroneo o algun problema, simplemente ignoro el caso
-    }
-    */
     /*
     private void HandleMessage_Calibration(String topic, String msg){
         try {
@@ -644,6 +576,8 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 Log.d("LLEGO MENSAJE", "Mediciones de " + d.toString());
                 if(lastBtnClicked == Constants.GRAFICAR_PERSONA)
                     sendPersona(d);
+                else if(lastBtnClicked == Constants.GRAFICAR_HABITACION)
+                    sendDispositivo(d);
                 else
                     sendArray(d, lastBtnClicked);
             }
@@ -811,6 +745,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                     showProgressDialog();
                     break;
                 case Constants.GRAFICAR_PERSONA:
+                case Constants.GRAFICAR_HABITACION:
                     mqttClient.Publish("request/mediciones",
                             "id_dispositivo="+d.getId()+" AND "+
                                     "fecha>"+today.getTime()/1000);
@@ -931,11 +866,18 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         plotFragment = new PlotFragment();
 
         Log.println(Log.DEBUG, "SEND LIST", dispositivo.toString());
-        bundle.putInt(Constants.CASE_KEY, graph);
-        bundle.putSerializable(Constants.DATA_KEY, dispositivo.getArray(graph));
 
-        plotFragment.setArguments(bundle);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
+        if (dispositivo.getArray(graph).size() > 0){
+            bundle.putInt(Constants.CASE_KEY, graph);
+            bundle.putSerializable(Constants.DATA_KEY, dispositivo.getArray(graph));
+
+            plotFragment.setArguments(bundle);
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
+        } else {
+            Toast.makeText(this, "No hay mediciones hoy", Toast.LENGTH_SHORT).show();
+        }
+
+
     }
 
     @Override
@@ -943,11 +885,15 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
         plotFragment = new PlotFragment();
         Bundle bundle = new Bundle();
 
-        bundle.putInt(Constants.CASE_KEY, Constants.GRAFICAR_PERSONA);
-        bundle.putSerializable(Constants.DATA_KEY, persona);
+        if(persona.tieneMediciones()){
+            bundle.putInt(Constants.CASE_KEY, Constants.GRAFICAR_PERSONA);
+            bundle.putSerializable(Constants.DATA_KEY, persona);
 
-        plotFragment.setArguments(bundle);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
+            plotFragment.setArguments(bundle);
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragHome, plotFragment).addToBackStack(null).commit();
+        } else {
+            Toast.makeText(this, "No hay mediciones hoy", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
