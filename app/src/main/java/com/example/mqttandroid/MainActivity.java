@@ -576,7 +576,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 Log.d("LLEGO MENSAJE", "Mediciones de " + d.toString());
                 if(lastBtnClicked == Constants.GRAFICAR_PERSONA)
                     sendPersona(d);
-                else if(lastBtnClicked == Constants.GRAFICAR_HABITACION)
+                else if(lastBtnClicked == Constants.DISPO_HABITACION)
                     sendDispositivo(d);
                 else
                     sendArray(d, lastBtnClicked);
