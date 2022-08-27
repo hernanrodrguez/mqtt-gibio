@@ -213,22 +213,22 @@ public class PersonFragment extends Fragment implements IComData {
     public void OnClick(View v){
         switch (v.getId()){
             case R.id.btnHistory:
-                iComFragments.btnClicked(Constants.GRAFICAR_PERSONA, id_persona);
+                iComFragments.btnClicked(Constants.GRAFICAR_PERSONA, persona);
                 break;
             case R.id.btnSubjectTemperature:
-                iComFragments.btnClicked(Constants.TEMPERATURA_SUJETO, id_persona);
+                iComFragments.btnClicked(Constants.TEMPERATURA_SUJETO, persona);
                 break;
             case R.id.btnSPO2Level:
-                iComFragments.btnClicked(Constants.SPO2, id_persona);
+                iComFragments.btnClicked(Constants.SPO2, persona);
                 break;
             case R.id.btnRoomTemperature:
-                iComFragments.btnClicked(Constants.TEMPERATURA_AMBIENTE, id_persona);
+                iComFragments.btnClicked(Constants.TEMPERATURA_AMBIENTE, persona);
                 break;
             case R.id.btnCO2Level:
-                iComFragments.btnClicked(Constants.CO2, id_persona);
+                iComFragments.btnClicked(Constants.CO2, persona);
                 break;
             case R.id.btnHeartRate:
-                iComFragments.btnClicked(Constants.FRECUENCIA_CARDIACA, id_persona);
+                iComFragments.btnClicked(Constants.FRECUENCIA_CARDIACA, persona);
                 break;
             default:
                 break;

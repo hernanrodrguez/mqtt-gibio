@@ -3,7 +3,7 @@ package com.example.mqttandroid;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Medicion implements Serializable {
+public class Medicion implements Serializable, Comparable<Medicion> {
     private final double value;
     private Date date;
     private int sample;
@@ -27,4 +27,8 @@ public class Medicion implements Serializable {
         return ("[MEDICION] Valor: " + this.value + " Fecha: " + this.date);
     }
 
+    @Override
+    public int compareTo(Medicion o) {
+        return date.compareTo(o.getDate());
+    }
 }

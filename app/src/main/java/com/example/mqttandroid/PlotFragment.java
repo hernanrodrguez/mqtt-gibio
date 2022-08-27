@@ -328,17 +328,20 @@ public class PlotFragment extends Fragment implements IComData{
 
     private LineGraphSeries<DataPoint> LoadMeasurements(ArrayMediciones arrayMediciones){
         ArrayList<Medicion> list = arrayMediciones.getMediciones();
+        Collections.sort(list);
         LineGraphSeries<DataPoint> aux_series = new LineGraphSeries<>();
-        list.remove(0);
-        list.remove(list.size()-1);
+        //list.remove(0);
+        //list.remove(list.size()-1);
         for (Medicion m : list) {
             switch (id_graph){
                 case Constants.GRAFICAR_HABITACION:
                     if(arrayMediciones.getTipoMedicion() == Constants.TEMPERATURA_SUJETO || arrayMediciones.getTipoMedicion() == Constants.SPO2 || arrayMediciones.getTipoMedicion() == Constants.FRECUENCIA_CARDIACA)
                         aux_series.appendData(new DataPoint(m.getSample(), m.getValue()), true, 20);
-                    else
+                    else {
+                        Log.println(Log.DEBUG, "LOAD MEAS", m.toString());
                         aux_series.appendData(new DataPoint(m.getDate(), m.getValue()), true, 40);
-                    break;
+                    }
+                        break;
                 case Constants.GRAFICAR_PERSONA:
                 case Constants.TEMPERATURA_SUJETO:
                 case Constants.TEMPERATURA_AMBIENTE:

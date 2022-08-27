@@ -507,8 +507,13 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
 
     public static boolean containsMedicion(Dispositivo d, Medicion m, int tipo_medicion) {
         for(Medicion medicion : d.getArray(tipo_medicion).getMediciones()) {
+            Log.println(Log.DEBUG, "COMPARO MEDICION", m.toString());
+            Log.println(Log.DEBUG, "COMPARO MEDICION", medicion.toString());
             if(medicion.getDate().equals(m.getDate())) {
+                Log.println(Log.DEBUG, "COMPARO MEDICION", "IGUALES");
                 return true;
+            } else {
+                Log.println(Log.DEBUG, "COMPARO MEDICION", "DISTINTAS");
             }
         }
         return false;
@@ -816,9 +821,9 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     }
 
     @Override
-    public void btnClicked(int graph, int id) {
+    public void btnClicked(int graph, Dispositivo persona) {
         lastBtnClicked = graph;
-        Dispositivo d = getDispositivo(id);
+        Log.d("btnClicked", persona.toString());
         switch (graph) {
             case Constants.GRAFICAR_PERSONA:
             case Constants.TEMPERATURA_SUJETO:
@@ -826,7 +831,7 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
             case Constants.CO2:
             case Constants.SPO2:
             case Constants.FRECUENCIA_CARDIACA:
-                mqttRequestMediciones(d, graph);
+                mqttRequestMediciones(persona, graph);
                 break;
             default:
                 break;
@@ -849,6 +854,8 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
                 break;
             case Constants.DISPO_PERSONA:
                 personFragment = new PersonFragment();
+
+                Log.d("sendDispositivo", dispositivo.toString());
 
                 bundle.putInt(Constants.CASE_KEY, dispositivo.getId());
                 bundle.putSerializable(Constants.DATA_KEY, dispositivo);
@@ -989,6 +996,8 @@ public class MainActivity extends AppCompatActivity implements MqttListener, ICo
     private void SendPersonLastMeasurement(Dispositivo person, int id_person) {
         personFragment = new PersonFragment();
         Bundle bundle = new Bundle();
+
+        Log.d("SendLastMeasurement", person.toString());
 
         bundle.putInt(Constants.CASE_KEY, id_person);
         bundle.putSerializable(Constants.DATA_KEY, person);

@@ -2,7 +2,7 @@ package com.example.mqttandroid;
 
 public interface IComFragments {
     void btnClicked(int graph);
-    void btnClicked(int graph, int id);
+    void btnClicked(int graph, Dispositivo persona);
     void sendDispositivo(Dispositivo dispositivo);
     void sendArray(Dispositivo dispositivo, int graph);
     void sendPersona(Dispositivo person);
