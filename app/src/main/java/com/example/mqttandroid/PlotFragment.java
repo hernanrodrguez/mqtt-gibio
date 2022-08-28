@@ -196,7 +196,7 @@ public class PlotFragment extends Fragment implements IComData{
             factor = sum_real/sum_meas;
         }
         for(int i=0; i<sorted_meas.size(); i++)
-            ret.appendData(new DataPoint(sorted_meas.get(i)*factor, sorted_real.get(i)), true, 40);
+            ret.appendData(new DataPoint(sorted_meas.get(i)*factor, sorted_real.get(i)), true, 500);
 
         return ret;
     }
@@ -245,6 +245,7 @@ public class PlotFragment extends Fragment implements IComData{
             currentSeries = new LineGraphSeries<>();
             gridLabel = graph.getGridLabelRenderer();
             viewport = graph.getViewport();
+            viewport.setScrollable(true);
             currentSeries = LoadMeasurements(mediciones);
             currentThreshold = SetThresholdLine(mediciones.getTipoMedicion(), currentSeries);
 
@@ -253,7 +254,7 @@ public class PlotFragment extends Fragment implements IComData{
             series.add(currentSeries);
             thresholdSeries.add(currentThreshold);
 
-            viewport.setScalable(true);
+            //viewport.setScalable(true);
             CustomAxis(mediciones, graph);
 
             ll.addView(tv);
@@ -327,21 +328,21 @@ public class PlotFragment extends Fragment implements IComData{
     }
 
     private LineGraphSeries<DataPoint> LoadMeasurements(ArrayMediciones arrayMediciones){
+        int i_sample = 0;
         ArrayList<Medicion> list = arrayMediciones.getMediciones();
         Collections.sort(list);
         LineGraphSeries<DataPoint> aux_series = new LineGraphSeries<>();
-        //list.remove(0);
-        //list.remove(list.size()-1);
         for (Medicion m : list) {
-            switch (id_graph){
+            switch (id_graph) {
                 case Constants.GRAFICAR_HABITACION:
-                    if(arrayMediciones.getTipoMedicion() == Constants.TEMPERATURA_SUJETO || arrayMediciones.getTipoMedicion() == Constants.SPO2 || arrayMediciones.getTipoMedicion() == Constants.FRECUENCIA_CARDIACA)
-                        aux_series.appendData(new DataPoint(m.getSample(), m.getValue()), true, 20);
-                    else {
+                    if (arrayMediciones.getTipoMedicion() == Constants.TEMPERATURA_SUJETO || arrayMediciones.getTipoMedicion() == Constants.SPO2 || arrayMediciones.getTipoMedicion() == Constants.FRECUENCIA_CARDIACA){
+                        aux_series.appendData(new DataPoint(i_sample, m.getValue()), true, 500);
+                        i_sample++;
+                    } else {
                         Log.println(Log.DEBUG, "LOAD MEAS", m.toString());
-                        aux_series.appendData(new DataPoint(m.getDate(), m.getValue()), true, 40);
+                        aux_series.appendData(new DataPoint(m.getDate(), m.getValue()), true, 500);
                     }
-                        break;
+                    break;
                 case Constants.GRAFICAR_PERSONA:
                 case Constants.TEMPERATURA_SUJETO:
                 case Constants.TEMPERATURA_AMBIENTE:
@@ -349,11 +350,17 @@ public class PlotFragment extends Fragment implements IComData{
                 case Constants.CO2:
                 case Constants.FRECUENCIA_CARDIACA:
                     Log.d("LoadMeasurements", m.toString());
-                    aux_series.appendData(new DataPoint(m.getDate(), m.getValue()), true, 40);
+                    aux_series.appendData(new DataPoint(m.getDate(), m.getValue()), true, 500);
                     break;
                 default:
                     break;
             }
+        }
+
+        if (id_graph == Constants.GRAFICAR_HABITACION && arrayMediciones.getTipoMedicion() == Constants.TEMPERATURA_SUJETO || arrayMediciones.getTipoMedicion() == Constants.SPO2 || arrayMediciones.getTipoMedicion() == Constants.FRECUENCIA_CARDIACA) {
+            viewport.setXAxisBoundsManual(true);
+            viewport.setMaxX(i_sample);
+            viewport.setMinX(i_sample-20);
         }
         return aux_series;
     }
@@ -520,19 +527,19 @@ public class PlotFragment extends Fragment implements IComData{
         if(id_graph == Constants.GRAFICAR_HABITACION){
             switch (id_meas) {
                 case Constants.TEMPERATURA_SUJETO:
-                    thresholdSeries.get(index).appendData(new DataPoint(m.getSample(), Constants.TH_TEMP), true, 20);
+                    thresholdSeries.get(index).appendData(new DataPoint(m.getSample(), Constants.TH_TEMP), true, 500);
                     break;
                 case Constants.SPO2:
-                    thresholdSeries.get(index).appendData(new DataPoint(m.getSample(), Constants.TH_SPO2), true, 20);
+                    thresholdSeries.get(index).appendData(new DataPoint(m.getSample(), Constants.TH_SPO2), true, 500);
                     break;
                 case Constants.FRECUENCIA_CARDIACA:
-                    thresholdSeries.get(index).appendData(new DataPoint(m.getSample(), Constants.TH_HR), true, 20);
+                    thresholdSeries.get(index).appendData(new DataPoint(m.getSample(), Constants.TH_HR), true, 500);
                     break;
             }
         } else {
             switch (id_meas) {
                 case Constants.TEMPERATURA_SUJETO:
-                    thresholdSeries.get(index).appendData(new DataPoint(m.getDate(), Constants.TH_TEMP), true, 20);
+                    thresholdSeries.get(index).appendData(new DataPoint(m.getDate(), Constants.TH_TEMP), true, 500);
                     break;
                 case Constants.SPO2:
                     thresholdSeries.get(index).appendData(new DataPoint(m.getDate(), Constants.TH_SPO2), true, 20);
@@ -552,13 +559,13 @@ public class PlotFragment extends Fragment implements IComData{
                 if(id_meas == arrayMediciones.getTipoMedicion()){
                     if(id_graph == Constants.GRAFICAR_HABITACION){
                         if(id_meas == Constants.TEMPERATURA_AMBIENTE || id_meas == Constants.CO2)
-                            series.get(i).appendData(new DataPoint(m.getDate(), m.getValue()), true, 40);
+                            series.get(i).appendData(new DataPoint(m.getDate(), m.getValue()), true, 500);
                         else {
-                            series.get(i).appendData(new DataPoint(m.getSample(), m.getValue()), true, 20);
+                            series.get(i).appendData(new DataPoint(m.getSample(), m.getValue()), true, 500);
                             UpdateThreshold(i, id_meas, m);
                         }
                     } else {
-                        series.get(i).appendData(new DataPoint(m.getDate(), m.getValue()), true, 40);
+                        series.get(i).appendData(new DataPoint(m.getDate(), m.getValue()), true, 500);
                         if(id_meas != Constants.TEMPERATURA_AMBIENTE && id_meas != Constants.CO2)
                             UpdateThreshold(i, id_meas, m);
                     }
